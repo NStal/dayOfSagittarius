@@ -1,0 +1,49 @@
+(function(exports){    
+    var Class = require("../util").Class
+    var Point = require("../util").Point
+    var Util = require("../util").Util
+    var Ship = Class.sub();
+    Ship.prototype._init = function(info){
+	if(!info){
+	    return;
+	}
+	this.id = info.id;
+	this.name = info.name
+	this.ability = {
+	    maxSpeed:1
+	    ,maxRotateSpeed:0.2
+	    ,speedFactor:0.8
+	};
+	this.state = {};
+	this.action = {};
+	this.cordinates = new Point(info.position);
+	this.action.speedFix = 1;
+	this.action.rotateFix = 1;
+	this.physicsState = {
+	    toward:0
+	} 
+    }
+    
+    Ship.prototype.init = function(){
+	this.applyAbility();
+	return this;
+    }
+    Ship.prototype.applyAbility = function(){
+	Util.update(this.state
+		    ,this.ability);
+    }
+    Ship.prototype.toData = function(){
+	var data ={
+	    id:this.id
+	    ,name:this.name
+	    ,position:{x:this.cordinates.x
+		       ,y:this.cordinates.y}
+	    ,ability:this.ability
+	    ,state:this.state
+	    ,physicsState:this.physicsState 
+	}
+	console.log(data);
+	return data;
+    }
+    exports.Ship = Ship;
+})(exports)

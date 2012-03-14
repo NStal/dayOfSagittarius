@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>The Day of Sagittarius</title>
+    <script type="text/javascript" src="static.js"></script>
+    <script type="text/javascript" src="settings.js"></script>
+    <!-- loading shares -->
+    <script type="text/javascript" src="share/protocol.js"></script>
+    <script type="text/javascript" src="share/util.js"></script>
+    <script type="text/javascript" src="share/gameUtil.js"></script>
+    <script type="text/javascript" src="share/world.js"></script>
+    <script type="text/javascript" src="share/ship/ship.js"></script>
+    <script type="text/javascript" src="share/gateway.js"></script>
+    <script type="text/javascript" src="share/battleField.js"></script>
+    <!-- end share -->
+    <!-- loading share overrides -->
+    <script type="text/javascript" src="ship/ship.js"></script>
+    <script type="text/javascript" src="battleField.js"></script>
+    <!-- end overrides -->
+    <script type="text/javascript" src="syncWorker.js"></script>
+    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript">
+      window.onload = function(){
+      var main = new Main();
+      main.init();
+      }
+    </script>
+  </head>
+  <style type="text/css" media="screen">
+    body{
+    padding:0;
+    margin:0;
+    }
+    .container{
+    margin:0 auto;
+    width:1280px;
+    }
+    #info{
+    width:300px;
+    position:absolute;
+    top:0;
+    right:0;
+    background-color:#fff;
+    height:700px;
+    border-left:1px solid #888;
+    }
+    #screen,#screen2{
+    cursor:none;
+    width:1280px;
+    border:1px solid #ddd;
+    }
+  </style>
+  <body>
+    <div class="container"> 
+      <canvas id="screen">
+      </canvas>
+    </div>
+  </body>
+</html>
