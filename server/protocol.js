@@ -12,7 +12,7 @@
     instructions = {
 	moveTo:0
 	,roundAt:1
-	,targetAt:2
+	,lockTarget:2
     }
     request = {
 	s:defineType.sequence  // s=0 meas request sync
@@ -23,7 +23,7 @@
 	sync:1
 	,moveTo:2
 	,roundAt:3
-	,targetAt:4
+	,lockTarget:4
     }
     response = {
 	t:defineType.time      // t=0 meas need initial sync

@@ -45,6 +45,11 @@
 	this._timeId = null;
 	this.garenteed = true;
 	this.wait = 0;
+	//lag 3000 ms make it impossible to run 
+	//at current rate 
+	//thus throught Exception to
+	//stop the program
+	this.failDelay = 10*1000;
     }
     Instance.prototype.start = function(type){
 	if(!type){
@@ -94,11 +99,17 @@
 	}
 	if(this.garenteed){
 	    this._shouldBe += this.coolDown;
-	    if((Date.now() -  this._shouldBe)> this.coolDownDelay){
+	    var delay = Date.now() -  this._shouldBe;
+	    if(delay > this.failDelay){
+		console.trace();
+		throw "Too heavy to garenteed the Instance work at rate "+this.rate;
+		return;
+	    }
+	    if(delay> this.coolDownDelay){
 		console.log("promise jump");
 		this.loop()
 	    }else{
-		if((Date.now() - this._shouldBe)< -this.coolDownDelay){
+		if((delay)< -this.coolDownDelay){
 		    console.log("promise wait");
 		    this.wait++;
 		}
@@ -293,6 +304,7 @@
     }
     Container.prototype.add = function(item){
 	this.parts.push(item);
+	item.parentContainer = this;
     }
     Container.prototype.remove = function(item){
 	for(var i=0;i<this.parts.length;i++){
@@ -307,6 +319,17 @@
     Container.prototype.removeAll = function(){
 	this.parts = [];
     }
+    var HashInt =function(a){
+	a = (a+0x7ed55d16) + (a<<12);
+	a = (a^0xc761c23c) ^ (a>>19);
+	a = (a+0x165667b1) + (a<<5);
+	a = (a+0xd3a2646c) ^ (a<<9);
+	a = (a+0xfd7046c5) + (a<<3);
+	a = (a^0xb55a4f09) ^ (a>>16);
+	if( a < 0 ) a = 0xffffffff + a;
+	return a;
+    }
+    exports.HashInt = HashInt;
     exports.Class=Class;
     exports.Math=Math;
     exports.Point = Point;
@@ -315,4 +338,5 @@
     exports.EventEmitter = EventEmitter;
     exports.Key = Key;
     exports.Container = Container;
+    
 })(exports)

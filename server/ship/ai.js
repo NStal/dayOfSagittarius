@@ -12,9 +12,6 @@
 	this.destination = {};
     }
     AI.prototype.calculate = function(){
-	if(this.destination.target){
-	    this.ship.onFireAt(this.destination.target);
-	}
 	if(this.destination.roundRoute){
 
 	    this._adjustRoundAt(this.destination.roundRoute.point,
@@ -24,7 +21,6 @@
 	if(this.destination.targetPoint){
 	    this._adjustToPoint(this.destination.targetPoint);
 	}
-	//this.todoList.doit();
     }
     AI.prototype.next = function(){
 	//donothing currently
@@ -32,7 +28,7 @@
     }
     //how
     AI.prototype.clearDestination = function(){
-        this.destination = {}; 
+        this.destination = {};
     }
     AI.prototype.start = function(){
 	this.rate = this.ship.state.cpu;
@@ -147,9 +143,14 @@
 				       ,antiClockWise:antiClockWise};
     }
     AI.prototype.toData = function(){
-	return {
-	    destination:this.destination
+	var data = {
+	    destination:{
+		targetPoint:this.destination.targetPoint
+		,roundRoute:this.destination.roundRoute
+		,target:this.destination.target?this.destination.target.id:null
+	    }
 	}
+	return data;
     }
     exports.AI = AI;
 })(exports)

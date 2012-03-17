@@ -44,9 +44,10 @@
 	context.clearRect(0,0,settings.width,settings.height);
 	context.save();
 	this.battleField.next(context);
+	this.interactionManager.draw(context);
 	context.restore();
 	context.save();
-	this.interactionManager.draw(context);
+	this.interactionManager.globalParts.draw(context);
 	context.restore();
     }
     Game.prototype.solveKeyEvent = function(){
@@ -57,57 +58,33 @@
 		this.battleField.scale*=0.9; 
 	    }
 	}
-	if(window.KEY[Key.o]){
-	    window.KEY[Key.o] = false;
-	    //send moveRight
-	    this.syncWorker.send({
-		time:this.battleField.time+this.delay
-		,cmd:2
-		,data:{
-		    id:0
-		    ,point:{
-			x:1000
-			,y:200
-		    }
-		}
-	    });
-	    console.log("move right");
+	if(window.KEY[Key.m]){
+	    window.KEY[Key.m] = false;
+	    if(this.selectedShip){
+	    this.interactionManager.pushCriticalInteraction(
+		new MoveToInteraction(this.selectedShip));
+	    }else{
+		console.log("please select a ship");
+	    }
 	}
-	if(window.KEY[Key.p]){
-	    window.KEY[Key.p] = false; 
-	    //send moveLeft
-	    this.syncWorker.send({
-		time:this.battleField.time+this.delay
-		,cmd:2
-		,data:{
-		    id:0
-		    ,point:{
-			x:200
-			,y:200
-		    }
-		}
-	    });
-	    console.log("move left");
-	} 
-	
 	if(window.KEY[Key.r]){
-	    window.KEY[Key.r] = false; 
-	    //send moveLeft
-	    this.syncWorker.send({
-		time:this.battleField.time+this.delay
-		,cmd:3
-		,data:{
-		    id:0
-		    ,point:{
-			x:400
-			,y:200
-		    }
-		    ,radius:40
-		    ,antiClockWise:false
-		}
-	    });
-	    console.log("move left");
-	} 
+	    window.KEY[Key.r] = false;
+	    if(this.selectedShip){
+	    this.interactionManager.pushCriticalInteraction(
+		new RoundAtInteraction(this.selectedShip));
+	    }else{
+		console.log("please select a ship"); 
+	    }
+	}
+	if(window.KEY[Key.a]){
+	    window.KEY[Key.a] = false;
+	    if(this.selectedShip){
+	    this.interactionManager.pushCriticalInteraction(
+		new LockAtInteraction(this.selectedShip));
+	    }else{
+		console.log("please select a ship"); 
+	    }
+	}
     }
     exports.Game = Game;
 })(exports)

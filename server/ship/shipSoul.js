@@ -5,8 +5,8 @@
     var ShipSoul = Class.sub();
     var AI = require("./ai").AI;
     //ShipSoul Holds a shipInformation
-    //it contain everything you want in a ship 
-    //except:the intention of the ship 
+    //it contain everything you want in a ship
+    //except:the intention of the ship
     //is stored in it's AI;
     ShipSoul.prototype._init = function(info){
 	if(!info){
@@ -22,7 +22,6 @@
 	this.AI = new AI(this);
 	this.AI.destination = info.AI&&info.AI.destination?info.AI.destination:{};
     }
-    
     ShipSoul.prototype.init = function(){
 	this.applyAbility();
 	return this;

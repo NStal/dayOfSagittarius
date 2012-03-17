@@ -11,6 +11,7 @@
     }
     ShipMark.prototype.set = function(ship){
 	this.ship = ship;
+	game.selectedShip = ship;
 	if(!ship)return;
 	this.position = ship.cordinates;
 	this.outterRotation = 0;
@@ -88,12 +89,25 @@
 	context.fill();
 	context.restore();
     }
+    ShipMark.prototype.drawLockTarget = function(context){
+	if(!this.ship.AI.destination.target){
+	    return;
+	}
+	var p = this.ship.AI.destination.target.cordinates.sub(this.ship.cordinates);
+	context.save();
+	context.beginPath();
+	context.moveTo(0,0);
+	context.lineTo(p.x,p.y);
+	context.strokeStyle = "red";
+	context.stroke();
+	context.restore();
+    }
     ShipMark.prototype.onDraw = function(context){
 	if(!this.ship){
 	    return;
 	}
 	if(this.alpha >=this.maxAlpha
-	  || this.alpha <= this.minAlpha){
+	   || this.alpha <= this.minAlpha){
 	    this.alphaStep *= -1;
 	}
 	this.alpha+= this.alphaStep;
@@ -103,6 +117,7 @@
 	context.globalAlpha = this.alpha;
 	this.drawTargetPoint(context);
 	this.drawRoundRoute(context);
+	this.drawLockTarget(context);
 	context.globalAlpha = 1;
     }
     
@@ -151,4 +166,5 @@
 	this.manager.remove(this.shipMark);
     }
     exports.ShipSelectInteraction = ShipSelectInteraction;
+    exports.ShipMark = ShipMark;
 })(exports)

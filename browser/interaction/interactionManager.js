@@ -13,18 +13,20 @@
 	this.global = game;
 	this.battleField = game.battleField;
 	this.infoPanel = {};
-	this.currentInteraction = null;
+	this.criticalInteraction = [];
 	this.eventHandlers = [];
 	this.parts = [];
+	this.globalParts = new Drawable();
 	this.position = new Point(0,0);
 	this.scale = 1; 
 	this.mouse = new MouseInteraction();
 	this.addInteraction(this.mouse);
-	this.addCriticalInteraction(new ShipSelectInteraction());
+	this.pushCriticalInteraction(new ShipSelectInteraction());
+	
 	var self  = this;
 	window.KEY = {};
 	window.onkeydown = function(e){
-	    window.KEY[e.which] = true; 
+	    window.KEY[e.which] = true;
 	}
 	window.onkeyup = function(e){
 	    window.KEY[e.which] = false;
@@ -110,6 +112,29 @@
 	this._criticalInteraction = interaction;
 	this.addInteraction(interaction);
     }
-    
+    InteractionManager.prototype.pushCriticalInteraction = function(interaction){
+	var tail = this.criticalInteraction.length-1;
+	if(tail>=0)
+	    this.criticalInteraction[tail].clear();
+	this.criticalInteraction.push(interaction);
+	this.addInteraction(interaction);
+    }
+    InteractionManager.prototype.popCriticalInteraction = function(interaction){
+	var tail = this.criticalInteraction.length-1;
+	if(tail>=0 && interaction===this.criticalInteraction[tail]){
+	    
+	    this.criticalInteraction.pop();
+	    interaction.clear();
+	    if(tail>=1){
+		this.criticalInteraction[tail-1].init(this);
+	    }
+	}
+    }
+    InteractionManager.prototype.addGlobal = function(item){
+	this.globalParts.add(item);
+    } 
+    InteractionManager.prototype.removeGlobal = function(item){
+	this.globalParts.remove(item);
+    }
     exports.InteractionManager = InteractionManager;
 })(exports)

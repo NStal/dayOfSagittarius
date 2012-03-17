@@ -12,7 +12,7 @@
 	console.log("recieve msg",msg);
 	if(msg.cmd==1){
 	    console.log("sync initial data from server");
-	    this.battleField.initByShips(msg.data.ships);
+	    this.battleField.initByShips(msg.data.ships); 
 	    this.battleField.time = msg.time;
 	    this.battleField.ready = true;
 	    return;
@@ -25,6 +25,13 @@
 	    }
 	}
 	if(msg.cmd==3){
+	    if(msg.time>this.battleField.time){
+		this.battleField.onInstruction(msg);
+	    }else{
+		console.log("recieve out dated server instruction");
+	    }
+	}
+	if(msg.cmd==4){
 	    if(msg.time>this.battleField.time){
 		this.battleField.onInstruction(msg);
 	    }else{

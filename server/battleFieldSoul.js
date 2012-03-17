@@ -59,6 +59,8 @@
 		console.log("get ship of id:",ship.id);
 	    }else{
 		console.warn("invalid ship id",ship.id); 
+		console.trace();
+		return;
 	    }
 	    console.log("move to",instruction.data.point);
 	    ship.AI.moveTo(new Point(instruction.data.point)); 
@@ -69,11 +71,42 @@
 		console.log("get ship of id:",ship.id);
 	    }else{
 		console.warn("invalid ship id",ship.id); 
+		console.trace();
+		return;
 	    }
 	    console.log("round at",instruction.data.point);
 	    ship.AI.roundAt(new Point(instruction.data.point)
 			    ,instruction.data.radius
 			    ,instruction.data.antiClockWise);
+	}
+	if(instruction.cmd==clientCommand.lockTarget){
+	    var ship = this.getShipById(instruction.data.id); 
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",ship.id);
+		console.trace();
+		return;
+	    }
+	    var target = this.getShipById(instruction.data.targetId)
+	    if(target){
+		console.log("find target of id:",target.id);
+	    }else{
+		console.warn("invalid target id");
+		console.trace();
+		return;
+	    }
+	    if(target!=ship){
+		//can't target your self
+		console.log("set target") 
+		ship.AI.destination.target = target;
+	    }
+	    else{
+		console.warn("target your self?");
+		console.trace();
+	    }
+	    
+	    return;
 	}
     }
     //calculate the ships next state

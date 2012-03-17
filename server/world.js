@@ -31,29 +31,34 @@
 	this.battleField.next();
     }
     World.prototype.init = function(){
-	this.testShip = new Ship({
-	    name:"myname"
-	    ,cordinates:{x:10,y:10}
-	    ,id:0
-	    ,category:0
-	    ,ability:{
-		maxSpeed:8
-		,maxRotateSpeed:0.2
-		,speedFactor:0.8
-		,cpu:10
-		,size:18
-		,curveForwarding:true
-	    }
-	    ,action:{
-		rotateFix:0
-		,speedFix:0
-	    }
-	    ,physicsState:{
-		toward:0
-	    } 
-	}).init();
-	this.testShip.AI.roundAt({x:300,y:300},100,true);
-	this.battleField.add(this.testShip);
+	this.testShips = [];
+	for(var i=0;i < 4;i++){
+	    var ship = new Ship({
+		name:"myname"
+		,cordinates:{x:10,y:10}
+		,id:i
+		,category:0
+		,ability:{
+		    maxSpeed:8
+		    ,maxRotateSpeed:0.2
+		    ,speedFactor:0.8
+		    ,cpu:10
+		    ,size:18
+		    ,curveForwarding:true
+		}
+		,action:{
+		    rotateFix:0
+		    ,speedFix:0
+		}
+		,physicsState:{
+		    toward:0
+		} 
+	    }).init();
+	    this.testShips.push(ship);
+	    ship.AI.roundAt({x:300+i*100,y:400},120,true);
+	    this.battleField.add(ship);
+	}
+	
     }
     exports.World = World;
 })(exports)

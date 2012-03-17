@@ -12,6 +12,7 @@
 	    normal:0
 	    ,onShip:1
 	    ,onBattleField:2
+	    ,attack:3
 	} 
 	this.size = 20;
 	this.rotation = 0;
@@ -52,6 +53,13 @@
 	}
 	context.restore();
     }
+    MouseSprite.prototype.drawAttack = function(context){
+	var _color = this.color;
+	this.color = "red";
+	this.drawOnShip(context);
+	this.color = _color;
+	return;
+    }
     MouseSprite.prototype.onDraw = function(context){
 	switch(this.type){
 	case this.types.normal:
@@ -59,6 +67,9 @@
 	    break;
 	case this.types.onShip:
 	    this.drawOnShip(context);
+	    break;
+	case this.types.attack:
+	    this.drawAttack(context);
 	    break;
 	}
     }
@@ -80,11 +91,11 @@
     }
     MouseInteraction.prototype.init = function(manager){
 	MouseInteraction.parent.prototype.init.call(this,manager);
-	this.manager.add(this.pointer);
+	this.manager.addGlobal(this.pointer);
     }
     MouseInteraction.prototype.clear = function(){
 	MouseInteraction.parent.prototype.clear.call(this);
-	this.manager.remove(this.pointer);
+	this.manager.removeGlobal(this.pointer);
     }
     MouseInteraction.prototype.show = function(){
 	this.pointer.show = true;

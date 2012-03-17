@@ -17,14 +17,12 @@
 	    item.position = item.cordinates;
 	    item.rotation = item.physicsState.toward; 
 	}
-	context.save();
 	this.setViewPort(context);
 	this.drawGrid(context);
 	this.draw(context);
-	context.restore();
     }
     BattleField.prototype.setViewPort = function(context){
-	//context.translate(this.position.x,this.position.y);
+	context.translate(this.position.x,this.position.y);
 	context.scale(this.scale,this.scale);
     }
     BattleField.prototype.drawGrid = function(context){
@@ -44,17 +42,15 @@
     
     BattleField.prototype.onInstruction = function(instruction){
 	var Protocol = require("./share/protocol");
-	if(instruction.c==Protocol.clientCommand.sync){
-	    this.initByShips(instruction.d.ships);
-	    console.log("here");
-	    return;
-	}
 	BattleField.parent.prototype.onInstruction.call(this,instruction);
     }
     BattleField.prototype.initByShips = function(ships){
 	this.parts = [];
+	var _ships = [];
+	console.log(ships);
 	for(var i=0;i < ships.length;i++){
 	    var ship = new Ship(ships[i]).init();
+	    _ships.push(ship);
 	    //test
 	    ship.onDraw = function(context){
 		context.beginPath();
@@ -66,6 +62,24 @@
 		context.fill();
 	    }
 	    this.add(ship);
+	    console.log("here~~~~~~~~~~~");
+	}
+	//add AI;
+	ships = _ships;
+	for(var i=0;i < ships.length;i++){
+	    var ship = ships[i];
+	    if(ship.AI&&ship.AI.destination.target){
+		var id = ship.AI.destination.target;
+		if(typeof id == "undefined")continue;
+		//target should be valid
+		//this work must be done here
+		//before here:we can't find ship by id
+		//after here:game is already start
+		//invalid target will cause 
+		//fatal unsync
+		console.log("id",id);
+		ship.AI.destination.target = this.getShipById(id);
+	    }
 	}
     }
     BattleField.prototype.screenToBattleField = function(p){
