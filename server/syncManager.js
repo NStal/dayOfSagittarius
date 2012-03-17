@@ -20,18 +20,15 @@
     SyncManager.prototype.boardCast =function(msg){
 	this.syncSequence+=1;
 	console.log("boardcast at sequence:",this.syncSequence);
-	for(var i=0;i<this.listener.length;i++){
-	    var item = this.listener[i];
+	msg.sequnce = this.syncSequence;
+	for(var i=0;i<this.workers.length;i++){
+	    var item = this.workers[i];
 	    //wrap sequnce
 	    //sequnce is a serials nunber
 	    //present the current msg index
 	    //when server recieve the index jump by 2
 	    //means it's quiet probably lost some information
-	    item.send(JSON.stringify({
-		s:this.syncSequence
-		,t:msg.time
-		,i:msg.instruction
-	    }))
+	    item.send(msg);
 	}
     }
     SyncManager.prototype.addClient = function(ws){
@@ -42,7 +39,8 @@
 	for(var i=0;i<this.workers.length;i++){
 	    var item = this.workers[i]
 	    if(item.ws === ws){
-		this.workers.splice(i,0);
+		console.log("removeClient done");
+		this.workers.splice(i,1);
 		return true;
 	    }
 	}

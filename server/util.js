@@ -1,12 +1,10 @@
 (function(exports){
+    var Util = {};
     var Class = function(){};
     Class.sub = function(){
 	var parent = this;
 	var c =  function(){
 	    parent.call(this);
-	    //if(parent.prototype._init){
-	    //parent.prototype._init.call(this);
-	    //}
 	    if(c.prototype._init){
 		c.prototype._init.apply(this,arguments);
 	    }
@@ -14,9 +12,14 @@
 	c.parent = this;
 	c.prototype = new c.parent();
 	c.sub = Class.sub;
+	c.changeRoot = Class.changeRoot;
 	return c;
     }
-
+    Class.changeRoot = function(c,parent){
+	var _c = parent.sub();
+	Util.update(_c.prototype,c.prototype);
+	return _c;
+    }
     var EventEmitter = Class.sub();
     EventEmitter.prototype._init = function(){
 	this.event = {};
@@ -38,8 +41,10 @@
     var Instance = EventEmitter.sub();
     Instance.prototype._init = function(){
 	this.finished = true;
-	this.rate = 1;
+	this.setRate(1);
 	this._timeId = null;
+	this.garenteed = true;
+	this.wait = 0;
     }
     Instance.prototype.start = function(type){
 	if(!type){
@@ -50,6 +55,7 @@
 	    console.trace();
 	    return false;
 	} 
+	this.jump =0 ;
 	this.type = type;
 	var self = this;
 	this.finished = false;
@@ -58,19 +64,27 @@
 		self.loop();
 	    },0)
 	};
+	this._shouldBe = Date.now();
 	if(type == "interval"){
 	    this._timeId = setInterval(function(){
 		self.loop();
-	    },1000/this.rate);
+	    },this.coolDown);
 	}
     }
     Instance.prototype.setRate = function(rate){
-	if(typeof rate!= "undefined")
+	if(typeof rate!= "undefined"){
 	    this.rate = rate;
+	    this.coolDown = 1000/rate;
+	    this.coolDownDelay = this.coolDown;0.8
+	}
     }
-    Instance.prototype.loop = function(sprite){
+    Instance.prototype.loop = function(){
 	var self = this;
 	var result = false;
+	if(this.wait>1){
+	    this.wait-=1;
+	    return;
+	}
 	if(this.next){
 	    result = this.next();
 	}
@@ -78,6 +92,19 @@
 	    this.stop();
 	    return;
 	}
+	if(this.garenteed){
+	    this._shouldBe += this.coolDown;
+	    if((Date.now() -  this._shouldBe)> this.coolDownDelay){
+		console.log("promise jump");
+		this.loop()
+	    }else{
+		if((Date.now() - this._shouldBe)< -this.coolDownDelay){
+		    console.log("promise wait");
+		    this.wait++;
+		}
+	    }
+	}
+	
 	//next time
 	if(this.type=="timeout"){
 	    this._timeId = setTimeout(function(){
@@ -241,7 +268,6 @@
     Point.prototype.toString = function(){
 	return "("+this.x+","+this.y+")";
     }
-    var Util = Class.sub();
     Util.update = function(a,b){
 	if(!a || !b) return;
 	for(var item in b){
@@ -261,6 +287,26 @@
 		clearInterval(_id);
 	},_interval);
     }
+    var Container = Class.sub();
+    Container.prototype._init = function(){
+	this.parts = [];
+    }
+    Container.prototype.add = function(item){
+	this.parts.push(item);
+    }
+    Container.prototype.remove = function(item){
+	for(var i=0;i<this.parts.length;i++){
+	    var _item = this.parts[i]
+	    if(_item===item){
+		this.parts.splice(i,1);
+		return true;
+	    }
+	}
+	return false;
+    }
+    Container.prototype.removeAll = function(){
+	this.parts = [];
+    }
     exports.Class=Class;
     exports.Math=Math;
     exports.Point = Point;
@@ -268,4 +314,5 @@
     exports.Instance = Instance;
     exports.EventEmitter = EventEmitter;
     exports.Key = Key;
+    exports.Container = Container;
 })(exports)

@@ -5,10 +5,43 @@
 	this.battleField = battleField;
     }
     Gateway.prototype.onConnect = function(worker){
-	worker.send({t:0});
+	//require sync
+	worker.send({time:0});
+    }
+    Gateway.prototype.onMessage = function(msg,worker){
+	console.log("recieve msg",msg);
+	if(msg.cmd==1){
+	    console.log("sync initial data from server");
+	    this.battleField.initByShips(msg.data.ships);
+	    this.battleField.time = msg.time;
+	    this.battleField.ready = true;
+	    return;
+	}
+	if(msg.cmd==2){
+	    if(msg.time>this.battleField.time){
+		this.battleField.onInstruction(msg);
+	    }else{
+		console.log("recieve out dated server instruction");
+	    }
+	}
+	if(msg.cmd==3){
+	    if(msg.time>this.battleField.time){
+		this.battleField.onInstruction(msg);
+	    }else{
+		console.log("recieve out dated server instruction");
+	    }
+	}
     }
     Gateway.prototype.onDisconnect = function(worker){
-	alert("lostConnection from server");
+	this.battleField.ready = false;
+	var self = this;
+	var id = setInterval(function(){
+	    if(!worker.ready)
+		self.battleField.world.syncWorker.start();
+	    else
+		clearInterval(id);
+	    
+	},1000)
     }
     exports.Gateway = Gateway;
 })(exports)

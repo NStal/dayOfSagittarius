@@ -3,6 +3,6 @@
     Main.prototype._init = function(){
     }
     Main.prototype.init = function(){
-	new Game().start(); 
+	this.game = new Game().start(); 
     }
 })(exports);

@@ -1,0 +1,87 @@
+(function(exports){
+    var Class = require("../share/util").Class;
+    var Point = require("../share/util").Point;
+    var Interaction = require("./interaction").Interaction;
+    var Sprite = require("./drawing/drawable").Sprite;
+    var Drawable = require("./drawing/drawable").Drawable;
+    var MouseSprite = Drawable.sub();
+    MouseSprite.prototype._init = function(){
+	this.count = 10;
+	this.color = "#60dfff";
+	this.types = {
+	    normal:0
+	    ,onShip:1
+	    ,onBattleField:2
+	} 
+	this.size = 20;
+	this.rotation = 0;
+    }
+    MouseSprite.prototype.drawNormal = function(context){
+	context.save();
+	context.fillStyle = this.color; 
+	context.strokeStyle = context.fillStyle;
+	this.rotation +=0.2;
+	for(var i=0;i<4;i++){
+	    context.rotate(Math.PI/2);
+	    context.beginPath();
+	    context.moveTo(this.size*2/5,0);
+	    context.lineTo(this.size,this.size*1/8);
+	    context.lineTo(this.size,-this.size*1/8);
+	    context.closePath();
+	    context.fill();
+	}
+	context.restore();
+    }
+    MouseSprite.prototype.onDraw = function(context){
+	switch(this.type){
+	case this.types.normal:
+	    this.drawNormal(context);
+	    break;
+	}
+    }
+    var MouseInteraction = Interaction.sub();
+    
+    MouseInteraction.prototype._init = function(){
+	var self = this;
+	this.handlers = [
+	    {
+		where:"battleField"
+		,type:"mouseMove"
+		,handler:function(position){
+		    self.moveTo("battleField");
+		    self.pointer.position = position;
+		    self.pointer.type = self.pointer.types.normal;
+		}
+	    }
+	    ,{
+		where:"infoPanel"
+		,type:"mouseMove"
+		,handler:function(position){
+		    self.moveTo("infoPanel");
+		    self.pointer.position = position;
+		}
+	    }
+	];
+	this.pointer = new MouseSprite();
+    }
+    MouseInteraction.prototype.moveTo = function(where){
+	
+    }
+    MouseInteraction.prototype.init = function(manager){
+	MouseInteraction.parent.prototype.init.call(this,manager);
+	this.manager.add(this.pointer);
+    }
+    MouseInteraction.prototype.clear = function(){
+	MouseInteraction.parent.prototype.clear.call(this);
+	this.manager.remove(this.pointer);
+    }
+    MouseInteraction.prototype.show = function(){
+	this.pointer.show = true;
+	return this;
+    }
+    MouseInteraction.prototype.unshow = function(){
+	this.pointer.show = false;
+    }
+    exports.MouseInteraction = MouseInteraction;
+    exports.MouseSprite = MouseSprite;
+})(exports)

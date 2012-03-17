@@ -1,6 +1,7 @@
 (function(exports){
     var Class = require("./util").Class;
     var Protocol = require("./protocol");
+    var settings = require("./settings").settings;
     var ServerGateway = Class.sub();
     //ServerGateway do these things
     //1.recieve instruction wherever it come from
@@ -19,19 +20,23 @@
     }
     ServerGateway.prototype.onMessage = function(msg,who){
 	//request initial sync
-	if(msg.t==0){
-	    return {
-		c:Protocol.clientCommand.sync
-		,t:this.battleField.time
-		,d:this.battleField.genFieldState()
-	    }
+	console.log(msg);
+	if(msg.time==0){
+	    who.send({
+		cmd:Protocol.clientCommand.sync
+		,time:this.battleField.time
+		,data:this.battleField.genFieldState()
+	    });
+	    return;
 	}
 	//fatal latency
-	if(msg.t<=this.battleField.time){
-	    return Protocol.clientOutdate;
+	if(msg.time+settings.delay<=this.battleField.time){
+	    console.log("it's",this.battleField.time);
+	    console.log("drop outdated message",msg);
 	}
 	//
 	this.battleField.onInstruction(msg);
+	who.master.boardCast(msg);
 	return {s:0};
     }
     exports.ServerGateway = ServerGateway;

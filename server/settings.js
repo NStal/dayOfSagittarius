@@ -1,5 +1,7 @@
 exports.settings = {
     rate:30
-    ,host:"vuvu"
+    ,host:"115.156.219.166"
     ,port:10000
+    //instruction should be 5 frame head server battleField
+    ,delay:5 //160ms
 }

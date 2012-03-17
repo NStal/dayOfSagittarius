@@ -1,32 +1,33 @@
 (function(exports){
-    Instance = require("./util").Instance;
+    var Instance = require("./util").Instance;
+    var settings = require("./settings").settings;
     var GameInstance = Instance.sub();
     //GameInstance is a simulated thread
     //that recieve nextTickEvent from game loop
     //to simulate multi-thread performance
-    /*GameInstance.instances = [];
-      GameInstance.tickPerUnitTime = settings.rate;
-      GameInstance.add = function(){
-      for(var i=0;i<arguments.length;i++){
-      this.instances.push(arguments[i]);
+    GameInstance.instances = [];
+    GameInstance.tickPerUnitTime = settings.rate;
+    GameInstance.add = function(){
+	for(var i=0;i<arguments.length;i++){
+	    this.instances.push(arguments[i]);
 	    arguments[i].isActive = true;
-	    }
-	    }
-	    GameInstance.remove = function(item){
-	    for(var i=0;i<this.instances.length;i++){
+	}
+    }
+    GameInstance.remove = function(item){
+	for(var i=0;i<this.instances.length;i++){
 	    if(this.instances[i] === item){
 		this.instances.splice(i,1);
 		item.isActive = false;
 		return true;
-		}
-		}
-		return false;
-		}
-	GameInstance.nextTick = function(){
+	    }
+	}
+	return false;
+    }
+    GameInstance.nextTick = function(){
 	for(var i=0;i<this.instances.length;i++){
-	this.instances[i].nextTick();
+	    this.instances[i].nextTick();
 	} 
-	}*/
+    }
     GameInstance.prototype._init = function(){
 	this.isPause = false;
 	this.coolDown = GameInstance.tickPerUnitTime/this.rate;
@@ -41,7 +42,7 @@
     //thus recieve the nextTickEvent
     //Is 
     GameInstance.prototype.start = function(){
-	this.setRate();
+	this.setRate(this.rate);
 	if(this.isPause){
 	    this.isPause = false;
 	    return;
@@ -64,7 +65,6 @@
 		    this.stop();
 		}
 	    }
-	    //if(!this.repeat)this.stop();
 	}
     }
     //stop remove this instance from GameInstance.instances

@@ -3,25 +3,24 @@
     var Point = require("../util").Point
     var Util = require("../util").Util
     var ShipSoul = Class.sub();
+    var AI = require("./ai").AI;
+    //ShipSoul Holds a shipInformation
+    //it contain everything you want in a ship 
+    //except:the intention of the ship 
+    //is stored in it's AI;
     ShipSoul.prototype._init = function(info){
 	if(!info){
 	    return;
 	}
 	this.id = info.id;
 	this.name = info.name
-	this.ability = {
-	    maxSpeed:1
-	    ,maxRotateSpeed:0.2
-	    ,speedFactor:0.8
-	};
-	this.state = {};
-	this.action = {};
-	this.cordinates = new Point(info.position);
-	this.action.speedFix = 1;
-	this.action.rotateFix = 1;
-	this.physicsState = {
-	    toward:0
-	} 
+	this.ability = info.ability;
+	this.state = info.state?info.state:{};
+	this.action = info.action?info.action:{rotateFix:0};
+	this.cordinates = new Point(info.cordinates);
+	this.physicsState = info.physicsState;
+	this.AI = new AI(this);
+	this.AI.destination = info.AI&&info.AI.destination?info.AI.destination:{};
     }
     
     ShipSoul.prototype.init = function(){
@@ -37,11 +36,13 @@
 	var data ={
 	    id:this.id
 	    ,name:this.name
-	    ,position:{x:this.cordinates.x
+	    ,cordinates:{x:this.cordinates.x
 		       ,y:this.cordinates.y}
 	    ,ability:this.ability
 	    ,state:this.state
-	    ,physicsState:this.physicsState 
+	    ,physicsState:this.physicsState
+	    ,action:this.action
+	    ,AI:this.AI.toData()
 	}
 	console.log(data);
 	return data;

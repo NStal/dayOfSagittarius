@@ -1,8 +1,11 @@
 (function(exports){
     var Class = require("./util").Class;
     var Point = require("./util").Point;
+    var Container = require("./util").Container;
+    var clientCommand = require("./protocol").clientCommand;
     var settings = require("./settings").settings;
-    var BattleFieldSoul = Class.sub();
+    var Math = require("./util").Math;
+    var BattleFieldSoul = Container.sub();
     //BattleFieldSoul is battleField without drawing functions
     //BattleField do these things:
     //1.hold all the ships
@@ -11,7 +14,7 @@
     
     BattleFieldSoul.prototype._init = function(info){
 	this.parts = [];
-	this.size = new Point(500,500);
+	this.size = new Point(10000,10000);
 	this.listener = [];
 	this.instructionQueue = [];
 	if(!info)return;
@@ -28,57 +31,72 @@
 	};
     }
     BattleFieldSoul.prototype.next = function(){
+	this.time+=1 
+	this.applyInstruction();
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
 	    this.calculateUnit(item);
 	}
-	this.applyInstruction();
     }
     BattleFieldSoul.prototype.applyInstruction = function(){
+	//console.log("at",this.time,this.instructionQueue.length);
 	while(true){
 	    if(this.instructionQueue[0] && 
 	       this.instructionQueue[0].time == this.time){
-		var ins = this.shift();
-		this._excute(instruction);
+		
+		var ins = this.instructionQueue.shift();
+		this._excute(ins);
 		continue;
 	    }
 	    return;
 	}
     }
     BattleFieldSoul.prototype._excute = function(instruction){
-	console.log(instruction.position);
-    }
-    BattleFieldSoul.prototype.add = function(ship){
-	this.parts.push(ship);
-	return true;
-    }
-    BattleFieldSoul.prototype.remove = function(ship){
-	for(var i=0;i<this.parts.length;i++){
-	    var item = this.parts[i]
-	    if(item===ship){
-		this.parts.splice(i,1);
-		return true;
+	//move Instruction
+	if(instruction.cmd==clientCommand.moveTo){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",ship.id); 
 	    }
+	    console.log("move to",instruction.data.point);
+	    ship.AI.moveTo(new Point(instruction.data.point)); 
 	}
-	return false;
-    }
-    //clear the battleField (which contain all the ships);
-    BattleFieldSoul.prototype.clear = function(ship){
-	this.parts = [];
+	if(instruction.cmd==clientCommand.roundAt){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",ship.id); 
+	    }
+	    console.log("round at",instruction.data.point);
+	    ship.AI.roundAt(new Point(instruction.data.point)
+			    ,instruction.data.radius
+			    ,instruction.data.antiClockWise);
+	}
     }
     //calculate the ships next state
     BattleFieldSoul.prototype.calculateUnit = function(ship){
-	//move ship
+	ship.AI.calculate();
+	//console.log("at",this.time,ship.cordinates.toString());
+	var fix = ship.action.rotateFix;
+	if(fix>1 || fix < -1){
+	    console.trace();
+	    return;
+	}
+	rotateSpeed = (1-ship.state.speedFactor)*ship.state.maxRotateSpeed;
+	ship.physicsState.toward += fix*rotateSpeed;
+	ship.physicsState.toward = Math.mod(ship.physicsState.toward,Math.PI*2); 
+
 	var fix = ship.action.speedFix;
-	//speedFactor is effected by ship engine and some other field
-	var speed = (1-ship.state.speedFactor)*ship.state.maxSpeed; 
-	//console.log("ship.state.speedFactor",ship.state.speedFactor);
+	var speed = (1-ship.state.speedFactor)*ship.state.maxSpeed;
+	//move
+	ship.cordinates.x+=Math.cos(ship.physicsState.toward) *speed*fix;
+	ship.cordinates.y+=Math.sin(ship.physicsState.toward) *speed*fix;
+	
 
-	ship.cordinates.x+=Math.cos(ship.physicsState.toward)*speed*fix;
-	ship.cordinates.y+=Math.sin(ship.physicsState.toward)*speed*fix;
-	//console.log("speed",speed);
-
-	//field edge dectection
+	//map edge detection;
 	if(ship.cordinates.x<-1)ship.cordinates.x =1; 
 	if(ship.cordinates.y<-1)ship.cordinates.y =1; 
 	if(ship.cordinates.x>this.size.x)
@@ -120,6 +138,8 @@
 	return null;
     }
     BattleFieldSoul.prototype.onInstruction = function(instruction){
+	console.log("add instruction at:",this.time,instruction);
+	
 	this.instructionQueue.push(instruction);
     }
     BattleFieldSoul.prototype.initByShips = function(ships){

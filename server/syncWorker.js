@@ -8,7 +8,8 @@ SyncWorker.prototype._init = function(ws,master){
     this.master = master;
     this.ws.onclose = function(){
 	if(self.master){
-	    self.master.removeClient(self);
+	    console.log("lost client");
+	    self.master.removeClient(self.ws);
 	}
 	this.over = true;
     }
@@ -17,12 +18,15 @@ SyncWorker.prototype.start = function(){
     var self = this;
     this.ws.on("message",function(msg){
 	var instruction = JSON.parse(msg);
-	self.master.onmessage(self);
+	console.log("msg recieved",msg); 
+	self.master.onMessage(instruction,self);
     });
     return this;
 }
-SyncWoker.prototype.send = function(msg){
+SyncWorker.prototype.send = function(msg){
     if(this.over)return null;
+    console.log("send msg",msg);
+
     this.ws.send(JSON.stringify(msg));
     return this;
 }

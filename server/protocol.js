@@ -1,4 +1,8 @@
 (function(exports){
+    
+    //This module is still in design
+    //It's design purpose is to give 
+    //convinience to the Server Client Communication
     var defineType = {
 	sequence:"_seq_"   //instruct sequence in game
 	,point:"_point_"   // {x,y}
@@ -16,8 +20,10 @@
 	,p:defineType.point
     }
     clientCommand = {
-	instruction:0
-	,sync:1
+	sync:1
+	,moveTo:2
+	,roundAt:3
+	,targetAt:4
     }
     response = {
 	t:defineType.time      // t=0 meas need initial sync

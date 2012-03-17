@@ -16,12 +16,15 @@
 	var self = this;
 	this.ws.onopen = function(){
 	    self.gateway.onConnect(self);
+	    self.ready = true;
 	}
 	this.ws.onmessage = function(msg){
-	    self.gateway.onMessage(JSON.parse(msg.data))
+	    var data = JSON.parse(msg.data);
+	    self.gateway.onMessage(data,self);
 	}
 	this.ws.onclose = function(){
 	    self.gateway.onDisconnect(self);
+	    self.ready = false;
 	    self.ws = null;
 	}
     }
@@ -31,7 +34,6 @@
 	}
 	if(this.ws){
 	    console.log("send",msg);
-
 	    this.ws.send(msg);
 	    return true;
 	}else{
