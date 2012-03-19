@@ -7,6 +7,8 @@ ln -s ../protocol.js
 ln -s ../serverGateway.js 
 ln -s ../util.js 
 ln -s ../world.js 
+ln -s ../galaxy 
+ln -s ../resource
 cd ../../browser
 
 ln -s ../server/share

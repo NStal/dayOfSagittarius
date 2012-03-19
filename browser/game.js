@@ -1,9 +1,11 @@
 (function(exports){
     var settings = require("./settings").settings;
-    var World = require("./share/world.js").World;
+    var World = require("./share/world").World;
     var BattleField = require("./battleField").BattleField;
     var SyncWorker = require("./syncWorker").SyncWorker;
     var GameInstance = require("./share/gameUtil").GameInstance;
+    var GALAXIES = require("./share/resource/galaxies").GALAXIES;
+    var GalaxyMap = require("./galaxy/galaxyMap").GalaxyMap;
     //alert(GameInstace);
     var Key = require("./util").Key;
     var Gateway = require("./gateway").Gateway
@@ -21,15 +23,17 @@
 	this.battleField = new BattleField({time:0});
 	this.battleField.world = this;
 	this.delay = 10;//300ms
-	this.gateway = new Gateway(this.battleField);
-	
+	this.gateway = new Gateway(this.battleField); 
+	this.galaxyMap = new GalaxyMap(GALAXIES);
 	this.interactionManager = new InteractionManager(this);
+	this.galaxySelectInteraction = new GalaxySelectInteraction();
 	//prepare handle global key event 
     }
     Game.prototype.start = function(){
 	Game.parent.prototype.start.call(this);
 	//connect to server to sync battleFieldInfo
-	this.syncWorker = new SyncWorker("ws://115.156.219.166:10000"
+	var g = this.galaxyMap.getGalaxyByName(settings.whereAmI)
+	this.syncWorker = new SyncWorker("ws://"+g.server.host+":"+g.server.port
 					 ,this.gateway);
 	this.syncWorker.start();
 	return this;
@@ -47,7 +51,10 @@
 	this.interactionManager.draw(context);
 	context.restore();
 	context.save();
-	this.interactionManager.globalParts.draw(context);
+	if(this.showMap){
+	    this.galaxyMap.draw(context);
+	}
+	this.interactionManager.globalParts.draw(context); 
 	context.restore();
     }
     Game.prototype.solveKeyEvent = function(){
@@ -85,6 +92,18 @@
 		console.log("please select a ship"); 
 	    }
 	}
+	if(window.KEY[Key.g]){
+	    window.KEY[Key.g] = false;
+	    if(this.showMap){
+		this.showMap = false;
+		this.interactionManager.popCriticalInteraction(this.galaxySelectInteraction);
+	    }
+	    else{
+		this.interactionManager.pushCriticalInteraction(this.galaxySelectInteraction);
+		this.showMap = true;
+	    } 
+	}
+	
     }
     exports.Game = Game;
 })(exports)

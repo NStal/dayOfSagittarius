@@ -33,9 +33,9 @@
 	this.done = false;
     }
     ShipMark.prototype.drawSelection = function(context){
-		if(!this.done){
+	if(!this.done){
 	    if(this.realR>this.r){
-		this.realR*=3/5;
+		this.realR*=3.5/5;
 	    }
 	    else{
 		this.done = true;

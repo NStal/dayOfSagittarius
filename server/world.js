@@ -32,7 +32,7 @@
     }
     World.prototype.init = function(){
 	this.testShips = [];
-	for(var i=0;i < 4;i++){
+	for(var i=0;i < 10;i++){
 	    var ship = new Ship({
 		name:"myname"
 		,cordinates:{x:10,y:10}

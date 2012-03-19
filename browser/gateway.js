@@ -40,13 +40,17 @@
 	}
     }
     Gateway.prototype.onDisconnect = function(worker){
+	if(this.isTrying)return;
 	this.battleField.ready = false;
 	var self = this;
 	var id = setInterval(function(){
+	    self.isTrying = true;
 	    if(!worker.ready)
 		self.battleField.world.syncWorker.start();
-	    else
+	    else{
 		clearInterval(id);
+		self.isTrying = false;
+	    }
 	    
 	},1000)
     }

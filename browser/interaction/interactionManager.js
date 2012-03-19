@@ -11,7 +11,9 @@
     //Should register in the interactionManager
     InteractionManager.prototype._init = function(game){
 	this.global = game;
+	this.game = game;
 	this.battleField = game.battleField;
+	this.galaxyMap = game.galaxyMap;
 	this.infoPanel = {};
 	this.criticalInteraction = [];
 	this.eventHandlers = [];
@@ -43,8 +45,14 @@
     }
     InteractionManager.prototype.onMouseDown = function(e){
 	this.mousePosition = this._eventToPoint(e);
+	//always trigger game event
 	var handlers = this._findHandler("game","mouseDown");
 	this._callHandlers(handlers,this.mousePosition); 
+	if(this.game.showMap){
+	    var handlers = this._findHandler("galaxyMap","mouseDown");
+	    this._callHandlers(handlers,this.mousePosition); 
+	
+	}
 	var handlers = this._findHandler("battleField","mouseDown");
 	this._callHandlers(handlers,this.mousePosition);
     }
@@ -52,6 +60,11 @@
 	this.mousePosition = this._eventToPoint(e);
 	var handlers = this._findHandler("game","mouseUp");
 	this._callHandlers(handlers,this.mousePosition); 
+	
+	if(this.game.showMap){
+	    var handlers = this._findHandler("galaxyMap","mouseUp");
+	    this._callHandlers(handlers,this.mousePosition); 
+	}
 	var handlers = this._findHandler("battleField","mouseUp");
 	this._callHandlers(handlers,this.mousePosition);
     }
@@ -59,6 +72,11 @@
 	this.mousePosition = this._eventToPoint(e);
 	var handlers = this._findHandler("game","mouseMove");
 	this._callHandlers(handlers,this.mousePosition); 
+	if(this.game.showMap){
+	    var handlers = this._findHandler("galaxyMap","mouseMove");
+	    this._callHandlers(handlers,this.mousePosition); 
+	} 
+	
 	var handlers = this._findHandler("battleField","mouseMove");
 	this._callHandlers(handlers,this.mousePosition);
     }
