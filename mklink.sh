@@ -1,5 +1,5 @@
-mkdir server/share/
-cd server/share/
+mkdir server/singleServer//share/
+cd server/singleServer/share/
 ln -s ../ship 
 ln -s ../battleFieldSoul.js 
 ln -s ../gameUtil.js 
@@ -9,7 +9,7 @@ ln -s ../util.js
 ln -s ../world.js 
 ln -s ../galaxy 
 ln -s ../resource
-cd ../../browser
+cd ../../../browser
 
-ln -s ../server/share
+ln -s ../server/singleServer/share
 
