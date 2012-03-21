@@ -316,6 +316,13 @@
 	}
 	return false;
     }
+    Container.prototype.indexOf = function(item){
+	for(var i=0;i<this.parts.length;i++){
+	    var _item = this.parts[i];
+	    if(item==_item)return i;
+	}
+	return -1;
+    }
     Container.prototype.removeAll = function(){
 	this.parts = [];
     }
@@ -329,7 +336,16 @@
 	if( a < 0 ) a = 0xffffffff + a;
 	return a;
     }
+    var HashRandom = function(a){
+	return (HashInt(a)%1000000)/1000000;
+    }
+    var HashRandomInt = function(seed,lessThan){
+	if(!lessThan)lessThan=1000000;
+	return parseInt(HashRandom(seed)*lessThan);
+    }
     exports.HashInt = HashInt;
+    exports.HashRandom = HashRandom;
+    exports.HashRandomInt = HashRandomInt;
     exports.Class=Class;
     exports.Math=Math;
     exports.Point = Point;

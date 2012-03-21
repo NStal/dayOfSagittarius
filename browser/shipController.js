@@ -41,6 +41,15 @@
 	    }
 	}
     }
-
+    ShipController.prototype.activeModule = function(which){
+	return {
+	    time:this.ship.parentContainer.time+settings.delay
+	    ,cmd:5
+	    ,data:{
+		id:this.ship.id
+		,moduleId:this.ship.moduleManager.indexOf(which)
+	    }
+	}
+    }
     exports.ShipController = ShipController;
 })(exports)

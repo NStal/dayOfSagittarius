@@ -27,6 +27,7 @@
     }
     World.prototype.next = function(){
 	this.time+=1;
+	settings.time = this.time;
 	GameInstance.nextTick();
 	this.battleField.next();
     }
@@ -34,18 +35,20 @@
 	this.testShips = [];
 	for(var i=0;i < 10;i++){
 	    var ship = new Ship({
-		name:"myname"
+		name:"ship"+i
 		,cordinates:{x:10,y:10}
 		,id:i
 		,category:0
 		,ability:{
 		    maxSpeed:8
+		    ,structure:10000
 		    ,maxRotateSpeed:0.2
 		    ,speedFactor:0.8
 		    ,cpu:10
 		    ,size:18
 		    ,curveForwarding:true
 		}
+		,modules:[]
 		,action:{
 		    rotateFix:0
 		    ,speedFix:0
@@ -53,7 +56,7 @@
 		,physicsState:{
 		    toward:0
 		} 
-	    }).init();
+	    }).init([0]);
 	    this.testShips.push(ship);
 	    ship.AI.roundAt({x:300+i*100,y:400},120,true);
 	    this.battleField.add(ship);

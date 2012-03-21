@@ -10,6 +10,8 @@
     }
     Gateway.prototype.onMessage = function(msg,worker){
 	console.log("recieve msg",msg);
+	//In future version
+	//Here all cmd should be validated
 	if(msg.cmd==1){
 	    console.log("sync initial data from server");
 	    this.battleField.initByShips(msg.data.ships); 
@@ -32,6 +34,13 @@
 	    }
 	}
 	if(msg.cmd==4){
+	    if(msg.time>this.battleField.time){
+		this.battleField.onInstruction(msg);
+	    }else{
+		console.log("recieve out dated server instruction");
+	    }
+	}
+	if(msg.cmd==5){
 	    if(msg.time>this.battleField.time){
 		this.battleField.onInstruction(msg);
 	    }else{

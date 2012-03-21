@@ -107,11 +107,39 @@
 	    }
 	    
 	    return;
+	} 
+	if(instruction.cmd==clientCommand.activeModule){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",ship.id);
+		console.trace();
+		return;
+	    }
+	    if(instruction.data.moduleId>=ship.moduleManager.parts.length){
+		console.log("invalid module id");
+		return;
+	    }
+	    var m = ship.moduleManager.parts[instruction.data.moduleId];
+	    if(!m){
+		console.log("get module of"+m);
+		console.trace();
+		return false;
+	    }
+	    console.log("get here")
+	    if(m.active){
+		m.active();
+		return true;
+	    }
+	    console.log("module can't active");
+	    return false;
 	}
     }
     //calculate the ships next state
     BattleFieldSoul.prototype.calculateUnit = function(ship){
 	ship.AI.calculate();
+	ship.nextTick();
 	//console.log("at",this.time,ship.cordinates.toString());
 	var fix = ship.action.rotateFix;
 	if(fix>1 || fix < -1){
@@ -137,6 +165,7 @@
 	if(ship.cordinates.y>this.size.y)
 	    ship.cordinates.y=this.size.y;
     }
+    
     BattleFieldSoul.prototype._dispatch = function(instruction){
 	for(var i=0;i<this.listener.length;i++){
 	    var item = this.listener[i];

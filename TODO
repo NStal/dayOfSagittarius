@@ -6,10 +6,11 @@ wuminghan:
 	选择星系：done
 	显示航道：done
 完成武器系统：
-	完成module系统:
-	完成moduleMaster模块
-	完成攻击同步
-	增加舰船的Shield,Armor,Structure 3种属性
+	完成module系统: done
+	完成moduleMaster模块 done
+	完成攻击同步 done
+	增加Shield，Armor模块
+	增加舰船的Shield,Armor,Structure 3种属性 
 	暂时命中率100%
 Fixed:
 修复了浏览器重连卡死的bug

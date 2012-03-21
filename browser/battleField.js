@@ -49,7 +49,7 @@
 	var _ships = [];
 	console.log(ships);
 	for(var i=0;i < ships.length;i++){
-	    var ship = new Ship(ships[i]).init();
+	    var ship = new Ship(ships[i]).init(ships[i].modules);
 	    _ships.push(ship);
 	    //test
 	    ship.onDraw = function(context){
@@ -62,7 +62,6 @@
 		context.fill();
 	    }
 	    this.add(ship);
-	    console.log("here~~~~~~~~~~~");
 	}
 	//add AI;
 	ships = _ships;

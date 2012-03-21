@@ -21,23 +21,31 @@
 	this.globalParts = new Drawable();
 	this.position = new Point(0,0);
 	this.scale = 1; 
+	this.modulePanel = new ModulePanel(this);
 	this.mouse = new MouseInteraction();
 	this.addInteraction(this.mouse);
 	this.pushCriticalInteraction(new ShipSelectInteraction());
-	
 	var self  = this;
 	window.KEY = {};
 	window.onkeydown = function(e){
 	    window.KEY[e.which] = true;
 	}
+	
 	window.onkeyup = function(e){
 	    window.KEY[e.which] = false;
 	}
+	/*window.onclick = function(e){
+	    if(self.down=true)return;
+	    self.onMouseDown(e);
+	    self.onMouseUp(e);
+	}*/
 	window.onmousedown = function(e){
 	    self.onMouseDown(e);
+	    self.down = true;
 	}
 	window.onmouseup = function(e){
 	    self.onMouseUp(e);
+	    self.down = false;
 	}
 	window.onmousemove = function(e){
 	    self.onMouseMove(e);
@@ -47,11 +55,11 @@
 	this.mousePosition = this._eventToPoint(e);
 	//always trigger game event
 	var handlers = this._findHandler("game","mouseDown");
-	this._callHandlers(handlers,this.mousePosition); 
-	if(this.game.showMap){
+	var result = this._callHandlers(handlers,this.mousePosition); 
+	if(!result&&this.game.showMap){
 	    var handlers = this._findHandler("galaxyMap","mouseDown");
 	    this._callHandlers(handlers,this.mousePosition); 
-	
+	    
 	}
 	var handlers = this._findHandler("battleField","mouseDown");
 	this._callHandlers(handlers,this.mousePosition);
@@ -59,9 +67,9 @@
     InteractionManager.prototype.onMouseUp = function(e){
 	this.mousePosition = this._eventToPoint(e);
 	var handlers = this._findHandler("game","mouseUp");
-	this._callHandlers(handlers,this.mousePosition); 
-	
-	if(this.game.showMap){
+	var result = this._callHandlers(handlers,this.mousePosition); 
+	console.log(result);
+	if(this.game.showMap && !result){
 	    var handlers = this._findHandler("galaxyMap","mouseUp");
 	    this._callHandlers(handlers,this.mousePosition); 
 	}
@@ -95,9 +103,12 @@
 	return handlers;
     }
     InteractionManager.prototype._callHandlers = function(handlers,info){
+	var result = false;
 	for(var i=0;i < handlers.length;i++){
-	    handlers[i].handler(info);
+	    result = handlers[i].handler(info);
+	    if(result)return true;
 	}
+	return result;
     }
     InteractionManager.prototype.register = function(info){
 	this.eventHandlers.push(info);

@@ -12,6 +12,11 @@
 	this.destination = {};
     }
     AI.prototype.calculate = function(){
+	if(this.destination.target){
+	    if(this.destination.target.state.structure<=0){
+		this.destination.target = null;
+	    }
+	}
 	if(this.destination.roundRoute){
 
 	    this._adjustRoundAt(this.destination.roundRoute.point,

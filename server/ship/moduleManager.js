@@ -2,9 +2,15 @@
     var Class = require("../util").Class;
     var Container = require("../util").Container;
     var ModuleManager = Container.sub();
+    var Weapon = require("./module").Weapon;
+    console.log("weapon",Weapon);
     ModuleManager.prototype.eventEnum = {
 	onDamage:0
-	,onFire:1
+	,onPresent:1
+	,onNextTick:2
+    }
+    ModuleManager.prototype.moduleEnum = {
+	0:Weapon
     }
     ModuleManager.prototype._init = function(ship){
 	this.ship = ship;
@@ -13,6 +19,10 @@
 	    this.events[item] = [];
 	}
     }
+    ModuleManager.prototype.validate = function(module){
+	return true;
+    }
+    
     ModuleManager.prototype.add = function(module){
 	if(this.validate(module)){
 	    this.consume(module);
@@ -23,6 +33,15 @@
 	    throw "install module that don't meet requirement";
 	}
     }
+    ModuleManager.prototype.toData = function(){
+	var data = [];
+	for(var i=0;i<this.parts.length;i++){
+	    var item = this.parts[i];
+	    console.log("Module",item);
+	    data.push(item.toData());
+	}
+	return data;
+    }
     ModuleManager.prototype.register = function(event,handler){
 	if(typeof this.events[event]=="undefined")return false;
 	this.events[event].push(handler);
@@ -32,11 +51,14 @@
 	var handlers = this.events[event]
 	for(var i=0;i< handlers.length ;i++){
 	    if(handlers[i]==handler){
-		handlers.splice(i,handler);
+		handlers.splice(i,1);
 		return true;
 	    }
 	}
 	return false;
+    }
+    ModuleManager.prototype.getModuleByInfo = function(info){
+	if(info==1)return new Weapon()
     }
     ModuleManager.prototype.remove = function(module){
 	if(ModuleManager.parent.prototype.remove.call(this,module)){
@@ -55,8 +77,4 @@
 	//produce what module requires
     }
     exports.ModuleManager = ModuleManager;
-    var Module = Class.sub();
-    Module.prototype._init = function(){
-	return;
-    }
 })(exports)

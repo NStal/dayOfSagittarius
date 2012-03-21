@@ -24,6 +24,7 @@
 	,moveTo:2
 	,roundAt:3
 	,lockTarget:4
+	,activeModule:5
     }
     response = {
 	t:defineType.time      // t=0 meas need initial sync

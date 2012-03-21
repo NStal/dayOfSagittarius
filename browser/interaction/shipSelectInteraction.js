@@ -27,6 +27,7 @@
 	this.maxAlpha = 0.8;
 	this.alpha = 0.8;
 	this.alphaStep = 0.03;
+	this.presentObjects = [];
     }
     ShipMark.prototype.release = function(){
 	this.ship = null;
@@ -134,9 +135,12 @@
 		    if(ship){
 			self.shipMark.set(ship);
 			console.log("set ship");
+			self.manager.modulePanel.show(ship);
+			return true;
 		    }else{
 			self.shipMark.set(null);
 			console.log("unset ship");
+			self.manager.modulePanel.show(null);
 		    }
 		} 
 	    }
