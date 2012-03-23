@@ -20,24 +20,43 @@
 	this.canvas = document.getElementById(settings.screen);
 	this.canvas.width = settings.width;
 	this.canvas.height = settings.height;
-	this.battleField = new BattleField({time:0});
-	this.battleField.world = this;
-	this.delay = 10;//300ms
-	this.gateway = new Gateway(this.battleField); 
 	this.galaxyMap = new GalaxyMap(GALAXIES);
+	this.galaxy = this.galaxyMap.getGalaxyByName(settings.whereAmI);
+	this.battleField = new BattleField({time:0
+					   });
+	this.battleField.world = this;
+	this.delay = settings.delay;//300ms
+	this.gateway = new Gateway(this.battleField); 
+	
 	this.interactionManager = new InteractionManager(this);
 	this.galaxySelectInteraction = new GalaxySelectInteraction();
+	
 	//prepare handle global key event 
     }
     Game.prototype.start = function(){
-	Game.parent.prototype.start.call(this);
+	Game.parent.prototype.start.call(this); 
 	//connect to server to sync battleFieldInfo
-	var g = this.galaxyMap.getGalaxyByName(settings.whereAmI)
-	this.syncWorker = new SyncWorker("ws://"+g.server.host+":"+g.server.port
-					 ,this.gateway);
-	this.syncWorker.start();
+	this.changeGalaxy(window.location.hash.replace("#",""));
+	var self = this;
+	window.onhashchange = function(){
+	    self.changeGalaxy(window.location.hash.replace("#",""));
+	}
 	return this;
     }
+    Game.prototype.changeGalaxy = function(where){
+	settings.whereAmI = where; 
+	var g = this.galaxyMap.getGalaxyByName(settings.whereAmI) 
+	if(!g)return false; 
+	this.galaxy = g;
+	if(!this.syncWorker){
+	    this.syncWorker = new SyncWorker(g.server.host,g.server.port,this.gateway);
+	    this.syncWorker.start();
+	    return;
+	}
+	this.syncWorker.setServer(g.server.host,g.server.port);
+	this.syncWorker.close();
+    }
+    
     Game.prototype.next = function(){
 	//this is game loops
 	//test
@@ -102,6 +121,45 @@
 		this.interactionManager.pushCriticalInteraction(this.galaxySelectInteraction);
 		this.showMap = true;
 	    } 
+	}
+	if(window.KEY[Key.r]){
+	    window.KEY[Key.r] = false;
+	    if(this.selectedShip){
+	    this.interactionManager.pushCriticalInteraction(
+		new RoundAtInteraction(this.selectedShip));
+	    }else{
+		console.log("please select a ship"); 
+	    }
+	}
+	if(window.KEY[Key.a]){
+	    window.KEY[Key.a] = false;
+	    if(this.selectedShip){
+	    this.interactionManager.pushCriticalInteraction(
+		new LockAtInteraction(this.selectedShip));
+	    }else{
+		console.log("please select a ship"); 
+	    }
+	}
+	if(window.KEY[Key.g]){
+	    window.KEY[Key.g] = false;
+	    if(this.showMap){
+		this.showMap = false;
+		this.interactionManager.popCriticalInteraction(this.galaxySelectInteraction);
+	    }
+	    else{
+		this.interactionManager.pushCriticalInteraction(this.galaxySelectInteraction);
+		this.showMap = true;
+	    } 
+	}
+	if(window.KEY[Key.j]){
+	    window.KEY[Key.j] = false;
+	    if(this.selectedShip){
+		this.interactionManager.pushCriticalInteraction(
+		    new PassStarGateInteraction(this.selectedShip)
+		);
+	    }else{
+		console.log("please select a ship"); 
+	    }
 	}
 	
     }

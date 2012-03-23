@@ -5,7 +5,7 @@
 	,screen:"screen"
 	,rate:30
 	,reconnectInterval:1000
-	,delay:5
+	,delay:6
 	,whereAmI:"Nolava"
     }
     exports.settings = settings;

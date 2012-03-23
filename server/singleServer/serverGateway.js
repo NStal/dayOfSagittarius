@@ -17,6 +17,51 @@
     //or offline,because the game world won't hault for it
     ServerGateway.prototype._init = function(bf){
 	this.battleField = bf;
+	var self = this;
+	bf.addListener({
+	    type:"onPassStarGate"
+	    ,handler:function(ship,gate){
+		console.log("here~~~~~~~~~~~");
+		self.onPassStarGate(ship,gate);
+	    }
+	})
+    }
+    ServerGateway.prototype.onPassStarGate = function(ship,gate){
+	try{
+	    var g = require("./resource/map/"+gate.to)[gate.to];
+	}
+	catch(e){
+	    console.trace();
+	    console.log("pass invalid gate");
+	    return;
+	}
+	var gs = require("./resource/galaxies").GALAXIES;
+	var gInfo = null;
+	for(var i=0;i < gs.length;i++){
+	    if(gs[i].name == gate.to){
+		gInfo = gs[i];
+		break;
+	    }
+	}
+	if(!gInfo){
+	    console.log("can't find galaxy info of",gate.to);
+	    console.trace();
+	    return;
+	} 
+	console.log("try connecting","ws://"+gInfo.server.host+":"+gInfo.server.port);
+	var sock = new (require("ws"))("ws://"+gInfo.server.host+":"+gInfo.server.port);
+	var self = this;
+	sock.on("open",function(){
+	    console.log("SEND！！！！");
+	    sock.send(JSON.stringify({
+		cmd:7
+		,data:{
+		    ship:ship.toData()
+		    ,from:self.battleField.galaxy.name
+		}
+	    }));
+	})
+	
     }
     ServerGateway.prototype.onMessage = function(msg,who){
 	//request initial sync
@@ -28,16 +73,22 @@
 		,data:this.battleField.genFieldState()
 	    });
 	    return;
+	} 
+	if(msg.cmd==Protocol.clientCommand.comeFromGate){
+	    //current alpha version don't judge if it's come from trust server 
+	    msg.time = this.battleField.time+settings.delay;
+	    this.battleField.onInstruction(msg);
+	    who.master.boardCast(msg);
+	    return;
 	}
 	//fatal latency
 	if(msg.time+settings.delay<=this.battleField.time){
 	    console.log("it's",this.battleField.time);
 	    console.log("drop outdated message",msg);
-	}
+	} 
 	//
 	this.battleField.onInstruction(msg);
 	who.master.boardCast(msg);
-	return {s:0};
     }
     exports.ServerGateway = ServerGateway;
 })(exports)

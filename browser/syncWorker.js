@@ -6,13 +6,13 @@
     //2.inform gateway on close and on open
     //3.change send data to string and do some format
     //Client side worker
-    SyncWorker.prototype._init = function(url,gateway){
-	this.url = url;
+    SyncWorker.prototype._init = function(host,port,gateway){
+	this.setServer(host,port);
 	this.ws = null;
 	this.gateway = gateway;
     }
     SyncWorker.prototype.start = function(){
-	this.ws = new WebSocket(this.url);
+	this.ws = new WebSocket("ws://"+this.host+":"+this.port);
 	var self = this;
 	this.ws.onopen = function(){
 	    self.gateway.onConnect(self);
@@ -28,10 +28,18 @@
 	    self.ws = null;
 	}
     }
+    SyncWorker.prototype.setServer = function(host,port){
+	this.host = host;
+	this.port = port;
+    }
+    SyncWorker.prototype.close = function(){
+	if(this.ws)this.ws.close();
+    }
     SyncWorker.prototype.send = function(msg){
 	if(typeof msg!="string"){
 	    msg = JSON.stringify(msg);
 	}
+	console.log(this.ws);
 	if(this.ws){
 	    console.log("send",msg);
 	    this.ws.send(msg);

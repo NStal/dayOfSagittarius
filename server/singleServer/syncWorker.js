@@ -24,8 +24,8 @@ SyncWorker.prototype.start = function(){
     return this;
 }
 SyncWorker.prototype.send = function(msg){
-    if(this.over)return null;
-    console.log("send msg",msg);
+    if(this.over)return;
+    //console.log("send msg",msg);
 
     this.ws.send(JSON.stringify(msg));
     return this;

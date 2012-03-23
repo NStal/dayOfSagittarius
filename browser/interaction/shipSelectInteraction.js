@@ -61,6 +61,9 @@
 	this.outterRotation+=this.outterRotateSpeed; 
     }
     ShipMark.prototype.drawTargetPoint = function(context){
+	if(!this.ship.AI.destination.targetPoint){
+	    return;
+	}
 	context.save();
 	var p = this.ship.cordinates.sub(this.ship.AI.destination.targetPoint);
 	context.beginPath();

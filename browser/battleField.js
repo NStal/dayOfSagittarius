@@ -14,8 +14,10 @@
 	BattleField.parent.prototype.next.call(this);
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i]
-	    item.position = item.cordinates;
-	    item.rotation = item.physicsState.toward; 
+	    if(item.type=="ship"){
+		item.position = item.cordinates;
+		item.rotation = item.physicsState.toward; 
+	    }
 	}
 	this.setViewPort(context);
 	this.drawGrid(context);
@@ -39,13 +41,35 @@
 	}
 	context.stroke();
     }
-    
     BattleField.prototype.onInstruction = function(instruction){
 	var Protocol = require("./share/protocol");
 	BattleField.parent.prototype.onInstruction.call(this,instruction);
     }
-    BattleField.prototype.initByShips = function(ships){
-	this.parts = [];
+    BattleField.prototype.addShip = function(ship){
+	var ship = new Ship(ships[i]).init(ship.modules); 
+	ship.onDraw = function(context){
+	    context.beginPath();
+	    context.moveTo(-6,-3);
+	    context.lineTo(6,0);
+	    context.lineTo(-6,3);
+	    context.closePath();
+	    context.fillStyle = "black";
+	    context.fill();
+	}
+	this.add(ship);
+    }
+    BattleField.prototype.passStarGate = function(ship,gate){
+	var g = game.galaxyMap.getGalaxyByName(gate.to);
+	if(!g){
+	    console.log("error pass invalid gate");
+	    console.trace();
+	}
+	this.remove(ship);
+	window.location.hash = gate.to;
+    }
+    BattleField.prototype.initByShips = function(ships,galaxy){
+	var StarGate = require("./ship/starGate").StarGate;
+	this.parts.length = 0;
 	var _ships = [];
 	console.log(ships);
 	for(var i=0;i < ships.length;i++){
@@ -62,6 +86,9 @@
 		context.fill();
 	    }
 	    this.add(ship);
+	} 
+	for(var i=0;i<galaxy.starGates.length;i++){
+	    this.add(new StarGate(galaxy.starGates[i]));
 	}
 	//add AI;
 	ships = _ships;
@@ -97,11 +124,32 @@
 	p.y += this.position.y;
 	return p;
     }
+    BattleField.prototype.findStarGateByPosition = function(p){
+	var distance = 9999999999;
+	var gate = null;
+	for(var i=0;i<this.parts.length;i++){
+	    var item = this.parts[i];
+	    if(item.type!="gate")continue;
+	    var _dis = item.position.distance(p);
+	    if(_dis < distance 
+	       && _dis < item.size){
+		distance = _dis;
+		gate = item;
+	    }
+	}
+	return gate;
+    }
+    BattleField.prototype.enterShip = function(ship){
+	var ship = new Ship(ship).init(ship.modules);
+	console.log(ship.cordinates);
+	this.add(ship);
+    }
     BattleField.prototype.findShipByPosition = function(p){
 	var distance = 9999999999;
 	var ship = null;
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
+	    if(item.type!="ship")continue;
 	    var _dis = item.cordinates.distance(p);
 	    if(_dis < distance 
 	       && _dis < item.state.size){

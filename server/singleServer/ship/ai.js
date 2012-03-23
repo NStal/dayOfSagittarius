@@ -12,13 +12,22 @@
 	this.destination = {};
     }
     AI.prototype.calculate = function(){
+	//release target when it's dead
 	if(this.destination.target){
 	    if(this.destination.target.state.structure<=0){
 		this.destination.target = null;
 	    }
 	}
+	if(this.destination.starGate){
+	    this.destination.roundRoute = null;
+	    this.destination.targetPoint = this.destination.starGate.position;
+	    
+	    if(this.destination.starGate.position.distance(this.ship.cordinates)
+	       < this.destination.starGate.size){
+		this.ship.passStarGate(this.destination.starGate);
+	    }
+	}
 	if(this.destination.roundRoute){
-
 	    this._adjustRoundAt(this.destination.roundRoute.point,
 				this.destination.roundRoute.radius,
 				this.destination.roundRoute.antiClockWise);
@@ -38,6 +47,9 @@
     AI.prototype.start = function(){
 	this.rate = this.ship.state.cpu;
 	AI.parent.prototype.start.call(this);
+    }
+    AI.prototype.passStarGate = function(gate){
+	this.destination.starGate = gate;
     }
     AI.prototype._adjustToPoint = function(targetPoint){
 	var targetPoint = new Point(targetPoint);
@@ -139,10 +151,11 @@
 
     //intent
     AI.prototype.moveTo = function(targetPoint){
-	this.destination.roundRoute = null;
+	this.clearDestination();
 	this.destination.targetPoint = targetPoint;
     }
     AI.prototype.roundAt =function(p,r,antiClockWise){
+	this.clearDestination();
 	this.destination.roundRoute = {point:p
 				       ,radius:r
 				       ,antiClockWise:antiClockWise};

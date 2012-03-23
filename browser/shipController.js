@@ -51,5 +51,16 @@
 	    }
 	}
     }
+    ShipController.prototype.passStarGate = function(gate){
+	console.log("gate ,,,",gate);
+	return {
+	    time:this.ship.parentContainer.time+settings.delay
+	    ,cmd:6
+	    ,data:{
+		id:this.ship.id
+		,gateId:gate.id
+	    }
+	}
+    }
     exports.ShipController = ShipController;
 })(exports)

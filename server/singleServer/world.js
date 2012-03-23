@@ -17,13 +17,14 @@
 	if(!worldInfo){
 	    return;
 	}
+	this.galaxy = worldInfo.galaxy;
+	this.map = worldInfo.map;
 	this.time = worldInfo.time; 
 	this.battleField = new (require("./battleFieldSoul").BattleFieldSoul)({
 	    time:this.time
 	});
 	this.gateway = new ServerGateway(this.battleField);
 	this.syncManager = new SyncManager(this.gateway);
-	
     }
     World.prototype.next = function(){
 	this.time+=1;
@@ -33,10 +34,10 @@
     }
     World.prototype.init = function(){
 	this.testShips = [];
-	for(var i=0;i < 10;i++){
-	    var ship = new Ship({
+	for(var i=0;i < 3;i++){
+	    var ship = {
 		name:"ship"+i
-		,cordinates:{x:10,y:10}
+		,cordinates:{x:100,y:100}
 		,id:i
 		,category:0
 		,ability:{
@@ -48,7 +49,7 @@
 		    ,size:18
 		    ,curveForwarding:true
 		}
-		,modules:[]
+		,modules:[0]
 		,action:{
 		    rotateFix:0
 		    ,speedFix:0
@@ -56,12 +57,10 @@
 		,physicsState:{
 		    toward:0
 		} 
-	    }).init([0]);
+	    };
 	    this.testShips.push(ship);
-	    ship.AI.roundAt({x:300+i*100,y:400},120,true);
-	    this.battleField.add(ship);
 	}
-	
+	this.battleField.initByShips(this.testShips,this.map);
     }
     exports.World = World;
 })(exports)

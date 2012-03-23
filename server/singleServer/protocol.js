@@ -25,6 +25,8 @@
 	,roundAt:3
 	,lockTarget:4
 	,activeModule:5
+	,passStarGate:6
+	,comeFromGate:7
     }
     response = {
 	t:defineType.time      // t=0 meas need initial sync

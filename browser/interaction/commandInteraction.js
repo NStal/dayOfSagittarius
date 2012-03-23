@@ -163,8 +163,60 @@
 	LockAtInteraction.parent.prototype.clear.call(this);
 	this.manager.remove(this.shipMark);
     }
+    var PassStarGateInteraction = Interaction.sub();
+    PassStarGateInteraction.prototype._init = function(ship){
+	if(!ship){
+	    return;
+	}
+	var ShipController = require("../shipController").ShipController;
+	var self = this;
+	this.shipMark = new ShipMark();
+	this.shipMark.set(ship);
+	this.ship = ship;
+	this.shipController = new ShipController(ship);
+	this.handlers = [
+	    {
+		where:"battleField"
+		,type:"mouseUp"
+		,handler:function(position){
+		    position = self.manager.battleField.screenToBattleField(position);
+		    var gate = self.manager.battleField.findStarGateByPosition(position);
+		    if(!gate){
+			return;
+		    }
+		    game.syncWorker.send(self.shipController.passStarGate(gate));
+		    self.manager.popCriticalInteraction(self);
+		}
+	    }
+	    ,{
+		where:"battleField"
+		,type:"mouseMove"
+		,handler:function(position){
+		    position = self.manager.battleField.screenToBattleField(position);
+		    var gate = self.manager.battleField.findStarGateByPosition(position);
+		    var pointer = game.interactionManager.mouse.pointer; 
+		    if(!gate){
+			pointer.type = pointer.types.normal;
+			return; 
+		    }else{
+			pointer.type = pointer.types.onStarGate;
+		    }
+		    
+		}
+	    }
+	];
+    }
+    PassStarGateInteraction.prototype.init = function(manager){
+	PassStarGateInteraction.parent.prototype.init.call(this,manager);
+	manager.add(this.shipMark);
+    }
+    PassStarGateInteraction.prototype.clear = function(){
+	PassStarGateInteraction.parent.prototype.clear.call(this);
+	this.manager.remove(this.shipMark);
+    }
     exports.LockAtInteraction = LockAtInteraction;
     exports.RoundAtInteraction = RoundAtInteraction;
     exports.MoveToInteraction = MoveToInteraction;
+    exports.PassStarGateInteraction = PassStarGateInteraction;
 })(exports)
 

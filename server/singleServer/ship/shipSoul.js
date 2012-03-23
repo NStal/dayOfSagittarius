@@ -14,6 +14,7 @@
 	if(!info){
 	    return;
 	}
+	this.type = "ship";
 	this.id = info.id;
 	this.name = info.name
 	this.ability = info.ability;
@@ -24,6 +25,7 @@
 	this.moduleManager = new ModuleManager(this);
 	this.AI = new AI(this);
 	this.AI.destination = info.AI&&info.AI.destination?info.AI.destination:{};
+	this.passing = false;
     }
     ShipSoul.prototype.init = function(modules){
 	for(var i=0;i<modules.length;i++){
@@ -40,6 +42,7 @@
 	Util.update(this.state
 		    ,this.ability); 
     }
+    
     ShipSoul.prototype.toData = function(){
 	var data ={
 	    id:this.id
@@ -53,7 +56,6 @@
 	    ,AI:this.AI.toData()
 	    ,modules:this.moduleManager.toData()
 	}
-	console.log(data);
 	return data;
     }
     ShipSoul.prototype.clear = function(){
@@ -82,6 +84,37 @@
 	    events[i]();
 	}
     }
-    
+    ShipSoul.prototype.passStarGate = function(gate){
+	if(this.passing)return;
+	this.parentContainer.passStarGate(this,gate);
+	this.passing = true;
+    }
+    ShipSoul.prototype.next = function(){
+	this.AI.calculate();
+	this.nextTick();
+	//console.log("at",this.time,this.cordinates.toString());
+	var fix = this.action.rotateFix;
+	if(fix>1 || fix < -1){
+	    console.trace();
+	    return;
+	}
+	rotateSpeed = (1-this.state.speedFactor)*this.state.maxRotateSpeed;
+	this.physicsState.toward += fix*rotateSpeed;
+	this.physicsState.toward = Math.mod(this.physicsState.toward,Math.PI*2); 
+	
+	var fix = this.action.speedFix;
+	var speed = (1-this.state.speedFactor)*this.state.maxSpeed;
+	//move
+	this.cordinates.x+=Math.cos(this.physicsState.toward) *speed*fix;
+	this.cordinates.y+=Math.sin(this.physicsState.toward) *speed*fix;
+	
+	//map edge detection;
+	if(this.cordinates.x<-1)this.cordinates.x =1; 
+	if(this.cordinates.y<-1)this.cordinates.y =1; 
+	if(this.cordinates.x>this.parentContainer.size.x)
+	    this.cordinates.x=this.parentContainer.size.x;
+	if(this.cordinates.y>this.parentContainer.size.y)
+	    this.cordinates.y=this.parentContainer.size.y;
+    }
     exports.ShipSoul = ShipSoul;
 })(exports)

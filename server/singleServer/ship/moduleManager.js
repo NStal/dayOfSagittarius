@@ -37,7 +37,6 @@
 	var data = [];
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
-	    console.log("Module",item);
 	    data.push(item.toData());
 	}
 	return data;

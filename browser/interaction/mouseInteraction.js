@@ -14,6 +14,7 @@
 	    ,onBattleField:2
 	    ,attack:3
 	    ,onGalaxy:1
+	    ,onStarGate:1
 	} 
 	this.size = 20;
 	this.rotation = 0;

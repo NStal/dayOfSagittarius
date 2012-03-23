@@ -6,6 +6,8 @@
     var settings = require("./settings").settings;
     var Math = require("./util").Math;
     var BattleFieldSoul = Container.sub();
+    var ShipSoul = require("./ship/shipSoul").ShipSoul;
+    var StarGate = require("./ship/starGate").StarGateSoul;
     //BattleFieldSoul is battleField without drawing functions
     //BattleField do these things:
     //1.hold all the ships
@@ -24,6 +26,7 @@
 	var ships = [];
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
+	    if(item.type!="ship")continue;
 	    ships.push(item.toData());
 	}
 	return {
@@ -36,6 +39,7 @@
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
 	    this.calculateUnit(item);
+	    //if near star gate
 	}
     }
     BattleFieldSoul.prototype.applyInstruction = function(){
@@ -52,25 +56,51 @@
 	}
     }
     BattleFieldSoul.prototype._excute = function(instruction){
+	//come from starGate
+	if(instruction.cmd == clientCommand.comeFromGate){
+	    this.enterShip(instruction.data.ship);
+	    console.log("new ship",instruction.data.ship,"is entered!");
+	}
+	
+	//pass star gate instruction
+	if(instruction.cmd == clientCommand.passStarGate){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id); 
+		console.trace();
+		return;
+	    }
+	    var gate = this.getStarGateById(instruction.data.gateId);
+	    if(gate){
+		console.log("get gate of id:",gate.id);
+	    }else{
+		console.log("invalid gate id",instruction.data.gateId);
+		return;
+	    }
+	    ship.AI.passStarGate(gate);
+	    console.log("ship",ship.id,"is move to stargate");
+	}
 	//move Instruction
 	if(instruction.cmd==clientCommand.moveTo){
 	    var ship = this.getShipById(instruction.data.id);
 	    if(ship){
 		console.log("get ship of id:",ship.id);
 	    }else{
-		console.warn("invalid ship id",ship.id); 
+		console.warn("invalid ship id",instruction.data.id); 
 		console.trace();
 		return;
 	    }
 	    console.log("move to",instruction.data.point);
-	    ship.AI.moveTo(new Point(instruction.data.point)); 
+	    ship.AI.moveTo(new Point(instruction.data.point));
 	}
 	if(instruction.cmd==clientCommand.roundAt){
 	    var ship = this.getShipById(instruction.data.id);
 	    if(ship){
 		console.log("get ship of id:",ship.id);
 	    }else{
-		console.warn("invalid ship id",ship.id); 
+		console.warn("invalid ship id",instruction.data.id); 
 		console.trace();
 		return;
 	    }
@@ -84,7 +114,7 @@
 	    if(ship){
 		console.log("get ship of id:",ship.id);
 	    }else{
-		console.warn("invalid ship id",ship.id);
+		console.warn("invalid ship id",instruction.data.id);
 		console.trace();
 		return;
 	    }
@@ -113,7 +143,7 @@
 	    if(ship){
 		console.log("get ship of id:",ship.id);
 	    }else{
-		console.warn("invalid ship id",ship.id);
+		console.warn("invalid ship id",instruction.data.id);
 		console.trace();
 		return;
 	    }
@@ -137,33 +167,11 @@
 	}
     }
     //calculate the ships next state
-    BattleFieldSoul.prototype.calculateUnit = function(ship){
-	ship.AI.calculate();
-	ship.nextTick();
-	//console.log("at",this.time,ship.cordinates.toString());
-	var fix = ship.action.rotateFix;
-	if(fix>1 || fix < -1){
-	    console.trace();
-	    return;
+    BattleFieldSoul.prototype.calculateUnit = function(unit){
+	if(unit.type == "ship"){
+	    unit.next();
 	}
-	rotateSpeed = (1-ship.state.speedFactor)*ship.state.maxRotateSpeed;
-	ship.physicsState.toward += fix*rotateSpeed;
-	ship.physicsState.toward = Math.mod(ship.physicsState.toward,Math.PI*2); 
-
-	var fix = ship.action.speedFix;
-	var speed = (1-ship.state.speedFactor)*ship.state.maxSpeed;
-	//move
-	ship.cordinates.x+=Math.cos(ship.physicsState.toward) *speed*fix;
-	ship.cordinates.y+=Math.sin(ship.physicsState.toward) *speed*fix;
-	
-
-	//map edge detection;
-	if(ship.cordinates.x<-1)ship.cordinates.x =1; 
-	if(ship.cordinates.y<-1)ship.cordinates.y =1; 
-	if(ship.cordinates.x>this.size.x)
-	    ship.cordinates.x=this.size.x;
-	if(ship.cordinates.y>this.size.y)
-	    ship.cordinates.y=this.size.y;
+	if(unit.type == "gate")return;
     }
     
     BattleFieldSoul.prototype._dispatch = function(instruction){
@@ -193,29 +201,80 @@
     BattleFieldSoul.prototype.getShipById = function(id){
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
-	    if(item.id === id){
+	    if(item.id === id && item.type == "ship"){
 		return item;
 	    }
 	}
 	return null;
+    }
+    BattleFieldSoul.prototype.getStarGateById = function(id){
+	for(var i=0;i<this.parts.length;i++){
+	    var item = this.parts[i];
+	    if(item.id === id && item.type == "gate"){
+		return item;
+	    }
+	}
+    }
+    BattleFieldSoul.prototype.passStarGate = function(ship,gate){
+	var g = null;
+	try{
+	    g = require("./resource/map/"+gate.to)[gate.to];
+	}
+	catch(e){
+	    console.log(e);
+	    console.log("./resource/map/"+gate.to);
+	    console.log("pass invalid gate!!!");
+	    return;
+	}
+	for(var i=0;i<this.listener.length;i++){
+	    var item = this.listener[i];
+	    if(item.type=="onPassStarGate"){
+		item.handler(ship,gate); 
+	    }
+	}
+	this.remove(ship);
     }
     BattleFieldSoul.prototype.onInstruction = function(instruction){
 	console.log("add instruction at:",this.time,instruction);
 	
 	this.instructionQueue.push(instruction);
     }
-    BattleFieldSoul.prototype.initByShips = function(ships){
-	
+    BattleFieldSoul.prototype.enterShip = function(ship){
+	var ship = new ShipSoul(ship).init(ship.modules);
+	console.log(ship.cordinates);
+	this.add(ship);
     }
-    var ControlCommand = {
-	moveTo:{
-	    id:0
-	    ,d:{p:{
-		x:0
-		,y:0
-	    }}
+    BattleFieldSoul.prototype.initByShips = function(ships,galaxy){
+	this.galaxy = galaxy;
+	var _ships = [];
+	for(var i=0;i<this.galaxy.starGates.length;i++){
+	    this.add(new StarGate(this.galaxy.starGates[i]));
+	}
+	for(var i=0;i < ships.length;i++){
+	    var ship = new ShipSoul(ships[i]).init(ships[i].modules);
+	    _ships.push(ship);
+	    //test
+	    this.add(ship);
+	}
+	//add AI;
+	ships = _ships;
+	for(var i=0;i < ships.length;i++){
+	    var ship = ships[i];
+	    if(ship.AI&&ship.AI.destination.target){
+		var id = ship.AI.destination.target;
+		if(typeof id == "undefined")continue;
+		//target should be valid
+		//this work must be done here
+		//before here:we can't find ship by id
+		//after here:game is already start
+		//invalid target will cause 
+		//fatal unsync
+		console.log("id",id);
+		ship.AI.destination.target = this.getShipById(id);
+	    }
 	}
     }
+    
     
     exports.BattleFieldSoul = BattleFieldSoul;
 })(exports)
