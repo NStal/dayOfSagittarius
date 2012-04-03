@@ -1,5 +1,14 @@
+group:
 wuminghan:
+INBOX:
+ShipSoul.attachModule
+ShipSoul.detachModule
+server side authorization.
 计划：2012-3-19：
+更新项目文档。
+完成星系移动的系统构架:
+	从数据库初始化船只，保存船只状态 DONE
+	
 完成星图系统:
 	切换星图：done
 	显示星图：done
@@ -9,8 +18,18 @@ wuminghan:
 	完成module系统: done
 	完成moduleMaster模块 done
 	完成攻击同步 done
-	增加Shield，Armor模块
+	增加Shield，Armor模块 
 	增加舰船的Shield,Armor,Structure 3种属性 
 	暂时命中率100%
 Fixed:
 修复了浏览器重连卡死的bug
+
+
+PP：
+同步最新版本的代码
+放到/gameTools文件夹下
+潘潘看一下/design文件
+ShipMidifier:
+recieve a ship as initial parameter
+show it'c content
+

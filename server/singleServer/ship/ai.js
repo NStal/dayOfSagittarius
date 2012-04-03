@@ -14,11 +14,22 @@
     AI.prototype.calculate = function(){
 	//release target when it's dead
 	if(this.destination.target){
+	    if(typeof this.destination.target == "string"){
+		this.destination.target = this.ship.parentContainer.getShipById(this.destination.target);
+		return;
+	    } 
+	    if(this.destination.target.missed){
+		this.destination.target.null;
+	    }
 	    if(this.destination.target.state.structure<=0){
 		this.destination.target = null;
 	    }
 	}
 	if(this.destination.starGate){
+	    if(typeof this.destination.starGate == "string"){
+		this.destination.starGate = this.ship.parentContainer.getStarGateById(this.destination.starGate);
+		return;
+	    }
 	    this.destination.roundRoute = null;
 	    this.destination.targetPoint = this.destination.starGate.position;
 	    

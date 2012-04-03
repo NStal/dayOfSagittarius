@@ -1,10 +1,22 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
   <head>
+    <meta name="Content-Type" content="text/html; charset=UTF-8"/>
     <title>The Day of Sagittarius</title>
-    <script type="text/javascript" src="jXFrame/apiManager.js"></script>
-    <script type="text/javascript" src="static.js"></script>
-    <script type="text/javascript" src="settings.js"></script>
+    <link rel="stylesheet/less" href="site/css/style.less" type="text/css" media="screen" />
+    <script type="text/javascript" src="site/less-1.2.1.min.js"></script>
+
+    <script type="text/javascript" src="game/static.js"></script>
+    <script type="text/javascript" src="game/settings.js"></script>
+    
+    <!-- LOADING SITE --> 
+    <script type="text/javascript" src="site/jquery-1.5.min.js"></script>
+    <script type="text/javascript" src="site/jXFrame/jTool.js"></script>
+    <script type="text/javascript" src="site/jXFrame/apiManager.js"></script>
+    <script type="text/javascript" src="site/jXFrame/widget.js"></script>
+    <script type="text/javascript" src="site/site.js"></script>
+
+    <!-- LOADING GAMES -->
     
     <!-- temperory load resources using this style later becomming dynamic loading using javascript-->
     <script type="text/javascript" src="share/resource/galaxies.js"></script>
@@ -12,14 +24,14 @@
     <script type="text/javascript" src="share/resource/map/Evy.js"></script>
     <!-- end load resources -->
     <!-- third party utils -->
-    <script type="text/javascript" src="sylvester.js"></script>
+    <script type="text/javascript" src="game/sylvester.js"></script>
     <!-- end third party utils -->
     <!-- loading shares -->
     <!-- over write modules -->
     <script type="text/javascript" src="share/util.js"></script> 
     <script type="text/javascript" src="share/gameUtil.js"></script>
     <script type="text/javascript" src="share/ship/module.js"></script> 
-    <script type="text/javascript" src="ship/module.js"></script>
+    <script type="text/javascript" src="game/ship/module.js"></script>
     <script type="text/javascript" src="share/ship/moduleManager.js"></script>
 
     
@@ -34,24 +46,25 @@
     <script type="text/javascript" src="share/galaxy/galaxyMapSoul.js"></script>
     <!-- end share -->
     <!-- loading share overrides -->
-    <script type="text/javascript" src="ship/starGate.js"></script>
-    <script type="text/javascript" src="drawing/drawable.js"></script> 
-    <script type="text/javascript" src="interaction/interaction.js"></script>
-    <script type="text/javascript" src="interaction/mouseInteraction.js"></script>
-    <script type="text/javascript" src="interaction/shipSelectInteraction.js"></script> 
-    <script type="text/javascript" src="interaction/interactionManager.js"></script>
-    <script type="text/javascript" src="interaction/commandInteraction.js"></script>
-    <script type="text/javascript" src="interaction/galaxySelectInteraction.js"></script>
-    <script type="text/javascript" src="interaction/modulePanel.js"></script>
-    <script type="text/javascript" src="ship/ship.js"></script>
-    <script type="text/javascript" src="shipController.js"></script>
-    <script type="text/javascript" src="battleField.js"></script>
-    <script type="text/javascript" src="galaxy/galaxy.js"></script>
-    <script type="text/javascript" src="galaxy/galaxyMap.js"></script>
+    <script type="text/javascript" src="game/ship/starGate.js"></script>
+    <script type="text/javascript" src="game/drawing/drawable.js"></script> 
+    <script type="text/javascript" src="game/interaction/interaction.js"></script>
+    <script type="text/javascript" src="game/interaction/mouseInteraction.js"></script>
+    <script type="text/javascript" src="game/interaction/shipSelectInteraction.js"></script> 
+    <script type="text/javascript" src="game/interaction/interactionManager.js"></script>
+    <script type="text/javascript" src="game/interaction/commandInteraction.js"></script>
+    <script type="text/javascript" src="game/interaction/galaxySelectInteraction.js"></script>
+    <script type="text/javascript" src="game/interaction/modulePanel.js"></script>
+    <script type="text/javascript" src="game/interaction/toast.js"></script>
+    <script type="text/javascript" src="game/ship/ship.js"></script>
+    <script type="text/javascript" src="game/shipController.js"></script>
+    <script type="text/javascript" src="game/battleField.js"></script>
+    <script type="text/javascript" src="game/galaxy/galaxy.js"></script>
+    <script type="text/javascript" src="game/galaxy/galaxyMap.js"></script>
     <!-- end overrides -->
-    <script type="text/javascript" src="gateway.js"></script>
-    <script type="text/javascript" src="syncWorker.js"></script>
-    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="game/gateway.js"></script>
+    <script type="text/javascript" src="game/syncWorker.js"></script>
+    <script type="text/javascript" src="game/game.js"></script>
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript">
       window.onload = function(){
@@ -60,32 +73,13 @@
       }
     </script>
   </head>
-  <style type="text/css" media="screen">
-    body{
-    padding:0;
-    margin:0;
-    }
-    .container{
-    margin:0 auto;
-    width:1280px;
-    }
-    #info{
-    width:300px;
-    position:absolute;
-    top:0;
-    right:0;
-    background-color:#fff;
-    height:700px;
-    border-left:1px solid #888;
-    }
-    #screen,#screen2{
-    cursor:none;
-    width:1280px;
-    border:1px solid #ddd;
-    }
-  </style>
   <body>
-    <div class="container"> 
+    <div id="landingPage">
+      <input type="text" name="" id="loginUsernameInput" value="" placeholder="用户名" />
+      <button id="loginButton">登录</button>
+      <button id="signUpButton" >注册</button>
+    </div>
+    <div class="canvasContainer" id="canvasContainer"> 
       <canvas id="screen">
       </canvas>
     </div>

@@ -1,0 +1,24 @@
+ShipConstructor + ShipBasicInfo + modulesAttached = a ship in the battleField
+ShipConstructor recieves a Info = {
+		many basic infos (ShipBasicInfo)...
+		...
+		...
+		modules:ShipDesign.getModule() // (modulesAttached)
+}
+
+
+
+ShipDesigner:
+parameter:
+1.ship
+
+interface:
+getModules:
+return attached modulesCode as an array
+
+mode:
+read-only (not in starstation)
+read-write (in starstation)
+
+read-only (only view the modules and the ship)
+read-write ()

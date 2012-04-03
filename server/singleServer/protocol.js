@@ -27,6 +27,8 @@
 	,activeModule:5
 	,passStarGate:6
 	,comeFromGate:7
+	,chaseTarget:8
+	,roundAtTarget:9
     }
     response = {
 	t:defineType.time      // t=0 meas need initial sync

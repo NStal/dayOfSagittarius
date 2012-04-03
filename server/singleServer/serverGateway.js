@@ -3,6 +3,7 @@
     var Protocol = require("./protocol");
     var settings = require("./settings").settings;
     var ServerGateway = Class.sub();
+    var db = require("../database/interface").Interface;
     //ServerGateway do these things
     //1.recieve instruction wherever it come from
     //usually form syncManager,but else where  is OK
@@ -17,6 +18,7 @@
     //or offline,because the game world won't hault for it
     ServerGateway.prototype._init = function(bf){
 	this.battleField = bf;
+	this.db = new db();
 	var self = this;
 	bf.addListener({
 	    type:"onPassStarGate"
@@ -66,14 +68,26 @@
     ServerGateway.prototype.onMessage = function(msg,who){
 	//request initial sync
 	console.log(msg);
-	if(msg.time==0){
-	    who.send({
-		cmd:Protocol.clientCommand.sync
-		,time:this.battleField.time
-		,data:this.battleField.genFieldState()
-	    });
+	var self = this;
+	//no auth info
+	if(!msg.auth||!msg.auth.username){
+	    console.log("recieved unauthed package");
 	    return;
-	} 
+	}
+	if(msg.time==0){
+	    self.db.getUserData(msg.auth.username,
+				function(user){
+				    who.send({
+					cmd:Protocol.clientCommand.sync
+					,time:self.battleField.time
+					,data:self.battleField.genFieldState()
+					,user:{
+					    credits:user.credits
+					}
+				    });
+				})
+	    return;
+	}
 	if(msg.cmd==Protocol.clientCommand.comeFromGate){
 	    //current alpha version don't judge if it's come from trust server 
 	    msg.time = this.battleField.time+settings.delay;

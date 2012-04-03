@@ -10,6 +10,4 @@ ln -s ../world.js
 ln -s ../galaxy 
 ln -s ../resource
 cd ../../../browser
-
 ln -s ../server/singleServer/share
-

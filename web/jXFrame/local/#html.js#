@@ -1,0 +1,14 @@
+var settings = require("./settings.js");
+var handler = function(req,rsp){
+    var htmlRoot = settings.root+settings.htmlRoot;
+    var invalidChar = /[.~\\'"]/ig;
+    if(invalidChar.test(req.url)){
+	console.warn("warning:recieve invalid apiPathCall,maybe some error or attacks");
+	rsp.end("");
+	return false;
+    }
+    var html;
+    
+    
+}
+exports.handler = handler;

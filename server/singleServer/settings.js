@@ -4,4 +4,6 @@ exports.settings = {
     ,port:10000
     //instruction should be 5 frame head server battleField
     ,delay:5 //160ms
+    ,dbhost:"localhost"
+    ,dbport:27017
 }

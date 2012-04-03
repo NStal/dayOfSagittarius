@@ -115,7 +115,6 @@
 		}
 	    }
 	}
-	
 	//next time
 	if(this.type=="timeout"){
 	    this._timeId = setTimeout(function(){
@@ -343,6 +342,17 @@
 	if(!lessThan)lessThan=1000000;
 	return parseInt(HashRandom(seed)*lessThan);
     }
+    var _runOnceArray = [];
+    var runOnce =function(handler,code){
+	for(var i=0;i<_runOnceArray.length;i++){
+	    if(code==_runOnceArray[i]){
+		return;
+	    }
+	}
+	_runOnceArray.push(code);
+	handler();
+    }
+    exports.runOnce = runOnce;
     exports.HashInt = HashInt;
     exports.HashRandom = HashRandom;
     exports.HashRandomInt = HashRandomInt;

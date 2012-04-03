@@ -3,8 +3,16 @@
     var Module = Class.sub();
     var GameInstance = require("../gameUtil").GameInstance;
     var settings = require("../settings").settings;
-    Module.prototype._init = function(){
+    //Some basic model of modules.
+    //Weapon,Shield,Armor
+    Module.prototype._init = function(state){
 	this.handlers = {};
+	if(state){
+	    this.state = state;
+	}
+	else{
+	    this.state = {};
+	}
     }
     Module.prototype.init = function(moduleManager){
 	this.manager = moduleManager;
@@ -17,14 +25,13 @@
 	    this.manager.unregister(item);
 	}
 	this.manager = null;
-	
     }
     Module.prototype.listen = function(event){
 	var self = this;
 	if(!event || !self[event]){
 	    console.trace();
 	    throw "no " + event + "handler";
-	};
+	}
 	this.handlers[event] = function(){
 	    return self[event].apply(self,arguments);
 	}
@@ -43,12 +50,13 @@
     AllumitionSoul.prototype.next = function(){
 	this.index++;
 	if(this.index==this.count){
-	    this.stop(); 
+	    this.stop();
 	    this.target.onHit(this);
 	}
     }
     var WeaponSoul = Module.sub();
-    WeaponSoul.prototype._init = function(){
+    WeaponSoul.prototype._init = function(state){
+	WeaponSoul.parent.prototype._init.call(this,state);
 	this.listen("onNextTick");
 	this.coolDown = 30;
 	this.readyState = 0;

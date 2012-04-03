@@ -25,7 +25,9 @@
 	this.moduleManager = new ModuleManager(this);
 	this.AI = new AI(this);
 	this.AI.destination = info.AI&&info.AI.destination?info.AI.destination:{};
-	this.passing = false;
+	this.passing = false
+	this.owner = info.owner;
+	this.reward = info.reward;
     }
     ShipSoul.prototype.init = function(modules){
 	for(var i=0;i<modules.length;i++){
@@ -71,12 +73,16 @@
 	    value = item(value);
 	}
 	console.log("recieve ",value,"points of hit");
-	this.state.structure-=1000;
+	this.state.structure-=value;
 	if(this.state.structure<=0){
-	    this.clear();
-	    console.log(this.name,"is dead");
-	    this.isDead = true;
+	    this.onDead(byWho);
+	    
 	}
+    }
+    ShipSoul.prototype.onDead = function(byWho){
+	this.clear();
+	console.log(this.name,"is dead");
+	this.isDead = true;
     }
     ShipSoul.prototype.nextTick = function(){
 	var events = this.moduleManager.events.onNextTick;

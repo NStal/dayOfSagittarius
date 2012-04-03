@@ -4,6 +4,10 @@
     var ModuleManager = Container.sub();
     var Weapon = require("./module").Weapon;
     console.log("weapon",Weapon);
+    //Event
+    //"OnPresent":
+    //parameter:array object
+    //description
     ModuleManager.prototype.eventEnum = {
 	onDamage:0
 	,onPresent:1

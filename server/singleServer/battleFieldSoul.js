@@ -56,6 +56,74 @@
 	}
     }
     BattleFieldSoul.prototype._excute = function(instruction){
+	//see protocol.js => clientCommand to all the command implemented here
+	//chase target
+	if(instruction.cmd==clientCommand.chaseTarget){
+	    var ship = this.getShipById(instruction.data.id); 
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id);
+		console.trace();
+		return;
+	    }
+	    var target = this.getShipById(instruction.data.targetId)
+	    if(target){
+		console.log("find target of id:",target.id);
+	    }else{
+		console.warn("invalid target id");
+		console.trace();
+		return;
+	    }
+	    if(target!=ship){
+		//can't target your self
+		console.log("set target") 
+		ship.AI.destination.targetPoint = target.cordinates;
+	    }
+	    else{
+		console.warn("target your self?");
+		console.trace();
+		return;
+	    }
+	    var radius = instruction.radius;
+	    if(!radius){
+		console.warn("recievef no radius; Broken instruction");
+		return;
+	    }
+	    var antiClockWise = instruction.antiClockWise?true:false;
+	    ship.AI.roundAt(target.cordinates,radius,antiClockWise);
+	    return;
+	} 
+	//chaseTarget 	
+	if(instruction.cmd==clientCommand.chaseTarget){
+	    var ship = this.getShipById(instruction.data.id); 
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id);
+		console.trace();
+		return;
+	    }
+	    var target = this.getShipById(instruction.data.targetId)
+	    if(target){
+		console.log("find target of id:",target.id);
+	    }else{
+		console.warn("invalid target id");
+		console.trace();
+		return;
+	    }
+	    if(target!=ship){
+		//can't target your self
+		console.log("set target") 
+		ship.AI.destination.targetPoint = target.cordinates;
+	    }
+	    else{
+		console.warn("target your self?");
+		console.trace();
+	    }
+	    
+	    return;
+	} 
 	//come from starGate
 	if(instruction.cmd == clientCommand.comeFromGate){
 	    this.enterShip(instruction.data.ship);
@@ -229,9 +297,10 @@
 	for(var i=0;i<this.listener.length;i++){
 	    var item = this.listener[i];
 	    if(item.type=="onPassStarGate"){
-		item.handler(ship,gate); 
+		item.handler(ship,gate);
 	    }
 	}
+	ship.missed = true;
 	this.remove(ship);
     }
     BattleFieldSoul.prototype.onInstruction = function(instruction){
