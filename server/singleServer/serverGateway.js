@@ -72,7 +72,12 @@
 	//no auth info
 	if(!msg.auth||!msg.auth.username){
 	    console.log("recieved unauthed package");
-	    return;
+	    if(msg.cmd!=Protocol.clientCommand.comeFromGate){
+		//this come from server 
+		//no need to ...
+		console.log("recieve server command");
+		return;
+	    }
 	}
 	if(msg.time==0){
 	    self.db.getUserData(msg.auth.username,

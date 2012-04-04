@@ -45,7 +45,7 @@
 	    self._againExit = false;
 	    return true;
 	});
-	tty.setRawMode(true);
+	//tty.setRawMode(true);
 	this.loadShip();
     }
     World.prototype.next = function(){
