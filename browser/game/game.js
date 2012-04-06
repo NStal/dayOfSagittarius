@@ -87,8 +87,9 @@
 	if(window.KEY[Key.m]){
 	    window.KEY[Key.m] = false;
 	    if(this.selectedShip){
-	    this.interactionManager.pushCriticalInteraction(
-		new MoveToInteraction(this.selectedShip));
+		if(this.selectedShip.owner != Static.username)return;
+		this.interactionManager.pushCriticalInteraction(
+		    new MoveToInteraction(this.selectedShip));
 	    }else{
 		console.log("please select a ship");
 	    }
@@ -96,7 +97,8 @@
 	if(window.KEY[Key.r]){
 	    window.KEY[Key.r] = false;
 	    if(this.selectedShip){
-	    this.interactionManager.pushCriticalInteraction(
+		if(this.selectedShip.owner != Static.username)return;
+		this.interactionManager.pushCriticalInteraction(
 		new RoundAtInteraction(this.selectedShip));
 	    }else{
 		console.log("please select a ship"); 
@@ -105,7 +107,8 @@
 	if(window.KEY[Key.a]){
 	    window.KEY[Key.a] = false;
 	    if(this.selectedShip){
-	    this.interactionManager.pushCriticalInteraction(
+		if(this.selectedShip.owner != Static.username)return;
+		this.interactionManager.pushCriticalInteraction(
 		new LockAtInteraction(this.selectedShip));
 	    }else{
 		console.log("please select a ship"); 
@@ -125,6 +128,8 @@
 	if(window.KEY[Key.r]){
 	    window.KEY[Key.r] = false;
 	    if(this.selectedShip){
+		
+		if(this.selectedShip.owner != Static.username)return;
 	    this.interactionManager.pushCriticalInteraction(
 		new RoundAtInteraction(this.selectedShip));
 	    }else{
@@ -134,8 +139,10 @@
 	if(window.KEY[Key.a]){
 	    window.KEY[Key.a] = false;
 	    if(this.selectedShip){
-	    this.interactionManager.pushCriticalInteraction(
-		new LockAtInteraction(this.selectedShip));
+		
+		if(this.selectedShip.owner != Static.username)return;
+		this.interactionManager.pushCriticalInteraction(
+		    new LockAtInteraction(this.selectedShip));
 	    }else{
 		console.log("please select a ship"); 
 	    }
@@ -154,6 +161,8 @@
 	if(window.KEY[Key.j]){
 	    window.KEY[Key.j] = false;
 	    if(this.selectedShip){
+		
+		if(this.selectedShip.owner != Static.username)return;
 		this.interactionManager.pushCriticalInteraction(
 		    new PassStarGateInteraction(this.selectedShip)
 		);

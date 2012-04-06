@@ -57,6 +57,7 @@
 	    ,action:this.action
 	    ,AI:this.AI.toData()
 	    ,modules:this.moduleManager.toData()
+	    ,owner:this.owner
 	}
 	return data;
     }

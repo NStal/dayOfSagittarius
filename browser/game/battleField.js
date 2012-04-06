@@ -82,8 +82,10 @@
 		context.lineTo(6,0);
 		context.lineTo(-6,3);
 		context.closePath();
-		if(this.owner==Static.username)
+		
+		if(this.owner==Static.username){
 		    context.fillStyle = "red";
+		}
 		else
 		    context.fillStyle = "blue";
 		context.fill();

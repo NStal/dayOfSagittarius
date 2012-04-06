@@ -101,11 +101,14 @@
 	    return;
 	}
 	//fatal latency
-	if(msg.time+settings.delay<=this.battleField.time){
+	if(msg.time-settings.delay<=this.battleField.time){
 	    console.log("it's",this.battleField.time);
 	    console.log("drop outdated message",msg);
+	    return;
 	} 
 	//
+	console.log(msg.time-settings.delay);
+	console.log(msg.time,this.battleField.time);
 	this.battleField.onInstruction(msg);
 	who.master.boardCast(msg);
     }

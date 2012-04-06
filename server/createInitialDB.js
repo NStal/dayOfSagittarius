@@ -34,6 +34,33 @@ var galaxyInfoInserters = {
 	    };
 	    col.insert(ship);
 	}
+	for(var i=0;i<3;i++){
+	    var ship = {
+		name:"ship"+i
+		,owner:"AI"
+		,cordinates:{x:300,y:300}
+		,category:0
+		,ability:{
+		    maxSpeed:8
+		    ,structure:10000
+		    ,maxRotateSpeed:0.2
+		    ,speedFactor:0.8
+		    ,cpu:10
+		    ,size:18
+		    ,curveForwarding:true
+		}
+		,modules:[0]
+		,reward:1200
+		,action:{
+		    rotateFix:0
+		    ,speedFix:0
+		}
+		,physicsState:{
+		    toward:0
+		} 
+	    };
+	    col.insert(ship);
+	}
     }
     ,"Evy":function(col){
 	for(var i=0;i<5;i++){

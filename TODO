@@ -4,16 +4,16 @@ INBOX:
 ShipSoul.attachModule
 ShipSoul.detachModule
 server side authorization.
-计划：2012-3-19：
+计划：2012-4-7：
 更新项目文档。
-完成星系移动的系统构架:
-	从数据库初始化船只，保存船只状态 DONE
-	
-完成星图系统:
-	切换星图：done
-	显示星图：done
-	选择星系：done
-	显示航道：done
+重构：
+	relink share文件夹，让之成为独立的文件夹。别的模块通过软链接来引用。
+完成AI：
+	添加AI在Nolava的初始飞船作为测试用机型。
+	添加AICore类，对整个星系的AI飞船进行操作，只需要基本的随机移动就好。
+界面优化：
+	更新四个方向移动大地图。
+
 完成武器系统：
 	完成module系统: done
 	完成moduleMaster模块 done
@@ -33,3 +33,10 @@ ShipMidifier:
 recieve a ship as initial parameter
 show it'c content
 
+	从数据库初始化船只，保存船只状态 DONE
+	
+完成星图系统:
+	切换星图：done
+	显示星图：done
+	选择星系：done
+	显示航道：done

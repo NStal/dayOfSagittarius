@@ -1,20 +1,20 @@
 (function(exports){
-    var Class = require("./util").Class;
-    var Point = require("./util").Point;
-    var Container = require("./util").Container;
-    var clientCommand = require("./protocol").clientCommand;
-    var settings = require("./settings").settings;
-    var Math = require("./util").Math;
-    var BattleFieldSoul = Container.sub();
-    var ShipSoul = require("./ship/shipSoul").ShipSoul;
-    var StarGate = require("./ship/starGate").StarGateSoul;
-    //BattleFieldSoul is battleField without drawing functions
+    var Class = require("./share/util").Class;
+    var Point = require("./share/util").Point;
+    var Container = require("./share/util").Container;
+    var clientCommand = require("./share/protocol").clientCommand;
+    var settings = require("./settings");
+    var Math = require("./share/util").Math;
+    var BattleFieldVirtual = Container.sub();
+    var ShipSoul = require("./share/ship/shipSoul").ShipSoul;
+    var StarGate = require("./share/ship/starGate").StarGateSoul;
+    //BattleFieldVirtual is battleField without drawing functions
     //BattleField do these things:
     //1.hold all the ships
     //2.set ship position acording to the the ship.AI
     //3.listen instructions come from the gateway and conduct it.
     
-    BattleFieldSoul.prototype._init = function(info){
+    BattleFieldVirtual.prototype._init = function(info){
 	this.parts = [];
 	this.size = new Point(10000,10000);
 	this.listener = [];
@@ -22,7 +22,7 @@
 	if(!info)return;
 	this.time = info.time;
     }
-    BattleFieldSoul.prototype.genFieldState = function(){
+    BattleFieldVirtual.prototype.genFieldState = function(){
 	var ships = [];
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
@@ -33,39 +33,29 @@
 	    ships:ships
 	};
     }
-    BattleFieldSoul.prototype.next = function(){
-	this.applyInstruction(); 
+    BattleFieldVirtual.prototype.next = function(){
 	this.time+=1 
+	this.applyInstruction();
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
 	    this.calculateUnit(item);
 	    //if near star gate
 	}
-	
     }
-    BattleFieldSoul.prototype.applyInstruction = function(){
+    BattleFieldVirtual.prototype.applyInstruction = function(){
 	//console.log("at",this.time,this.instructionQueue.length);
 	while(true){
-	    /*if(this.instructionQueue[0] && typeof this.instructionQueue[0].time == "number" &&
-	      this.instructionQueue[0].time < this.time){
-		console.log("fatal Error! recieve outdated instruction from gateway"); 
-		console.trace(); 
-		//throw "Logic Error";
-	    }*/
-	    //console.log(this.instructionQueue[0]?this.instructionQueue[0].time:null);
 	    if(this.instructionQueue[0] && 
 	       this.instructionQueue[0].time == this.time){
 		
 		var ins = this.instructionQueue.shift();
-		console.log("excute cmd",ins);
 		this._excute(ins);
-		
 		continue;
 	    }
 	    return;
 	}
     }
-    BattleFieldSoul.prototype._excute = function(instruction){
+    BattleFieldVirtual.prototype._excute = function(instruction){
 	//see protocol.js => clientCommand to all the command implemented here
 	//chase target
 	if(instruction.cmd==clientCommand.chaseTarget){
@@ -243,29 +233,28 @@
 	    console.log("module can't active");
 	    return false;
 	}
-	console.log("unknow cmd!!");
     }
     //calculate the ships next state
-    BattleFieldSoul.prototype.calculateUnit = function(unit){
+    BattleFieldVirtual.prototype.calculateUnit = function(unit){
 	if(unit.type == "ship"){
 	    unit.next();
 	}
 	if(unit.type == "gate")return;
     }
     
-    BattleFieldSoul.prototype._dispatch = function(instruction){
+    BattleFieldVirtual.prototype._dispatch = function(instruction){
 	for(var i=0;i<this.listener.length;i++){
 	    var item = this.listener[i];
 	    item(instruction);
 	}
     }
-    BattleFieldSoul.prototype.addListener = function(){
+    BattleFieldVirtual.prototype.addListener = function(){
 	for(var i=0;i<arguments.length;i++){
 	    var item  = arguments[i];
 	    this.listener.push(item);
 	} 
     }
-    BattleFieldSoul.prototype.removeListener = function(){
+    BattleFieldVirtual.prototype.removeListener = function(){
 	for(var i=0;i<arguments.length;i++){
 	    var item  = arguments[i];
 	    for(var j=0;j<this.listener.length;j++){
@@ -277,7 +266,7 @@
 	    }
 	} 
     }
-    BattleFieldSoul.prototype.getShipById = function(id){
+    BattleFieldVirtual.prototype.getShipById = function(id){
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
 	    if(item.id === id && item.type == "ship"){
@@ -286,7 +275,7 @@
 	}
 	return null;
     }
-    BattleFieldSoul.prototype.getStarGateById = function(id){
+    BattleFieldVirtual.prototype.getStarGateById = function(id){
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
 	    if(item.id === id && item.type == "gate"){
@@ -294,7 +283,7 @@
 	    }
 	}
     }
-    BattleFieldSoul.prototype.passStarGate = function(ship,gate){
+    BattleFieldVirtual.prototype.passStarGate = function(ship,gate){
 	var g = null;
 	try{
 	    g = require("./resource/map/"+gate.to)[gate.to];
@@ -314,20 +303,22 @@
 	ship.missed = true;
 	this.remove(ship);
     }
-    BattleFieldSoul.prototype.onInstruction = function(instruction){
-	console.log("add instruction at:",this.time,instruction); 
+    BattleFieldVirtual.prototype.onInstruction = function(instruction){
+	console.log("add instruction at:",this.time,instruction);
+	
 	this.instructionQueue.push(instruction);
     }
-    BattleFieldSoul.prototype.enterShip = function(ship){
+    BattleFieldVirtual.prototype.enterShip = function(ship){
 	var ship = new ShipSoul(ship).init(ship.modules);
 	console.log(ship.cordinates);
 	this.add(ship);
     }
-    BattleFieldSoul.prototype.initByShips = function(ships,galaxy){
+    BattleFieldVirtual.prototype.initByShips = function(ships,galaxy,name){
 	this.galaxy = galaxy;
 	var _ships = [];
-	for(var i=0;i<this.galaxy.starGates.length;i++){
-	    this.add(new StarGate(this.galaxy.starGates[i]));
+	console.log(galaxy);
+	for(var i=0;i<this.galaxy[name].starGates.length;i++){
+	    this.add(new StarGate(this.galaxy[name].starGates[i]));
 	}
 	for(var i=0;i < ships.length;i++){
 	    var ship = new ShipSoul(ships[i]).init(ships[i].modules);
@@ -354,6 +345,5 @@
 	}
     }
     
-    
-    exports.BattleFieldSoul = BattleFieldSoul;
+    exports.BattleFieldVirtual = BattleFieldVirtual;
 })(exports)

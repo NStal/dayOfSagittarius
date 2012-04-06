@@ -5,6 +5,7 @@
     var Ship = require("./ship/shipSoul").ShipSoul;
     var ServerGateway = require("./serverGateway").ServerGateway;
     var SyncManager = require("./syncManager").SyncManager;
+    var Interface = require("../database/interface").Interface;
     //World do these:
     //1.assemble and holds most of the Objects of the game
     //BattleField,Gateway,SyncManager
@@ -17,6 +18,7 @@
 	if(!worldInfo){
 	    return;
 	}
+	this.interface = new Interface();
 	this.galaxy = worldInfo.galaxy;
 	this.map = worldInfo.map;
 	this.time = worldInfo.time; 
@@ -45,6 +47,15 @@
 	    self._againExit = false;
 	    return true;
 	});
+	
+	var mongodb =  require("mongodb");
+	var server = new mongodb.Server("localhost"
+					,27017
+		       ,{})
+	,connector = new mongodb.Db("dayOfSagittarius"
+				    ,server
+				    ,{});
+	this.connector = connector;
 	//tty.setRawMode(true);
 	this.loadShip();
     }
@@ -59,70 +70,17 @@
 	this.battleField.initByShips(this.testShips,this.map);
     }
     World.prototype.loadShip = function(){
-	var mongodb =  require("mongodb");
-	var server = new mongodb.Server("localhost"
-		       ,27017
-		       ,{})
-	,connector = new mongodb.Db("dayOfSagittarius"
-				,server
-				,{});
 	var self = this;
-	connector.open(function(err,db){
-	    if(err || !db){
-		console.log("fail to open db");
-		return;
+	this.interface.getGalaxyShip(this.galaxy.name,function(ships){
+	    for(var i=0;i < ships.length;i++){
+		var ship = ships[i]; 
+		self.battleField.enterShip(ship);
 	    }
-	    console.log("load",self.galaxy.name);
-	    db.collection("galaxy_"+self.galaxy.name,function(err,col){
-		if(err || !db){
-		    console.log("fail to open collection",self.galaxy.name);
-		    return;
-		}
-		var cur = col.find();
-		cur.each(function(err,obj){
-		    if(err||!obj){
-			console.log(err);
-			console.trace();
-			return;
-		    }
-		    obj.id = obj._id.toString();
-		    self.battleField.enterShip(obj);
-		});
-	    })
 	})
     }
     World.prototype.saveShip = function(handler){
-	var data = this.battleField.genFieldState();
-	var mongodb =  require("mongodb");
-	var server = new mongodb.Server("localhost"
-		       ,27017
-		       ,{})
-	,connector = new mongodb.Db("dayOfSagittarius"
-				,server
-				,{});
-	var self = this;
-	connector.open(function(err,db){
-	    if(err || !db){
-		console.log("fail to open db");
-		return;
-	    }
-	    console.log("load",self.galaxy.name);
-	    //collection naming convention is
-	    //galaxy_name  such as: galaxy_Nolava
-	    db.collection("galaxy_"+self.galaxy.name,function(err,col){
-		if(err || !db){
-		    console.log("fail to open collection",self.galaxy.name);
-		    return;
-		} 
-		for(var i=0;i<data.ships.length;i++){
-		    var ship = data.ships[i];
-		    ship._id = new mongodb.ObjectID(ship.id);
-		    col.update({_id:ship._id}
-			     ,ship);
-		}
-		handler();
-	    })
-	})
+	//currently not implemented
+	return;
     }
     exports.World = World;
 })(exports)
