@@ -11,7 +11,6 @@
 	this.instance.setRate(30);
 	this.instance.next = function(){
 	    self.next();
-	    console.log("next");
 	}
 	this.instance.start();
 	this.index =0;
@@ -21,10 +20,10 @@
     Toaster.prototype.show = function(text){
 	this.text = text;
 	this.position = new Point(settings.width/2,settings.height/2);
-	game.interactionManager.addGlobal(this);
+	Static.interactionManager.addGlobal(this);
     }
     Toaster.prototype.hide = function(){
-	game.interactionManager.removeGlobal(this);
+	Static.interactionManager.removeGlobal(this);
 	this.instance.stop();
     }
     Toaster.prototype.next = function(){
@@ -39,11 +38,9 @@
 	context.textAlign = "center";
 	if(this.index>this.holdTime)
 	    context.globalAlpha = 1-(this.index-this.holdTime)/this.fadeTime;
-	console.log(context.globalAlpha);
 	context.beginPath();
 	context.font = "20pt";
 	context.fillText(this.text,30,30);
-	context.fill();
 	context.restore();
     }
     exports.Toaster = Toaster;

@@ -5,7 +5,10 @@
     Main.prototype.init = function(){
 	//game = new Game().start(); 
 	this.site = new Site();
-	this.site.loginUsernameInputJ.val("nstal");
-	this.site.onClickLoginButton();
+	var hash = window.location.hash;
+	if(hash=="#debug"){
+	    this.site.loginUsernameInputJ.val("AI");
+	    this.site.onClickLoginButton();
+	}
     }
 })(exports);

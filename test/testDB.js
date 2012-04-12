@@ -1,4 +1,4 @@
-var inf = new (require("../server/database/interface").Interface)();
+var inf = (require("../database/interface").Interface);
 //create 2 user
 inf.addUser("nstal");
 function get(){

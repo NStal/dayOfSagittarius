@@ -12,15 +12,15 @@
     InteractionManager.prototype._init = function(game){
 	this.global = game;
 	this.game = game;
-	this.battleField = game.battleField;
-	this.galaxyMap = game.galaxyMap;
+	this.battleField = Static.battleField;
+	this.galaxyMap = Static.galaxyMap;
 	this.infoPanel = {};
 	this.criticalInteraction = [];
 	this.eventHandlers = [];
 	this.parts = [];
 	this.globalParts = new Drawable();
 	this.position = new Point(0,0);
-	this.scale = 1; 
+	this.scale = 1;
 	this.modulePanel = new ModulePanel(this);
 	this.mouse = new MouseInteraction();
 	this.addInteraction(this.mouse);

@@ -22,13 +22,11 @@
 		for(var i=0;i<self.presentObjects.length;i++){
 		    var item = self.presentObjects[i]; 
 		    p.x +=100;
-		    if(position.distance(p)<20){
+		    if(position.distance(p)<40){
 			item.callback();
 			return true;
-		    }
-		    
+		    } 
 		}
-		console.log("no panel item found");
 	    }
 	}];
 	Interaction.prototype.init.call(this,manager);
@@ -50,6 +48,7 @@
 	    this.ship = ship;
 	    this.presentObjects.length = 0;
 	    var handlers = this.ship.moduleManager.events.onPresent;
+	    console.log(handlers.length);
 	    for(var i=0;i<handlers.length;i++){
 		handlers[i](this.presentObjects);
 	    }

@@ -11,7 +11,7 @@
     }
     ShipMark.prototype.set = function(ship){
 	this.ship = ship;
-	game.selectedShip = ship;
+	Static.world.selectedShip = ship;
 	if(!ship)return;
 	this.position = ship.cordinates;
 	this.outterRotation = 0;
@@ -23,11 +23,10 @@
 	this.done =false;
 	this.r = this.ship.state.size?this.ship.state.size*1.2:20;
 	this.realR = this.r*20;
-	this.minAlpha = 0.2;
-	this.maxAlpha = 0.8;
-	this.alpha = 0.8;
+	this.minAlpha = 0.3;
+	this.maxAlpha = 1;
+	this.alpha = 1;
 	this.alphaStep = 0.03;
-	this.presentObjects = [];
     }
     ShipMark.prototype.release = function(){
 	this.ship = null;
@@ -55,7 +54,7 @@
 	context.arc(0,0,innerR
 		    ,this.innerRotation
 		    ,this.innerRotation+this.innerRadLength); 
-	context.lineWidth = 1.5;
+	context.lineWidth = 1;
 	context.stroke();
 	this.innerRotation-=this.innerRotateSpeed; 
 	this.outterRotation+=this.outterRotateSpeed; 
@@ -102,6 +101,7 @@
 	context.beginPath();
 	context.moveTo(0,0);
 	context.lineTo(p.x,p.y);
+	context.lineWidth=0.4;
 	context.strokeStyle = "red";
 	context.stroke();
 	context.restore();

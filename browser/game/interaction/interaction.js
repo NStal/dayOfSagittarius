@@ -4,6 +4,8 @@
     var Container = require("../drawing/drawable").Drawable;
     var MouseInteraction = require("./interaction/mouseInteraction").MouseInteraction; 
     var Interaction = Class.sub();
+    //Other interaction subClasses get world through super class
+    //Interaction
     Interaction.prototype._init = function(){
 	
     }

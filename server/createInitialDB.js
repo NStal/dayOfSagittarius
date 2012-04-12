@@ -5,63 +5,51 @@ var server =new mongodb.Server("localhost"
 var connector = new mongodb.Db("dayOfSagittarius"
 			       ,server
 			       ,{});
+var getShipTemplate = function(){
+    return {
+	name:"name"
+	,owner:"AI"
+	,cordinates:{x:100,y:100}
+	,category:0
+	,ability:{
+	    maxSpeed:8
+	    ,structure:10000
+	    ,maxRotateSpeed:0.2
+	    ,speedFactor:0.8
+	    ,cpu:10
+	    ,size:18
+	    ,curveForwarding:true
+	}
+	,modules:[]
+	,reward:1200
+	,action:{
+	    rotateFix:0
+	    ,speedFix:0
+	}
+	,physicsState:{
+	    toward:0
+	}
+    };
+}
 var galaxyInfoInserters = {
-    "Nolava":function(col){
-	for(var i=0;i<3;i++){
-	    var ship = {
-		name:"ship"+i
-		,owner:"nstal"
-		,cordinates:{x:100,y:100}
-		,category:0
-		,ability:{
-		    maxSpeed:8
-		    ,structure:10000
-		    ,maxRotateSpeed:0.2
-		    ,speedFactor:0.8
-		    ,cpu:10
-		    ,size:18
-		    ,curveForwarding:true
-		}
-		,modules:[0]
-		,reward:1200
-		,action:{
-		    rotateFix:0
-		    ,speedFix:0
-		}
-		,physicsState:{
-		    toward:0
-		} 
-	    };
+	"Nolava":function(col){
+	    col.remove();
+	    //main ship for AI
+	    var ship = getShipTemplate();
+	    ship.owner = "AI";
+	    ship.name = "AI CommandorShip";
+	    //Equiped with 1 Missile 2 Cannon 2 Beam
+	    ship.modules.push(2,0,0,1,1);
+	    col.insert(ship);
+	    
+	    //main ship for "nstal"
+	    ship = getShipTemplate();
+	    ship.owner = "nstal";
+	    ship.name = "nstal CommandorShip";
+	    ship.modules.push(2,2,2);
+	    ship.cordinates = {x:500,y:500};
 	    col.insert(ship);
 	}
-	for(var i=0;i<3;i++){
-	    var ship = {
-		name:"ship"+i
-		,owner:"AI"
-		,cordinates:{x:300,y:300}
-		,category:0
-		,ability:{
-		    maxSpeed:8
-		    ,structure:10000
-		    ,maxRotateSpeed:0.2
-		    ,speedFactor:0.8
-		    ,cpu:10
-		    ,size:18
-		    ,curveForwarding:true
-		}
-		,modules:[0]
-		,reward:1200
-		,action:{
-		    rotateFix:0
-		    ,speedFix:0
-		}
-		,physicsState:{
-		    toward:0
-		} 
-	    };
-	    col.insert(ship);
-	}
-    }
     ,"Evy":function(col){
 	for(var i=0;i<5;i++){
 	    var ship = {

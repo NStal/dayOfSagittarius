@@ -1,0 +1,14 @@
+#private member or method should has a prefix "_"
+Instance._privateMethod();
+Instance._provateValue;
+
+#oneTime var should has a prefix "__"
+#oneTime var is a language suger
+var __config = {
+    time:0
+    ,name:"config"
+}
+world.init(__config);
+#code without it is hard to read
+world.init({time:0
+	    ,name:"config"});

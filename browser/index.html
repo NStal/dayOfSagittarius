@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
   <head>
-    <meta name="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="Content-Type" content="text/html; charset=utf8"/>
     <title>The Day of Sagittarius</title>
     <link rel="stylesheet/less" href="site/css/style.less" type="text/css" media="screen" />
     <script type="text/javascript" src="site/less-1.2.1.min.js"></script>
@@ -17,6 +17,12 @@
     <script type="text/javascript" src="site/site.js"></script>
 
     <!-- LOADING GAMES -->
+    <!-- game frameworks -->
+    <script type="text/javascript" src="share/util.js"></script> 
+    <script type="text/javascript" src="share/gameUtil.js"></script> 
+    <script type="text/javascript" src="game/drawing/drawable.js"></script> 
+    <script type="text/javascript" src="game/drawing/effect.js"></script>
+    <script type="text/javascript" src="game/waitingPage.js"></script>
     
     <!-- temperory load resources using this style later becomming dynamic loading using javascript-->
     <script type="text/javascript" src="share/resource/galaxies.js"></script>
@@ -28,11 +34,9 @@
     <!-- end third party utils -->
     <!-- loading shares -->
     <!-- over write modules -->
-    <script type="text/javascript" src="share/util.js"></script> 
-    <script type="text/javascript" src="share/gameUtil.js"></script>
     <script type="text/javascript" src="share/ship/module.js"></script> 
-    <script type="text/javascript" src="game/ship/module.js"></script>
     <script type="text/javascript" src="share/ship/moduleManager.js"></script> 
+    <script type="text/javascript" src="game/ship/module.js"></script>
     <script type="text/javascript" src="share/shipController.js"></script>
     
 
@@ -41,13 +45,11 @@
     <script type="text/javascript" src="share/ship/ai.js"></script>
     <script type="text/javascript" src="share/ship/shipSoul.js"></script>
     <script type="text/javascript" src="share/ship/starGate.js"></script>
-    <script type="text/javascript" src="share/serverGateway.js"></script>
     <script type="text/javascript" src="share/battleFieldSoul.js"></script>
     <script type="text/javascript" src="share/galaxy/galaxyMapSoul.js"></script>
     <!-- end share -->
     <!-- loading share overrides -->
     <script type="text/javascript" src="game/ship/starGate.js"></script>
-    <script type="text/javascript" src="game/drawing/drawable.js"></script> 
     <script type="text/javascript" src="game/interaction/interaction.js"></script>
     <script type="text/javascript" src="game/interaction/mouseInteraction.js"></script>
     <script type="text/javascript" src="game/interaction/shipSelectInteraction.js"></script> 
@@ -56,6 +58,7 @@
     <script type="text/javascript" src="game/interaction/galaxySelectInteraction.js"></script>
     <script type="text/javascript" src="game/interaction/modulePanel.js"></script>
     <script type="text/javascript" src="game/interaction/toast.js"></script>
+    <script type="text/javascript" src="game/interaction/shipInfoMark.js"></script>
     <script type="text/javascript" src="game/ship/ship.js"></script>
     <script type="text/javascript" src="game/battleField.js"></script>
     <script type="text/javascript" src="game/galaxy/galaxy.js"></script>
@@ -63,7 +66,7 @@
     <!-- end overrides -->
     <script type="text/javascript" src="game/gateway.js"></script>
     <script type="text/javascript" src="game/syncWorker.js"></script>
-    <script type="text/javascript" src="game/game.js"></script>
+    <script type="text/javascript" src="game/clientWorld.js"></script>
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript">
       window.onload = function(){
@@ -81,6 +84,8 @@
     <div class="canvasContainer" id="canvasContainer"> 
       <canvas id="screen">
       </canvas>
+      <canvas id="waitingPage">
+      </canvas> 
     </div>
   </body>
 </html>

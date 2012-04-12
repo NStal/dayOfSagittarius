@@ -11,6 +11,8 @@
 	this.position = new Point(0,0);
 	this.scale = 1;
 	this.rotation = 0;
+	this.effects = [];
+	this.effectQueue = [];
     }
     Drawable.prototype.draw = function(context){
 	//recursive drawing
@@ -27,11 +29,23 @@
 	if(this.center){
 	    context.translate(-this.center.x,-this.center.y); 
 	}
+	if(typeof this.scale =="number"){
+	    context.scale(this.scale,this.scale);
+	}
 	if(this.invert){
 	    if(this.invertPadding){
 		context.translate(this.invertPadding,0);
 	    }
 	    context.scale(-1,1);
+	}
+	for(var i=0;this.effects&&i<this.effects.length;i++){
+	    if(this.effects[i].onBeforeRender)
+		this.effects[i].onBeforeRender(context);
+	}
+	if(this.effectQueue[0] && this.effectQueue[0].onBeforeRender){
+	    if(this.effectQueue[0].onBeforeRender(context)){
+		this.effectQueue.shift();
+	    }
 	}
 	if(typeof this.onDraw == "function"){
 	    this.onDraw(context);
@@ -41,15 +55,35 @@
 		Drawable.prototype.draw.call(this.parts[i],context);
 	    }
 	}
-	if(typeof this.onClear == "function"){
-	    this.onClear(context);
+	for(var i=0;this.effects&&i<this.effects.length;i++){
+	    if(this.effects[i].onAfterRender)
+		this.effects[i].onAfterRender(context);
 	}
 	context.restore();
 	return;
     }
+    Drawable.prototype.addEffect = function(item){
+	item.init(this);
+	this.effects.push(item);
+    }
+    Drawable.prototype.removeEffect = function(item){
+	for(var i=0;i<this.effects.length;i++){
+	    if(this.effects[i]==item){
+		this.effects.splice(i,1);
+		return;
+	    }
+	}
+	//may be syncEffect at effectQueue
+    }
+    Drawable.prototype.addSyncEffect = function(item){
+	item.init(this);
+	this.effectQueue.push(item);
+    } 
     //Sprite
     //1.A drawable which can animating
     //2.Sprite hold a instance for drawing
+
+
     var Sprite = Drawable.sub();
     Sprite.prototype._init = function(){
 	var self = this;
@@ -75,8 +109,7 @@
     } 
     Sprite.prototype.stop = function(){
 	this._drawControler.stop();
-    }
-	
+    }	
     exports.Sprite = Sprite;
     exports.Drawable = Drawable;
 })(exports)

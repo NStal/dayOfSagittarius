@@ -1,7 +1,7 @@
 (function(exports){
-    var Class = require("./util").Class;
+    var Class = require("./share/util").Class;
     var Gateway = Class.sub();
-    var settings = require("./settings").settings;
+    var settings = require("./settings");
     //Gateway is the middleware between server and client battleField
     //Gateway add authInfo to every command sent to the server
     //and start the initial sync 
@@ -11,16 +11,11 @@
 	this.battleField = battleField;
     }
     Gateway.prototype.onConnect = function(worker){
-	//clear battleField
-	Static.battleField.parts.length = 0;
-	//WARNING TAG this may cause memory leak
-	//Some interaction instance may not released
-	Static.interactionManager.parts.length = 0;
-	
 	//require sync
 	console.log("conntecting!");
 	this.isConnected = true; 
-	this.worker = worker; 
+	this.worker = worker;
+	
 	this.send({time:0});
     }
     Gateway.prototype.getAuthInfo =function(){
@@ -36,11 +31,10 @@
 	//Here all cmd should be validated
 	if(msg.cmd==1){
 	    console.log("sync initial data from server");
-	    this.battleField.initByShips(msg.data.ships,window[settings.whereAmI]);
-	    clientWorld.setTime(msg.time);
-	    console.log(msg.time);
+	    this.battleField.initByShips(msg.data.ships,require("./share/resource/map/"+this.galaxy.name),this.galaxy.name);
+	    this.battleField.time = msg.time;
+	    
 	    this.battleField.ready = true;
-	    Static.waitingPage.endWaiting();
 	    return;
 	}
 	if(msg.cmd==2){
@@ -106,7 +100,6 @@
 	}
     }
     Gateway.prototype.onDisconnect = function(worker){
-	Static.waitingPage.startWaiting();
 	this.isConnected = false;
 	if(this.isTrying)return;
 	this.battleField.ready = false;

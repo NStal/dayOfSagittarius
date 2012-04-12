@@ -1,7 +1,9 @@
 (function(exports){
     var BattleFieldSoul = require("./share/battleFieldSoul").BattleFieldSoul;
+    var Drawable = require("./drawings/drawable.js").Drawable;
     var Class = require("./util").Class;
-    var BattleField = Class.changeRoot(BattleFieldSoul,Drawable).sub();
+    var BattleField = BattleFieldSoul.sub();
+    BattleField.extend(Drawable);
     var Point = require("./util").Point;
     BattleField.prototype._init = function(info){
 	BattleField.parent.prototype._init.call(this,info);
@@ -11,6 +13,7 @@
     BattleField.prototype.next = function(context){
 	//has connect to server?
 	if(!this.ready)return false;
+	this.draw(context);
 	BattleField.parent.prototype.next.call(this);
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i]
@@ -19,17 +22,17 @@
 		item.rotation = item.physicsState.toward; 
 	    }
 	}
-	this.setViewPort(context);
+	//this.setViewPort(context);
+    }
+    BattleField.prototype.onDraw = function(context){
 	this.drawGrid(context);
-	this.draw(context);
+	Static.interactionManager.draw(context);
     }
     BattleField.prototype.setViewPort = function(context){
 	context.translate(this.position.x,this.position.y);
 	context.scale(this.scale,this.scale);
     }
     BattleField.prototype.drawGrid = function(context){
-	context.strokeStyle = "#999";
-	context.lineWidth = 0.4;
 	context.beginPath();
 	for(var i=0;i < this.size.x;i+=100){
 	    context.moveTo(i,0);
@@ -38,8 +41,12 @@
 	for(var i=0;i < this.size.y;i+=100){
 	    context.moveTo(0,i);
 	    context.lineTo(this.size.x,i);
-	}
+	} 
+	context.globalAlpha = 0.3;
+	context.strokeStyle = "black";
+	context.lineWidth = 1;
 	context.stroke();
+	context.globalAlpha = 1;
     }
     BattleField.prototype.onInstruction = function(instruction){
 	var Protocol = require("./share/protocol");
@@ -59,7 +66,7 @@
 	this.add(ship);
     }
     BattleField.prototype.passStarGate = function(ship,gate){
-	var g = game.galaxyMap.getGalaxyByName(gate.to);
+	var g = Static.galaxyMap.getGalaxyByName(gate.to);
 	if(!g){
 	    console.log("error pass invalid gate");
 	    console.trace();

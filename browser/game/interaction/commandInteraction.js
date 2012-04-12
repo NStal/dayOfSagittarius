@@ -23,7 +23,7 @@
 		,type:"mouseUp"
 		,handler:function(position){
 		    position = self.manager.battleField.screenToBattleField(position);
-		    game.gateway.send(self.shipController.moveTo(position));
+		    Static.gateway.send(self.shipController.moveTo(position));
 		    self.manager.popCriticalInteraction(self);
 		}
 	    }
@@ -95,7 +95,7 @@
 		    if(!self.point)return false;
 		    if(!self.r)return false;
 		    if(self.r < 10)self.r=10;
-		    game.gateway.send(self.shipController.roundAt(self.point,self.r,true));
+		    Static.gateway.send(self.shipController.roundAt(self.point,self.r,true));
 		    self.manager.popCriticalInteraction(self);
 		}
 	    }
@@ -131,7 +131,7 @@
 		    position = self.manager.battleField.screenToBattleField(position);
 		    var target = self.manager.battleField.findShipByPosition(position);
 		    if(!target)return;
-		    game.gateway.send(self.shipController.lockAt(target));
+		    Static.gateway.send(self.shipController.lockAt(target));
 		    self.manager.popCriticalInteraction(self);
 		}
 	    }
@@ -142,7 +142,7 @@
 		    //change cursor type to attack style
 		    position = self.manager.battleField.screenToBattleField(position);
 		    var target = self.manager.battleField.findShipByPosition(position);
-		    var pointer = game.interactionManager.mouse.pointer;
+		    var pointer = self.manager.mouse.pointer;
 			
 		    if(target){
 			pointer.type = pointer.types.attack;
@@ -184,7 +184,7 @@
 		    if(!gate){
 			return;
 		    }
-		    game.gateway.send(self.shipController.passStarGate(gate));
+		    Static.gateway.send(self.shipController.passStarGate(gate));
 		    self.manager.popCriticalInteraction(self);
 		}
 	    }
@@ -194,7 +194,7 @@
 		,handler:function(position){
 		    position = self.manager.battleField.screenToBattleField(position);
 		    var gate = self.manager.battleField.findStarGateByPosition(position);
-		    var pointer = game.interactionManager.mouse.pointer; 
+		    var pointer = Static.interactionManager.mouse.pointer;
 		    if(!gate){
 			pointer.type = pointer.types.normal;
 			return; 
