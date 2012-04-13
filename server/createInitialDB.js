@@ -38,8 +38,9 @@ var galaxyInfoInserters = {
 	    var ship = getShipTemplate();
 	    ship.owner = "AI";
 	    ship.name = "AI CommandorShip";
+	    ship.ability.maxSpeed = 4;
 	    //Equiped with 1 Missile 2 Cannon 2 Beam
-	    ship.modules.push(2,0,0,1,1);
+	    ship.modules.push(2,2,2,0,0,1,1);
 	    col.insert(ship);
 	    
 	    //main ship for "nstal"
