@@ -5,13 +5,15 @@ var Site = function(){
 	//test
 	this.initGame(self.loginUsernameInputJ.val());
 	self.landingPageJ.hide();
-	self.canvasContainerJ.show();
     } 
 }
 Site.prototype.initGame = function(username){
     settings.width = $("body").width();
     settings.height = $("body").height();
-    Static.waitingPage = new WaitingPage(document.getElementById('waitingPage'));
+    Static.waitingPage = new WaitingPage(this.waitingSceneJ.find('#screen')[0]);
+    var StarStationScene = require("./starStationScene/starStationScene").StarStationScene;
+    Static.starStationScene = new StarStationScene(this.starStationSceneNode);
+    //Static.starStationScene.onEnterStation("Nolava-I");
     var __config = {
 	username:username
 	,rate:settings.rate

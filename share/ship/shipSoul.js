@@ -1,8 +1,10 @@
 (function(exports){
-    var Class = require("../util").Class
-    var Point = require("../util").Point
-    var Util = require("../util").Util
-    var ShipSoul = Class.sub();
+    var Class = require("../util").Class;
+    var EventEmitter = require("../util").EventEmitter;
+    
+    var Point = require("../util").Point;
+    var Util = require("../util").Util;
+    var ShipSoul = EventEmitter.sub();
     var ModuleManager = require("./moduleManager").ModuleManager;
     var Module = require("./module").Module;
     var AI = require("./ai").AI;
@@ -29,6 +31,7 @@
 	this.AI.destination = info.AI&&info.AI.destination?info.AI.destination:{};
 	this.passing = false
 	this.owner = info.owner;
+	this.pilot = info.pilot;
 	this.reward = info.reward;
     }
     ShipSoul.prototype.init = function(modules){
@@ -62,6 +65,8 @@
 	    ,AI:this.AI.toData()
 	    ,modules:this.moduleManager.toData()
 	    ,owner:this.owner
+	    ,pilot:this.pilot
+	    ,reward:this.reward
 	}
 	return data;
     }
@@ -77,10 +82,10 @@
 	    value = item(value);
 	}
 	
-	console.log("at",byWho.weapon.manager.ship.parentContainer.time
-		    ,"recieve ",value,"points of hit");
+	/*console.log("at",byWho.weapon.manager.ship.parentContainer.time
+	  ,"recieve ",value,"points of hit");*/
 	this.state.structure-=value;
-	console.log(this.state.structure);
+	//console.log(this.state.structure);
 	if(this.state.structure<=0){
 	    this.onDead(byWho);
 	    
@@ -90,6 +95,7 @@
 	this.clear();
 	console.log(this.name,"is dead");
 	this.isDead = true;
+	this.emit("dead",this,byWho);
     }
     ShipSoul.prototype.nextTick = function(){
 	var events = this.moduleManager.events.onNextTick;
@@ -130,4 +136,5 @@
 	    this.cordinates.y=this.parentContainer.size.y;
     }
     exports.ShipSoul = ShipSoul;
+    exports.Ship = ShipSoul;
 })(exports)

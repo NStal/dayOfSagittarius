@@ -1,5 +1,6 @@
 //require widget.js (for appObject class)
 function List(templateList,templateListItem,contentID){
+    
     if(!templateList){
 	return;
     }
@@ -7,6 +8,7 @@ function List(templateList,templateListItem,contentID){
     this.initNode(templateList);
     this.initAllControls();
     //all generated list is based on the clone of this
+    
     if(templateListItem){
 	this._listItem = new ListItem(templateListItem,[]);
 	this._listItem.parent = this;

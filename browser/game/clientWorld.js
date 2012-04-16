@@ -18,22 +18,24 @@
 	ClientWorld.parent.prototype._init.call(this,worldInfo);
 	var self = this;
 	//initialze canvas
-	this.canvas = document.getElementById(settings.screen);
+	this.canvas = $("#battleScene #screen")[0];
+	this.canvas.style.display="block";
 	this.canvas.width = settings.width;
 	this.canvas.height = settings.height;
 	//default net work delay
 	this.delay = worldInfo.delay;//300ms 
 	Static.battleField = new BattleField({world:this,time:worldInfo.time}); 
+	Static.battleFieldDisplayer = new BattleFieldDisplayer(Static.battleField);
 	Static.gateway = new Gateway(Static.battleField);
 	//setup user auth info
 	Static.gateway.username = worldInfo.username;
 	//setup galaxy
 	Static.galaxyMap = new GalaxyMap(GALAXIES);
 	Static.world = this;
-	this.galaxy = Static.galaxyMap.getGalaxyByName(settings.whereAmI);
 	//initialize interaction
 	Static.interactionManager = new InteractionManager(this);
 	this.galaxySelectInteraction = new GalaxySelectInteraction();
+	
     }
     ClientWorld.prototype.start = function(){
 	ClientWorld.parent.prototype.start.call(this);
@@ -52,17 +54,23 @@
     }
     ClientWorld.prototype.changeGalaxy = function(where){
 	settings.whereAmI = where;
-	var g = Static.galaxyMap.getGalaxyByName(settings.whereAmI);
-	console.log(g.server.host,g.server.port,g.name);
-	if(!g)return false; 
-	this.galaxy = g;
-	if(!this.syncWorker){
-	    this.syncWorker = new SyncWorker(g.server.host,g.server.port,Static.gateway);
-	    this.syncWorker.start();
-	    return;
-	}
-	this.syncWorker.setServer(g.server.host,g.server.port);
-	this.syncWorker.close();
+	var self = this;
+	Static.HttpAPI.getGalaxyInfoByName(settings.whereAmI,function(result){
+	    if(!result.result){
+		console.log("fail to change galaxy");
+	    }
+	    var g = result.data;
+	    if(!g)return false; 
+	    self.galaxy = g;
+	    Static.battleField.initEnvironment(g);
+	    if(!self.syncWorker){
+		self.syncWorker = new SyncWorker(g.server.host,g.server.port,Static.gateway);
+		self.syncWorker.start();
+		return;
+	    }
+	    self.syncWorker.setServer(g.server.host,g.server.port);
+	    self.syncWorker.close();
+	});
     }
     ClientWorld.prototype.next = function(){
 	ClientWorld.parent.prototype.next.call(this);
@@ -71,6 +79,10 @@
 	context.clearRect(0,0,settings.width,settings.height);
 	context.save();
 	Static.battleField.next(context);
+	Static.battleFieldDisplayer.draw(context);
+	Static.interactionManager.position = Static.battleFieldDisplayer.position;
+	Static.interactionManager.scale = Static.battleFieldDisplayer.scale;
+	Static.interactionManager.draw(context);
 	context.restore();
 	context.save();
 	if(this.showMap){
@@ -82,24 +94,24 @@
     ClientWorld.prototype.solveKeyEvent = function(){
 	if(window.KEY[Key.z]){
 	    if(window.KEY[Key.shift]){
-		if(Static.battleField.scale>=1)return;
-		Static.battleField.scale*=1.1;
+		if(Static.battleFieldDisplayer.scale>=1)return;
+		Static.battleFieldDisplayer.scale*=1.1;
 	    }else{
-		if(Static.battleField.scale<0.1)return;
-		Static.battleField.scale*=0.9;
+		if(Static.battleFieldDisplayer.scale<0.1)return;
+		Static.battleFieldDisplayer.scale*=0.9;
 	    }
 	}
 	if(window.KEY[Key.left]){
-	    Static.battleField.position.x+=10;
+	    Static.battleFieldDisplayer.position.x+=10;
 	} 
 	if(window.KEY[Key.right]){
-	    Static.battleField.position.x-=10; 
+	    Static.battleFieldDisplayer.position.x-=10;
 	} 
 	if(window.KEY[Key.up]){
-	    Static.battleField.position.y+=10;
+	    Static.battleFieldDisplayer.position.y+=10;
 	}
 	if(window.KEY[Key.down]){
-	    Static.battleField.position.y-=10;
+	    Static.battleFieldDisplayer.position.y-=10;
 	}
 	if(window.KEY[Key.m]){
 	    window.KEY[Key.m] = false;
@@ -116,7 +128,7 @@
 	    if(this.selectedShip){
 		if(this.selectedShip.owner != Static.username)return;
 		Static.interactionManager.pushCriticalInteraction(
-		new RoundAtInteraction(this.selectedShip));
+		    new RoundAtInteraction(this.selectedShip));
 	    }else{
 		console.log("please select a ship"); 
 	    }

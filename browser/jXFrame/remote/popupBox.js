@@ -9,24 +9,36 @@
  */
 function PopupBox(template){
     this.uniqueId = new Date().getTime();
-    this.bgColor = "#333";
     this.bgOpacity = 0.9;
     this.fadeInTime = 500;
     this.fadeOutTime = 500;
     this.zInde = 1024;
+    var self = this;
     Widget.call(this,template);
     function BG(bgTemplate){
 	Widget.call(this,bgTemplate);
     }
-    this.bg = new BG("<div id='bgName'></div>".replace("bgName",this.uniqueId+"BG"));
+    $(window).resize(function(){
+	if(!self.shown)return false;
+	var css = self._boxCSS();
+	var bgCSS = self._bgCSS();
+	css.display = "block";
+	bgCSS.display ="block"; 
+	self.nodeJ.css(css);
+	self.bg.nodeJ.css(bgCSS);
+    })
+    this.shown = false;
+    this.bg = new BG("<div id='bgName' class='bgClass'></div>".replace("bgName",this.node.id+"BG"));
     this.popup = function(){
 	this._add();
 	this.nodeJ.fadeIn(this.fadeInTime);
 	this.bg.nodeJ.fadeIn(this.fadeInTime);
+	this.shown = true;
     } 
     this.popoff = function(){
 	this.nodeJ.fadeOut(this.fadeOutTime);
 	this.bg.nodeJ.fadeOut(this.fadeOutTime);
+	this.shown = false;
     }
     this.inDOM = false;
     this.inDOMBd = false;
@@ -48,8 +60,8 @@ function PopupBox(template){
 		"position":"absolute",
 		"top":document.body.scrollTop+($(window).height()-this.nodeJ.height())/2,
 		"right":($(window).width()-this.nodeJ.width())/2,
-		"display":"none",
-		"text-align":"center"};
+		"display":"none"
+		};
     }
     this._bgCSS = function(){
 	return {"width":$(document).width(),
@@ -59,7 +71,6 @@ function PopupBox(template){
 		"left":0,
 		"z-index":this.zIndex,
 		"opacity":this.opacity,
-		"background-color":this.bgColor,
 		"display":"none"};
     }
     

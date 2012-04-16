@@ -12,50 +12,6 @@
     ServerGateway.prototype._init = function(bf){
 	this.battleField = bf;
 	this.battleField.gateway = this;
-	var self = this;
-	bf.addListener({
-	    type:"onPassStarGate"
-	    ,handler:function(ship,gate){
-		self.onPassStarGate(ship,gate);
-	    }
-	})
-    }
-    ServerGateway.prototype.onPassStarGate = function(ship,gate){
-	try{
-	    var g = require("./share/resource/map/"+gate.to)[gate.to];
-	}
-	catch(e){
-	    console.trace();
-	    console.log("pass invalid gate");
-	    return;
-	}
-	var gs = require("./share/resource/galaxies").GALAXIES;
-	var gInfo = null;
-	for(var i=0;i < gs.length;i++){
-	    if(gs[i].name == gate.to){
-		gInfo = gs[i];
-		break;
-	    }
-	}
-	if(!gInfo){
-	    console.log("can't find galaxy info of",gate.to);
-	    console.trace();
-	    return;
-	} 
-	console.log("try connecting","ws://"+gInfo.server.host+":"+gInfo.server.port);
-	var sock = new (require("ws"))("ws://"+gInfo.server.host+":"+gInfo.server.port);
-	var self = this;
-	sock.on("open",function(){
-	    console.log("SEND！！！！");
-	    sock.send(JSON.stringify({
-		cmd:7
-		,data:{
-		    ship:ship.toData()
-		    ,from:self.battleField.galaxy.name
-		}
-	    }));
-	})
-	
     }
     ServerGateway.prototype.onMessage = function(msg,who){
 	//request initial sync

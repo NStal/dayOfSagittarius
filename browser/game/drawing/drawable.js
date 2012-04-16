@@ -42,7 +42,7 @@
 	    if(this.effects[i].onBeforeRender)
 		this.effects[i].onBeforeRender(context);
 	}
-	if(this.effectQueue[0] && this.effectQueue[0].onBeforeRender){
+	if(this.effectQueue && this.effectQueue[0] && this.effectQueue[0].onBeforeRender){
 	    if(this.effectQueue[0].onBeforeRender(context)){
 		this.effectQueue.shift();
 	    }

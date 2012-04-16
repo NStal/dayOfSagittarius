@@ -1,16 +1,16 @@
-var inf = (require("../database/interface").Interface);
+var Interface = (require("../database/interface").Interface);
 //create 2 user
-inf.addUser("nstal");
+Interface.addUser("nstal");
 function get(){
-    inf.getUserData("nstal",function(obj){
+    Interface.getUserData("nstal",function(obj){
 	console.log(obj);
     })
 }
-inf.setUserData("nstal",{credits:2000},get);
-inf.addUser("giyya");
+Interface.setUserData("nstal",{credits:2000},get);
+Interface.addUser("giyya");
 function get(){
-    inf.getUserData("giyya",function(obj){
+    Interface.getUserData("giyya",function(obj){
 	console.log(obj);
     })
 }
-inf.setUserData("giyya",{credits:2000},get);
+Interface.setUserData("giyya",{credits:2000},get);

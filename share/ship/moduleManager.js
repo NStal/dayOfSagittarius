@@ -1,5 +1,6 @@
 (function(exports){
     var Class = require("../util").Class;
+    var Util = require("../util").Util; 
     var Container = require("../util").Container;
     var ModuleManager = Container.sub();
     var WeaponSoul = require("./module").WeaponSoul;
@@ -65,7 +66,13 @@
 	return false;
     }
     ModuleManager.prototype.getModuleByInfo = function(info){
-	return new (this.moduleEnum[info])();
+	if(typeof info == "number"){
+	    //comeform database
+	    return new (this.moduleEnum[info])();
+	}
+	var __m = new (this.moduleEnum[info.id])();
+	Util.update(__m,info);
+	return __m;
     }
     ModuleManager.prototype.remove = function(module){
 	if(ModuleManager.parent.prototype.remove.call(this,module)){

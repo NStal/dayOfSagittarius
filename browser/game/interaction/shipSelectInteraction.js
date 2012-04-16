@@ -42,7 +42,7 @@
 	    }
 	}
 	var outterR = this.realR;
-	var innerR = outterR-3; 
+	var innerR = outterR-3;
 	context.strokeStyle = this.color;
 	context.beginPath();
 	context.arc(0,0,outterR
@@ -130,11 +130,11 @@
 	this.shipMark = new ShipMark();
 	this.handlers = [
 	    {
-		where:"battleField"
+		where:"battleFieldDisplayer"
 		,type:"mouseUp"
 		,handler:function(position){
-		    var p = self.manager.battleField.screenToBattleField(position); 
-		    var ship =  self.manager.battleField.findShipByPosition(p);
+		    var p = self.manager.battleFieldDisplayer.screenToBattleField(position); 
+		    var ship =  self.manager.battleFieldDisplayer.findShipByPosition(p);
 		    if(ship){
 			self.shipMark.set(ship);
 			console.log("set ship");
@@ -148,12 +148,12 @@
 		} 
 	    }
 	    ,{
-		where:"battleField"
+		where:"battleFieldDisplayer"
 		,type:"mouseMove"
 		,handler:function(position){
 		    //change cursor to different types;
-		    var p = self.manager.battleField.screenToBattleField(position);
-		    var ship =  self.manager.battleField.findShipByPosition(p);
+		    var p = self.manager.battleFieldDisplayer.screenToBattleField(position);
+		    var ship =  self.manager.battleFieldDisplayer.findShipByPosition(p);
 		    if(ship){
 			self.manager.mouse.pointer.type = self.manager.mouse.pointer.types.onShip;
 		    }else{

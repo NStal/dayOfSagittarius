@@ -9,6 +9,11 @@
 	context.arc(0,0,this.size,0,Math.PI*2);
 	context.strokeStyle = this.color;
 	context.stroke();
+	
+	context.fillStyle = this.color;
+	context.textAlign = "center";
+	context.beginPath();
+	context.fillText("StarGate",0,4);
     }
     exports.StarGate = StarGate;
 })(exports)

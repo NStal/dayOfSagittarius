@@ -1,7 +1,7 @@
 (function(exports){
     var Instance = require("./util").Instance;
     var GameInstance = require("./gameUtil").GameInstance;
-    var Ship = require("./ship/shipSoul").ShipSoul; 
+    var Ship = require("./ship/shipSoul").ShipSoul;
     //World is a Base class for other world like:AI World,ClientWorld,ServerWorld
     //World do these:
     //0.World represent ONE galaxy
@@ -22,8 +22,6 @@
 	this.setRate(worldInfo.rate);
 	//Which galaxy is this world
 	this.galaxy = worldInfo.galaxy;
-	//Galaxy map contain some geometry info
-	this.map = worldInfo.map;
 	//starttime of the server
 	this.time = worldInfo.time;
 	//make sync for garenteed 
@@ -33,6 +31,7 @@
     World.prototype.next = function(){
 	this.time+=1;
 	GameInstance.nextTick();
+	this.emit("nextTick",this.time);
     }
     exports.World = World;
 })(exports)

@@ -10,5 +10,14 @@
 		,id:0
 	    }
 	]
+	,starStations:[
+	    {
+		position:{
+		    x:700
+		    ,y:700
+		}
+		,id:1
+	    }
+	]
     }
 })(exports)

@@ -19,10 +19,10 @@
 	this.shipController = new ShipController(ship);
 	this.handlers = [
 	    {
-		where:"battleField"
+		where:"battleFieldDisplayer"
 		,type:"mouseUp"
 		,handler:function(position){
-		    position = self.manager.battleField.screenToBattleField(position);
+		    position = self.manager.battleFieldDisplayer.screenToBattleField(position);
 		    Static.gateway.send(self.shipController.moveTo(position));
 		    self.manager.popCriticalInteraction(self);
 		}
@@ -72,24 +72,23 @@
 	this.shipController = new ShipController(ship);
 	this.handlers = [
 	    {
-		where:"battleField"
+		where:"battleFieldDisplayer"
 		,type:"mouseDown"
 		,handler:function(position){
-		    self.point = self.manager.battleField.screenToBattleField(position);
+		    self.point = self.manager.battleFieldDisplayer.screenToBattleField(position);
 		    //self.manager.popCriticalInteraction(self);
 		    console.log(self.point);
 		}
 	    }
 	    ,{
-		where:"battleField"
+		where:"battleFieldDisplayer"
 		,type:"mouseMove"
 		,handler:function(position){
-		    console.log(self.point)
 		    if(!self.point)return;
-		    self.r = self.manager.battleField.screenToBattleField(position).distance(self.point); 		}
+		    self.r = self.manager.battleFieldDisplayer.screenToBattleField(position).distance(self.point); 		}
 	    }
 	    ,{
-		where:"battleField"
+		where:"battleFieldDisplayer"
 		,type:"mouseUp"
 		,handler:function(position){
 		    if(!self.point)return false;
@@ -125,23 +124,23 @@
 	this.shipController = new ShipController(ship);
 	this.handlers = [
 	    {
-		where:"battleField"
+		where:"battleFieldDisplayer"
 		,type:"mouseUp"
 		,handler:function(position){
-		    position = self.manager.battleField.screenToBattleField(position);
-		    var target = self.manager.battleField.findShipByPosition(position);
+		    position = self.manager.battleFieldDisplayer.screenToBattleField(position);
+		    var target = self.manager.battleFieldDisplayer.findShipByPosition(position);
 		    if(!target)return;
 		    Static.gateway.send(self.shipController.lockAt(target));
 		    self.manager.popCriticalInteraction(self);
 		}
 	    }
 	    ,{
-		where:"battleField"
+		where:"battleFieldDisplayer"
 		,type:"mouseMove"
 		,handler:function(position){
 		    //change cursor type to attack style
-		    position = self.manager.battleField.screenToBattleField(position);
-		    var target = self.manager.battleField.findShipByPosition(position);
+		    position = self.manager.battleFieldDisplayer.screenToBattleField(position);
+		    var target = self.manager.battleFieldDisplayer.findShipByPosition(position);
 		    var pointer = self.manager.mouse.pointer;
 			
 		    if(target){
@@ -176,11 +175,11 @@
 	this.shipController = new ShipController(ship);
 	this.handlers = [
 	    {
-		where:"battleField"
+		where:"battleFieldDisplayer"
 		,type:"mouseUp"
 		,handler:function(position){
-		    position = self.manager.battleField.screenToBattleField(position);
-		    var gate = self.manager.battleField.findStarGateByPosition(position);
+		    position = self.manager.battleFieldDisplayer.screenToBattleField(position);
+		    var gate = self.manager.battleFieldDisplayer.findStarGateByPosition(position);
 		    if(!gate){
 			return;
 		    }
@@ -189,11 +188,11 @@
 		}
 	    }
 	    ,{
-		where:"battleField"
+		where:"battleFieldDisplayer"
 		,type:"mouseMove"
 		,handler:function(position){
-		    position = self.manager.battleField.screenToBattleField(position);
-		    var gate = self.manager.battleField.findStarGateByPosition(position);
+		    position = self.manager.battleFieldDisplayer.screenToBattleField(position);
+		    var gate = self.manager.battleFieldDisplayer.findStarGateByPosition(position);
 		    var pointer = Static.interactionManager.mouse.pointer;
 		    if(!gate){
 			pointer.type = pointer.types.normal;

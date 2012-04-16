@@ -21,8 +21,8 @@
     }
     ShipInfoMark.prototype.onDraw = function(context){
 	context.save();
-	context.scale(1/Static.battleField.scale,
-		      1/Static.battleField.scale);
+	context.scale(1/Static.battleFieldDisplayer.scale,
+		      1/Static.battleFieldDisplayer.scale);
 	//drawMark
 	var size = 14;
 	var pad = size*0.3;

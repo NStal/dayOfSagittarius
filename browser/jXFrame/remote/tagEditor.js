@@ -2,8 +2,8 @@ function TagEditor(template,hints){
     Widget.call(this);
     this.initNode(template);
     this.initAllControls();
-    this.splitor=" ,";
-    this.hints = ["1","12","123","1234","12345","123456"];
+    this.splitor=",";
+    this.hints = [];
     this.tags = []
     this.max = 6;
     var self = this;
@@ -13,6 +13,12 @@ function TagEditor(template,hints){
 	    this.value = "";
 	}
     });
+    this.on = function(event,handler){
+	if(!event||!handler){
+	    return false;
+	}
+	this[event+"Handler"] = handler;
+    }
     this.tagEditorInputJ.keyup(function(e){
 	var backSpaceCode = 8;
 	var enterCode = 13;
@@ -34,7 +40,7 @@ function TagEditor(template,hints){
 	//addTag by spliter
 	var lastChar = this.value.toString().charAt(this.value.toString().length-1);
 	for(var i=0;i<self.splitor.length;i++){
-	    if(self.splitor.charAt(i)==lastChar||e.which==32){
+	    if(self.splitor.charAt(i)==lastChar){
 		if(this.value.length<2){
 		    this.value=""
 		    break;
@@ -94,11 +100,18 @@ function TagEditor(template,hints){
 		self.tagEditorInputJ.width($(self.node).width()-self.tagContainnerJ.outerWidth(true)-20);
 		
 	    })
-	    .text(tagName + " x")
+	    .text(tagName)
 	    .attr("username",tagName);
+	if(typeof self.tagModifier === "function"){
+	    self.tagModifier(node);
+	}
 	self.tagContainnerJ.append(node);
 	self.tagEditorInputJ.width($(self.node).width()-self.tagContainnerJ.outerWidth(true)-20);
+	if(typeof this["tagaddHandler"] ==="function"){
+	    this.tagaddHandler();
+	}
     }
+    this.tagModifier = null;
 };
 
 

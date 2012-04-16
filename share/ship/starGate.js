@@ -22,5 +22,6 @@
 	console.log("invalid stargate toGalaxy name",this.to);
 	return null;
     }
-    exports.StarGateSoul = StarGateSoul;
+    exports.StarGateSoul = StarGateSoul; 
+    exports.StarGate = StarGateSoul;
 })(exports)

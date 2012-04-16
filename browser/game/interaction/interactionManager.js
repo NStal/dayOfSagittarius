@@ -12,7 +12,7 @@
     InteractionManager.prototype._init = function(game){
 	this.global = game;
 	this.game = game;
-	this.battleField = Static.battleField;
+	this.battleFieldDisplayer = Static.battleFieldDisplayer;
 	this.galaxyMap = Static.galaxyMap;
 	this.infoPanel = {};
 	this.criticalInteraction = [];
@@ -39,15 +39,15 @@
 	    self.onMouseDown(e);
 	    self.onMouseUp(e);
 	}*/
-	window.onmousedown = function(e){
+	Static.world.canvas.onmousedown = function(e){
 	    self.onMouseDown(e);
 	    self.down = true;
 	}
-	window.onmouseup = function(e){
+	Static.world.canvas.onmouseup = function(e){
 	    self.onMouseUp(e);
 	    self.down = false;
 	}
-	window.onmousemove = function(e){
+	Static.world.canvas.onmousemove = function(e){
 	    self.onMouseMove(e);
 	}
     }
@@ -61,8 +61,9 @@
 	    this._callHandlers(handlers,this.mousePosition); 
 	    
 	}
-	var handlers = this._findHandler("battleField","mouseDown");
+	var handlers = this._findHandler("battleFieldDisplayer","mouseDown");
 	this._callHandlers(handlers,this.mousePosition);
+	console.log(handlers.length);
     }
     InteractionManager.prototype.onMouseUp = function(e){
 	this.mousePosition = this._eventToPoint(e);
@@ -73,7 +74,7 @@
 	    var handlers = this._findHandler("galaxyMap","mouseUp");
 	    this._callHandlers(handlers,this.mousePosition); 
 	}
-	var handlers = this._findHandler("battleField","mouseUp");
+	var handlers = this._findHandler("battleFieldDisplayer","mouseUp");
 	this._callHandlers(handlers,this.mousePosition);
     }
     InteractionManager.prototype.onMouseMove = function(e){
@@ -85,7 +86,7 @@
 	    this._callHandlers(handlers,this.mousePosition); 
 	} 
 	
-	var handlers = this._findHandler("battleField","mouseMove");
+	var handlers = this._findHandler("battleFieldDisplayer","mouseMove");
 	this._callHandlers(handlers,this.mousePosition);
     }
     InteractionManager.prototype._eventToPoint = function(e){

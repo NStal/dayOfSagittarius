@@ -61,12 +61,12 @@
     var CannonSoul = AllumitionSoul.sub();
     CannonSoul.prototype._init = function(weapon){
 	CannonSoul.parent.prototype._init.call(this,weapon);
-	this.damagePoint = 20;
+	this.damagePoint = 30;
     }
     var BeamSoul = AllumitionSoul.sub();
     BeamSoul.prototype._init = function(weapon){
 	BeamSoul.parent.prototype._init.call(this,weapon);
-	this.damagePoint = 2;
+	this.damagePoint = 4;
 	this.count = 30; 
     }
     BeamSoul.prototype.hit = function(){
@@ -75,8 +75,6 @@
     BeamSoul.prototype.next = function(){
 	this.index++;
 	this.hit();
-	console.log("ne~~");
-	console.log(this.index,this.count);
 	if(this.index==this.count){
 	    this.stop();
 	}
@@ -88,7 +86,7 @@
 	}
 	MissileSoul.parent.prototype._init.call(this,weapon);
 	this.speed = 1; 
-	this.damagePoint = 300;
+	this.damagePoint = 30000;
 	this.maxSpeed = 7;
 	this.position = new Point(weapon.ship.cordinates);
     }
@@ -113,11 +111,15 @@
     var WeaponSoul = Module.sub();
     WeaponSoul.prototype._init = function(state){
 	WeaponSoul.parent.prototype._init.call(this,state);
+	this.type = "weapon";
 	this.listen("onNextTick");
 	this.coolDown = 120;
-	this.readyState = 0;
+	this.readyState = this.readyState?this.readyState:0;
 	this.Allumition = AllumitionSoul;
 	this.moduleId = 0;
+    }
+    WeaponSoul.prototype.isReady = function(){
+	return this.coolDown<=this.readyState;
     }
     WeaponSoul.prototype.onNextTick = function(){
 	this.readyState+=1;
@@ -144,7 +146,10 @@
 	this.readyState = 0;
     }
     WeaponSoul.prototype.toData = function(){
-	return this.moduleId;
+	return {
+	    id:this.moduleId
+	    ,readyState:this.readyState
+	}
     }
     var CannonEmitterSoul = WeaponSoul.sub();
     CannonEmitterSoul.prototype._init = function(){

@@ -31,71 +31,20 @@
 	//Here all cmd should be validated
 	if(msg.cmd==1){
 	    console.log("sync initial data from server");
-	    this.battleField.initByShips(msg.data.ships,require("./share/resource/map/"+this.galaxy.name),this.galaxy.name);
+	    this.battleField.initShips(msg.data.ships);
 	    this.battleField.time = msg.time;
 	    
-	    this.battleField.ready = true;
+	    this.battleField.ready = true; 
+	    
+	    this.aiCore.start();
 	    return;
 	}
-	if(msg.cmd==2){
+	if(msg.cmd){
 	    if(msg.time>this.battleField.time){
 		this.battleField.onInstruction(msg);
 	    }else{
 		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==3){
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==4){
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==5){
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==6){
-	    //jump
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==7){
-	    //enter
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	
-	if(msg.cmd==8){
-	    //chase
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==9){
-	    //roundAtTarget
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
+		console.log(this.battleField.time);
 	    }
 	}
     }

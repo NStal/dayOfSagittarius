@@ -39,10 +39,18 @@ function APIManager(){
 	    }
 	    //what param to client
 	    var paramClaims = apiClaim.slice(sliceFrom);
-	    this[apiName] = CreateAPIObject(this.apiURIPrefix+URI+this.apiURISuffix,
+	    var URL = ""
+	    if(withName){
+		//custom api
+		URL = URI
+	    }else{
+		URL = this.apiURIPrefix +URI+this.apiURISuffix;
+	    }
+	    this[apiName] = CreateAPIObject(URL,
 					    paramClaims,
 					    this.defaultErrorHandler,
 					    apiName);
+	    
 	}
     } 
     this.initAPI = function(){
@@ -52,7 +60,7 @@ function APIManager(){
     }
 }
 APIManager.errors = {"invalidParameter":1,
-		     "authorizationFailed":2,
+		     "permissionDenied":2,
 		     "notExist":3,
 		     "invalidAction":4,
 		     "alreadyExist":5,

@@ -11,7 +11,7 @@
 	this.manager.addGlobal(this);
 	var self = this;
 	this.handlers = [{
-	    where:"battleField"
+	    where:"battleFieldDisplayer"
 	    ,type:"mouseUp"
 	    ,handler:function(position){
 		if(!self.ship){

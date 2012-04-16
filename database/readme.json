@@ -1,0 +1,59 @@
+db = {
+    //document ships
+    "ships":[
+	{"name":"name"
+	 ,"owner":"nstal"
+	 ,"pilot":"nstal"
+	 ,"cordinates":{"x":588.7990071438253 
+			,"y":180.67608992569149
+		       }	  
+	 ,"category":0
+	 
+	 ,"ability":{"maxSpeed":8 
+		     ,"structure":10000 
+		     ,"maxRotateSpeed":0.2 
+		     ,"speedFactor":0.8
+		     ,"cpu":10
+		     ,"size":18
+		     ,"curveForwarding":true
+		    }
+	 ,"modules":[ 0 ,1 ,2 ,2 ];
+	 ,"reward":1200
+	 ,"action":{"rotateFix":0
+		    ,"speedFix":0
+		   }
+	 ,"physicsState":{
+	     "toward":0
+	 }
+	 ,"_id":ObjectId("4f8991cae3331a5b2f000001")
+	 //"at could be refer of galaxy or starStation"
+	 ,"at":{"$ref":"galaxies"
+		,"$id":"Nolava"
+	       }
+	}
+    ]
+    //document galaxys
+    "galaxies":[
+	{ 
+	    "_id":"Nolava"
+	    ,"color":"black"
+	    ,"name":"Nolava"
+	    ,"position":{ "x":300,"y":400 }
+	    ,"server":{ "host":"115.156.219.166"
+			,"localport":20000
+			,"port":10000 }
+	    ,"ships":[
+		{
+		    "$ref":"ships",
+		    "$id":ObjectId("4f8991cae3331a5b2f000001")
+		},{
+		    "$ref":"ships",
+		    "$id":ObjectId("4f8991cae3331a5b2f000002")
+		},{
+		    "$ref":"ships",
+		    "$id":ObjectId("4f8991cae3331a5b2f000003")
+		}
+	    ],"size":24,"starGates":[ ],"starStations":[ ],"to":[ "Evy","Lerum" ] }
+
+    ]
+}

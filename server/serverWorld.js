@@ -19,23 +19,19 @@
 	});
 	this.gateway = new ServerGateway(this.battleField);
 	this.syncManager = new SyncManager(this.gateway);
-	this.loadShip();
-    }
-    ServerWorld.prototype.next = function(){
-	ServerWorld.parent.prototype.next.call(this);
-	this.battleField.next();
+	var self = this;
+	this.on("nextTick",function(){
+	    self.battleField.next();
+	})
     }
     ServerWorld.prototype.init = function(){
-	this.testShips = [];
-	this.battleField.initByShips(this.testShips,this.map);
-    }
-    ServerWorld.prototype.loadShip = function(){
 	var self = this;
-	Interface.getGalaxyShip(this.galaxy.name,function(ships){
+	Interface.getGalaxyShips(this.galaxy.name,function(ships){
 	    for(var i=0;i < ships.length;i++){
-		var ship = ships[i]; 
-		self.battleField.enterShip(ship);
+		ships[i].id = ships[i]._id.toString();
 	    }
+	    self.battleField.initShips(ships);
+	    self.battleField.initEnvironment(self.galaxy);
 	})
     }
     ServerWorld.prototype.saveShip = function(handler){

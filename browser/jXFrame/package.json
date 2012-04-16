@@ -1,0 +1,25 @@
+{
+  "name": "jXFrame",
+  "description": "A complete frame work designed for single page application both in frontend and backend.Frontend need jquery support.",
+  "version": "0.0.1",
+  "author": "NStal nstalmail@gmail.com <nstalmail@gmail.com> (blog.memomeme.com)",
+  "keyword": [
+    "framework",
+    "jquery",
+    "jXFrame"
+  ],
+  "os": [
+    "Linux"
+  ],
+  "engines": {
+    "node": "0.4.9"
+  },
+  "directories": {
+    "lib": "local"
+  },
+  "files": [
+    ""
+  ],
+  "repository": {},
+  "main": "local/server"
+}

@@ -12,11 +12,8 @@
     }
     Gateway.prototype.onConnect = function(worker){
 	//clear battleField
-	Static.battleField.parts.length = 0;
 	//WARNING TAG this may cause memory leak
-	//Some interaction instance may not released
-	Static.interactionManager.parts.length = 0;
-	
+	//Some interaction instance may not released 
 	//require sync
 	console.log("conntecting!");
 	this.isConnected = true; 
@@ -35,69 +32,14 @@
 	//In future version
 	//Here all cmd should be validated
 	if(msg.cmd==1){
-	    console.log("sync initial data from server");
-	    this.battleField.initByShips(msg.data.ships,window[settings.whereAmI]);
+	    this.battleField.initShips(msg.data.ships,Static.world.galaxy);
 	    clientWorld.setTime(msg.time);
 	    console.log(msg.time);
 	    this.battleField.ready = true;
 	    Static.waitingPage.endWaiting();
 	    return;
 	}
-	if(msg.cmd==2){
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==3){
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==4){
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==5){
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==6){
-	    //jump
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==7){
-	    //enter
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	
-	if(msg.cmd==8){
-	    //chase
-	    if(msg.time>this.battleField.time){
-		this.battleField.onInstruction(msg);
-	    }else{
-		console.log("recieve out dated server instruction");
-	    }
-	}
-	if(msg.cmd==9){
-	    //roundAtTarget
+	if(msg.cmd){
 	    if(msg.time>this.battleField.time){
 		this.battleField.onInstruction(msg);
 	    }else{

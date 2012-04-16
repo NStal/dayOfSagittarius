@@ -1,17 +1,20 @@
 (function(exports){
     var Class = require("./util").Class;
+    var EventEmitter = require("./util").EventEmitter;
     var Point = require("./util").Point;
     var Container = require("./util").Container;
     var clientCommand = require("./protocol").clientCommand;
     var Math = require("./util").Math;
     var BattleFieldSoul = Container.sub();
-    var ShipSoul = require("./ship/shipSoul").ShipSoul;
-    var StarGate = require("./ship/starGate").StarGateSoul;
+    EventEmitter.mixin(BattleFieldSoul);
+    var Ship = require("./ship/shipSoul").Ship;
+    var StarGate = require("./ship/starGate").StarGate;
+    var StarStation = require("./ship/starStation").StarStation;
     //BattleFieldSoul is battleField without drawing functions
     //BattleField do these things:
     //1.hold all the ships
     //2.set ship position acording to the the ship.AI
-    //3.listen instructions come from the gateway and conduct it.    
+    //3.listen instructions come from the gateway and conduct it.
     BattleFieldSoul.prototype._init = function(info){
 	this.parts = [];
 	this.size = new Point(10000,10000);
@@ -19,7 +22,7 @@
 	this.instructionQueue = [];
 	if(!info)return;
 	this.world = info.world;
-	console.log(this.world)
+	var self = this;
     }
     BattleFieldSoul.prototype.genFieldState = function(){
 	var ships = [];
@@ -34,6 +37,7 @@
     }
     BattleFieldSoul.prototype.next = function(){
 	this.applyInstruction(this.world.time);
+	this.time = this.world.time;
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
 	    this.calculateUnit(item);
@@ -65,10 +69,52 @@
 	}
     }
     BattleFieldSoul.prototype._excute = function(instruction){
-	//see protocol.js => clientCommand to all the command implemented here
-	//chase target
-	var console = {};
-	console.log = function(){}
+	//see protocol.js => clientCommand to all the command implemented here 
+	if(instruction.cmd == clientCommand.GOD_shipDocked){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id); 
+		console.trace();
+		return;
+	    }
+	    ship.clear();
+	    ship.emit("docked",ship);
+	    console.log("ship",ship.id,"ship dock accept by GOD");
+	}
+	//chase target 
+	if(instruction.cmd == clientCommand.GOD_removeShip){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id); 
+		console.trace();
+		return;
+	    }
+	    ship.clear();
+	    console.log("ship",ship.id,"removed by GOD");
+	}
+	if(instruction.cmd == clientCommand.setDockStation){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id);
+		console.trace();
+		return;
+	    }
+	    var station = this.getStarStationByName(instruction.data.stationName);
+	    if(station){
+		console.log("get station of name:",station.name);
+	    }else{
+		console.log("invalid station id",instruction.data.stationName);
+		return;
+	    }
+	    ship.AI.setDockStation(station);
+	    console.log("ship",ship.id,"is move to station",station.name);
+	}
 	if(instruction.cmd==clientCommand.chaseTarget){
 	    var ship = this.getShipById(instruction.data.id); 
 	    if(ship){
@@ -88,8 +134,8 @@
 	    }
 	    if(target!=ship){
 		//can't target your self
-		console.log("set target") 
-		ship.AI.destination.targetPoint = target.cordinates;
+		console.log("set target");
+		ship.AI.destination.chaseTarget = target;
 	    }
 	    else{
 		console.warn("target your self?");
@@ -134,13 +180,12 @@
 	    }
 	    
 	    return;
-	} 
+	}
 	//come from starGate
 	if(instruction.cmd == clientCommand.comeFromGate){
 	    this.enterShip(instruction.data.ship);
 	    console.log("new ship",instruction.data.ship,"is entered!");
-	}
-	
+	} 
 	//pass star gate instruction
 	if(instruction.cmd == clientCommand.passStarGate){
 	    var ship = this.getShipById(instruction.data.id);
@@ -253,31 +298,6 @@
 	}
 	if(unit.type == "gate")return;
     }
-    
-    BattleFieldSoul.prototype._dispatch = function(instruction){
-	for(var i=0;i<this.listener.length;i++){
-	    var item = this.listener[i];
-	    item(instruction);
-	}
-    }
-    BattleFieldSoul.prototype.addListener = function(){
-	for(var i=0;i<arguments.length;i++){
-	    var item  = arguments[i];
-	    this.listener.push(item);
-	} 
-    }
-    BattleFieldSoul.prototype.removeListener = function(){
-	for(var i=0;i<arguments.length;i++){
-	    var item  = arguments[i];
-	    for(var j=0;j<this.listener.length;j++){
-		var subItem = this.listener[j];
-		if(item === subItem){
-		    this.listener.splice(j,0);
-		    break;
-		}
-	    }
-	} 
-    }
     BattleFieldSoul.prototype.getShipById = function(id){
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
@@ -295,6 +315,14 @@
 	    }
 	}
     }
+    BattleFieldSoul.prototype.getStarStationByName = function(name){
+	for(var i=0;i<this.parts.length;i++){
+	    var item = this.parts[i];
+	    if(item.name === name && item.type == "station"){
+		return item;
+	    }
+	}
+    } 
     BattleFieldSoul.prototype.passStarGate = function(ship,gate){
 	var g = null;
 	try{
@@ -316,33 +344,59 @@
 	this.remove(ship);
     }
     BattleFieldSoul.prototype.onInstruction = function(instruction){
-	//console.log("add instruction at:",this.time,instruction); 
+	//console.log("add instruction at:",this.time,instruction);
 	this.instructionQueue.push(instruction);
     }
     BattleFieldSoul.prototype.enterShip = function(ship){
-	var ship = new ShipSoul(ship).init(ship.modules);
-	console.log(ship.cordinates);
+	var ship = new Ship(ship).init(ship.modules);
+	var self = this;
+	ship.on("dead",function(ship,byWho){
+	    self.emit("shipDead",ship,byWho);
+	});
+	ship.on("docking",function(ship,station){
+	    self.emit("shipDocking",ship,station);
+	})
 	this.add(ship);
+	return ship;
     }
-    BattleFieldSoul.prototype.initByShips = function(ships,galaxy){
+    BattleFieldSoul.prototype.onShipDead = function(ship,byWho){
+	console.log("ship id:",who.id,"is dead",",killed by",byWho.weapon.ship.id);
+	
+    }
+    BattleFieldSoul.prototype.initEnvironment = function(galaxy){
 	this.galaxy = galaxy;
+	var self = this;
 	var _ships = [];
+	//add stargate
 	for(var i=0;i<this.galaxy.starGates.length;i++){
 	    this.add(new StarGate(this.galaxy.starGates[i]));
 	}
-	for(var i=0;i < ships.length;i++){
-	    var ship = new ShipSoul(ships[i]).init(ships[i].modules);
-	    _ships.push(ship);
-	    //test
-	    this.add(ship);
+	for(var i=0;i<this.galaxy.starStations.length;i++){
+	    this.add(new StarStation(this.galaxy.starStations[i]));
 	}
-	//add AI;
-	ships = _ships;
+    }
+    BattleFieldSoul.prototype.removeAll = function(type){
+	var i=0;
+	while(this.parts[i]){
+	    if(this.parts[i].type==type){
+		this.parts.splice(i,1);
+	    }else{
+		i++;
+	    }
+	}
+    }
+    BattleFieldSoul.prototype.initShips = function(ships){
+	this.removeAll("ship");
+	var __ships = [];
+	for(var i=0;i < ships.length;i++){
+	    var ship = ships[i];
+	    __ships.push(this.enterShip(ship));
+	} 
+	ships = __ships;
 	for(var i=0;i < ships.length;i++){
 	    var ship = ships[i];
 	    if(ship.AI&&ship.AI.destination.target){
 		var id = ship.AI.destination.target;
-		if(typeof id == "undefined")continue;
 		//target should be valid
 		//this work must be done here
 		//before here:we can't find ship by id
@@ -351,10 +405,14 @@
 		//fatal unsync
 		console.log("id",id);
 		ship.AI.destination.target = this.getShipById(id);
+	    } 
+	    if(ship.AI&&ship.AI.destination.chaseTarget){
+		var id = ship.AI.destination.chaseTarget;
+		console.log("id",id);
+		ship.AI.destination.chaseTarget = this.getShipById(id);
 	    }
 	}
+	this.emit("shipInitialized",ships);
     }
-    
-    
     exports.BattleFieldSoul = BattleFieldSoul;
 })(exports)

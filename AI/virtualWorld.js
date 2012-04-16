@@ -3,7 +3,7 @@
     var World = require("./share/world").World;
     var BattleField = require("./battleFieldVirtual").BattleFieldVirtual;
     var SyncWorker = require("./syncWorker").SyncWorker;
-    var VirtualWorldInstance = require("./share/gameUtil").VirtualWorldInstance;
+    var Interface = require("../database/interface").Interface;
     var runOnce = require("./share/util.js").runOnce;
     var GALAXIES = require("./share/resource/galaxies").GALAXIES;
     var GameInstance = require("./share/gameUtil").GameInstance;
@@ -16,52 +16,48 @@
     //VirtualWorld is the world for AI.
     VirtualWorld.prototype._init = function(worldInfo){
 	VirtualWorld.parent.prototype._init.call(this,worldInfo);
-	this.time = 0;
 	var self = this;
-	this.current
 	//initialze canvas
-	this.battleField = new BattleField({time:0});
-	this.battleField.world = this;
+	this.battleField = new BattleField({time:0
+					    ,world:this});
 	this.delay = settings.delay;//300ms
 	this.gateway = new Gateway(this.battleField);
 	this.gateway.username = worldInfo.name;
 	this.galaxy = "Nolava"
 	this.aiCore = new AICore(this.battleField,this.gateway);
+	
+	this.gateway.aiCore = this.aiCore;
 	//prepare handle global key event 
     }
     VirtualWorld.prototype.start = function(){
 	VirtualWorld.parent.prototype.start.call(this);
 	var self = this;
 	this.changeGalaxy(this.galaxy);
-	this.aiCore.start()
 	return this;
     }
     VirtualWorld.prototype.changeGalaxy = function(where){
-	var g = null;
-	for(var i=0;i < GALAXIES.length;i++){
-	    if(GALAXIES[i].name==where){
-		g = GALAXIES[i];
+	var self = this;
+	Interface.getGalaxyInfoWithEnvironment(where,function(g){
+	    if(!g){
+		console.warn("invalid galaxy name");
+		return false;
+	    }
+	    self.galaxy = g;
+	    self.gateway.galaxy = g;
+	    self.battleField.initEnvironment(g);
+	    if(!self.syncWorker){
+		self.syncWorker = new SyncWorker(g.server.host,g.server.port,self.gateway);
+		self.syncWorker.start();
+		return;
 	    } 
-	}
-	if(!g){
-	    console.warn("invalid galaxy name");
-	    return false;
-	}
-	this.galaxy = g;
-	this.gateway.galaxy = g;
-	if(!this.syncWorker){
-	    this.syncWorker = new SyncWorker(g.server.host,g.server.port,this.gateway);
-	    this.syncWorker.start();
-	    return;
-	}
-	this.syncWorker.setServer(g.server.host,g.server.port);
-	this.syncWorker.close();
+	    self.syncWorker.setServer(g.server.host,g.server.port);
+	    self.syncWorker.close();
+	})
     }
     VirtualWorld.prototype.next = function(){
 	//this is game loops
 	//test
-	this.time = this.battleField.time+1;
-	this.battleField.time = this.time;
+	this.time ++;
 	this.battleField.next();
 	GameInstance.nextTick();
     }

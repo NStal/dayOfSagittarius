@@ -38,14 +38,15 @@ var galaxyInfoInserters = {
 	    var ship = getShipTemplate();
 	    ship.owner = "AI";
 	    ship.name = "AI CommandorShip";
+	    ship.pilot = "AI"+Math.floor(Math.random()*1000);
 	    ship.ability.maxSpeed = 4;
 	    //Equiped with 1 Missile 2 Cannon 2 Beam
 	    ship.modules.push(2,2,2,0,0,1,1);
 	    col.insert(ship);
-	    
 	    //main ship for "nstal"
 	    ship = getShipTemplate();
 	    ship.owner = "nstal";
+	    ship.pilot = "nstal";
 	    ship.name = "nstal CommandorShip";
 	    ship.modules.push(2,2,2);
 	    ship.cordinates = {x:500,y:500};
@@ -81,6 +82,11 @@ var galaxyInfoInserters = {
 	}
     }
 }
+var StarStations = [{
+    name:"Nolava-I"
+    ,position:{x:900,y:500}
+    ,ships:[]
+}];
 connector.open(function(err,db){
     if(err || !db){
 	console.log(err);

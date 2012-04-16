@@ -14,12 +14,8 @@
     AI.prototype.calculate = function(){
 	//release target when it's dead
 	if(this.destination.target){
-	    if(typeof this.destination.target == "string"){
-		this.destination.target = this.ship.parentContainer.getShipById(this.destination.target);
-		return;
-	    } 
 	    if(this.destination.target.missed){
-		this.destination.target.null;
+		this.destination.target = null;
 	    }
 	    if(this.destination.target.state.structure<=0){
 		this.destination.target = null;
@@ -28,15 +24,30 @@
 	if(this.destination.starGate){
 	    if(typeof this.destination.starGate == "string"){
 		this.destination.starGate = this.ship.parentContainer.getStarGateById(this.destination.starGate);
-		return;
 	    }
 	    this.destination.roundRoute = null;
 	    this.destination.targetPoint = this.destination.starGate.position;
 	    
 	    if(this.destination.starGate.position.distance(this.ship.cordinates)
 	       < this.destination.starGate.size){
-		this.ship.passStarGate(this.destination.starGate);
+		this.ship.emit("passStarGate",this.ship,this.destination.starGate);
 	    }
+	}
+	if(this.destination.starStation){
+	    if(typeof this.destination.starStation == "string"){
+		this.destination.starStation = this.ship.parentContainer.getStarStationById(this.destination.starStation);
+	    }
+	    this.destination.roundRoute = null;
+	    this.destination.targetPoint = this.destination.starStation.position;
+	    
+	    if(this.destination.starStation.position.distance(this.ship.cordinates)
+	       < this.destination.starStation.size){
+		this.ship.emit("docking",this.ship,this.destination.starStation);
+	    }
+	}
+	if(this.destination.chaseTarget){
+	    this.destination.roundRoute = null;
+	    this.destination.targetPoint  = this.destination.chaseTarget.cordinates;
 	}
 	if(this.destination.roundRoute){
 	    this._adjustRoundAt(this.destination.roundRoute.point,
@@ -61,6 +72,9 @@
     }
     AI.prototype.passStarGate = function(gate){
 	this.destination.starGate = gate;
+    }
+    AI.prototype.setDockStation = function(station){
+	this.destination.starStation = station;
     }
     AI.prototype._adjustToPoint = function(targetPoint){
 	var targetPoint = new Point(targetPoint);
@@ -108,7 +122,6 @@
 	}
 	return false;
     }
-
     //how
     AI.prototype._adjustRoundAtCurrentRoute = function(r,antiClockWise){
 	//set distance to default if no distance specified
@@ -150,16 +163,13 @@
 	var x = realMatrix.row(2).e(1);
 	var y = realMatrix.row(1).e(1);
 	var pos = new Point(point.x+x,point.y+y);
-	this.destination.targetPoint = pos;
-	
+	this.destination.targetPoint = pos;	
     }
-
     //intent
     AI.prototype.standBy = function(){
 	this.destination.targetPoint = new Point(this.ship.cordinates);
 	return;
     }
-
     //intent
     AI.prototype.moveTo = function(targetPoint){
 	this.clearDestination();
@@ -177,6 +187,7 @@
 		targetPoint:this.destination.targetPoint
 		,roundRoute:this.destination.roundRoute
 		,target:this.destination.target?this.destination.target.id:null
+		,chaseTarget:this.destination.chaseTarget?this.destination.chaseTarget.id:null
 	    }
 	}
 	return data;

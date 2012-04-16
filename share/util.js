@@ -27,22 +27,64 @@
 	return this;
     }
     var EventEmitter = Class.sub();
-    EventEmitter.prototype._init = function(){
-	this.event = {};
-    }
-    EventEmitter.prototype.fire = function(event){
-	var self = this;
-	if(typeof self.event[event] == "function"){
-	    self.event[event]();
+    EventEmitter.prototype.on = function(event,callback){
+	if(!this.events)this.events = {};
+	if(this.events[event] instanceof Array){
+	    this.events[event].push(callback);
+	}else{
+	    this.events[event] = [callback];
 	}
     }
-    EventEmitter.prototype.on = function(event,callback){
-	this.event[event] = callback;
-	return false;
+    EventEmitter.prototype.bind = EventEmitter.prototype.on;
+    EventEmitter.prototype.emit = function(){
+	if(!this.events)this.events = {};
+	var name = Array.prototype.splice.call(arguments,0,1)
+	if(this.events[name] instanceof Array){
+	    var arr = this.events[name];
+	    for(var i=0;i < arr.length;i++){
+		var callback = arr[i];
+		callback.apply(this,arguments);
+	    }
+	} 
     }
-    EventEmitter.prototype.off = function(event){
-	this.event[event] = null;
-	return true;
+    EventEmitter.prototype.unbind = function(event,callback){
+	if(!this.events)this.events = {};
+	if(this.events[event] instanceof Array){
+	    var arr = this.events[event];
+	    for(var i=0;i<arr.length;i++){
+		if(arr[i]==callback){
+		    arr.splice(i,1);
+		    return true;
+		}
+	    }
+	}
+	return false;
+    } 
+    EventEmitter.mixin = function(_Class){
+	Util.update(_Class.prototype,EventEmitter.prototype);
+    }
+    MapTask = EventEmitter.sub();
+    MapTask.prototype._init = function(){
+	this.reset();
+    }
+    MapTask.prototype.reset = function(){
+	this.done = 0;
+	this.total = 0;
+	this.finished = false;
+    }
+    MapTask.prototype.newTask = function(){
+	var self = this;
+	this.total++;
+	return function(){
+	    self.complete();
+	}
+    }
+    MapTask.prototype.complete = function(){
+	this.done++;
+	if(this.done == this.total){
+	    this.emit("finish");
+	    this.finished = true;
+	}
     }
     var Instance = EventEmitter.sub();
     Instance.prototype._init = function(){
@@ -379,6 +421,7 @@
     exports.Util = Util;
     exports.Instance = Instance;
     exports.EventEmitter = EventEmitter;
+    exports.MapTask = MapTask;
     exports.Key = Key;
     exports.Container = Container;
     

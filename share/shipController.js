@@ -76,12 +76,18 @@
 	    }
 	}
     }
+    ShipController.prototype.setDockStation = function(station){
+	var d = this._genTemplate(10);
+	d.data.stationName = station.name;
+	return d;
+    }
     ShipController.prototype.chaseTarget = function(target){
 	var d = this._genTemplate(8);
 	d.data.targetId = target.id;
 	return d;
     }
     ShipController.prototype.roundAtTarget =function(target,radius,antiClockWise){
+	console.log(this.ship.parentContainer.time);
 	return {
 	    time:this.ship.parentContainer.time+ShipController.delay
 	    ,cmd:9
