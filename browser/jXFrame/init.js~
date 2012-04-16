@@ -1,8 +1,0 @@
-$(function(){
-    if(Main){
-	main = new Main();
-    }
-    if(main.init){
-	main.init();
-    }
-});
