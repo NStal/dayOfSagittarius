@@ -10,7 +10,14 @@
 	    }
 	}
 	c.parent = this;
-	c.prototype = new c.parent();
+	//make it savier
+	//when [] inherit as prototype
+	//in recursive function this may cause undebugable disaster
+	var parentP = new c.parent();
+	for(var item in parentP){
+	    if(typeof parentP[item] == "function")
+		c.prototype[item] = parentP[item];
+	}
 	c.prototype.parent = c.parent;
 	c.sub = Class.sub;
 	c.extend = Class.extend;
@@ -43,7 +50,9 @@
 	    var arr = this.events[name];
 	    for(var i=0;i < arr.length;i++){
 		var callback = arr[i];
-		callback.apply(this,arguments);
+		if(callback.apply(this,arguments)===true){
+		    return true;
+		};
 	    }
 	} 
     }
@@ -59,7 +68,7 @@
 	    }
 	}
 	return false;
-    } 
+    }
     EventEmitter.mixin = function(_Class){
 	Util.update(_Class.prototype,EventEmitter.prototype);
     }
@@ -328,6 +337,11 @@
 	return false;
     }
     Point.prototype.distance = function(p){
+	if(!p){
+	    return Math.sqrt((this.x-0)*(this.x-0)
+			 +(this.y-0)*(this.y-0));
+	    return;
+	}
 	return Math.sqrt((this.x-p.x)*(this.x-p.x)
 			 +(this.y-p.y)*(this.y-p.y));
     }
@@ -356,7 +370,7 @@
 		clearInterval(_id);
 	},_interval);
     }
-    var Container = Class.sub();
+    var Container = EventEmitter.sub();
     Container.prototype._init = function(){
 	this.parts = [];
     }
@@ -382,7 +396,7 @@
 	return -1;
     }
     Container.prototype.removeAll = function(){
-	this.parts = [];
+	this.parts.length = 0;
     }
     var HashInt =function(a){
 	a = (a+0x7ed55d16) + (a<<12);

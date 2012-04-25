@@ -51,10 +51,10 @@
 	while(true){
 	    /*if(this.instructionQueue[0] && typeof this.instructionQueue[0].time == "number" &&
 	      this.instructionQueue[0].time < this.time){
-		console.log("fatal Error! recieve outdated instruction from gateway"); 
-		console.trace(); 
-		//throw "Logic Error";
-	    }*/
+	      console.log("fatal Error! recieve outdated instruction from gateway"); 
+	      console.trace(); 
+	      //throw "Logic Error";
+	      }*/
 	    //console.log(this.instructionQueue[0]?this.instructionQueue[0].time:null);
 	    if(this.instructionQueue[0] && 
 	       this.instructionQueue[0].time == this.time){
@@ -70,6 +70,38 @@
     }
     BattleFieldSoul.prototype._excute = function(instruction){
 	//see protocol.js => clientCommand to all the command implemented here 
+	
+	if(instruction.cmd==clientCommand.setModuleTarget){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id);
+		console.trace();
+		return;
+	    }
+	    if(instruction.data.moduleId>=ship.moduleManager.parts.length){
+		console.log("invalid module id");
+		return;
+	    }
+	    var m = ship.moduleManager.parts[instruction.data.moduleId];
+	    if(!m){
+		console.log("get module of"+m);
+		console.trace();
+		return false;
+	    }
+	    var target = this.getShipById(instruction.data.targetId);
+	    if(!target){
+		console.log("target not exist");
+		return;
+	    }
+	    if(m.setTarget){
+		m.setTarget(target);
+		return true;
+	    }
+	    console.log("module can't set target");
+	    return false;
+	}
 	if(instruction.cmd == clientCommand.GOD_shipDocked){
 	    var ship = this.getShipById(instruction.data.id);
 	    if(ship){
@@ -181,10 +213,19 @@
 	    
 	    return;
 	}
-	//come from starGate
-	if(instruction.cmd == clientCommand.comeFromGate){
-	    this.enterShip(instruction.data.ship);
-	    console.log("new ship",instruction.data.ship,"is entered!");
+	//enter ship
+	if(instruction.cmd == clientCommand.GOD_enterShip){
+	    if(instruction.data.ship instanceof Array){
+		for(var i=0,length=instruction.data.ship.length;i < length;i++){
+		    var item = instruction.data.ship[i];
+		    console.log("~~~~~",item);
+		    this.initShip(item);
+		}
+	    }
+	    else{
+		this.initShip(instruction.data.ship);
+	    }
+	    console.log("new ship entered",instruction.data.ship);
 	} 
 	//pass star gate instruction
 	if(instruction.cmd == clientCommand.passStarGate){
@@ -367,7 +408,7 @@
 	this.galaxy = galaxy;
 	var self = this;
 	var _ships = [];
-	//add stargate
+	//add starga
 	for(var i=0;i<this.galaxy.starGates.length;i++){
 	    this.add(new StarGate(this.galaxy.starGates[i]));
 	}
@@ -385,6 +426,20 @@
 	    }
 	}
     }
+    //add a ship and transform any targetId into a target
+    BattleFieldSoul.prototype.initShip = function(ship){
+	var ship = this.enterShip(ship);
+	if(ship.target){
+	    ship.target = this.getShipById(ship.target);
+	}
+	if(ship.AI&&ship.AI.destination.chaseTarget){
+	    var id = ship.AI.destination.chaseTarget;
+	    console.log("id",id);
+	    ship.AI.destination.chaseTarget = this.getShipById(id);
+	} 
+	this.emit("shipInitialized",[ship]);
+	return ship;
+    }
     BattleFieldSoul.prototype.initShips = function(ships){
 	this.removeAll("ship");
 	var __ships = [];
@@ -395,17 +450,18 @@
 	ships = __ships;
 	for(var i=0;i < ships.length;i++){
 	    var ship = ships[i];
-	    if(ship.AI&&ship.AI.destination.target){
-		var id = ship.AI.destination.target;
-		//target should be valid
-		//this work must be done here
-		//before here:we can't find ship by id
-		//after here:game is already start
-		//invalid target will cause 
-		//fatal unsync
-		console.log("id",id);
-		ship.AI.destination.target = this.getShipById(id);
-	    } 
+	    //target should be valid
+	    //this work must be done here
+	    //before here:we can't find ship by id
+	    //after here:game is already start
+	    //invalid target will cause 
+	    //fatal unsync
+	    for(var j=0,length=ship.moduleManager.parts.length;j < length;j++){
+		var item = ship.moduleManager.parts[j];
+		if(item.target){
+		    item.target = this.getShipById(item.target);
+		}
+	    }
 	    if(ship.AI&&ship.AI.destination.chaseTarget){
 		var id = ship.AI.destination.chaseTarget;
 		console.log("id",id);

@@ -80,13 +80,16 @@ Interface.removeAllShips(function(){
 	var ship = getShipTemplate();
 	ship.owner = user;
 	ship.pilot = user;
-	ship.modules = [0,1,2,2];
+	ship.modules = [0,1,2,2 //weapon
+			,3,3 //shield
+		       ];
 	ship.cordinates = {x:Math.random()*600
 			   ,y:Math.random()*600
 			  };
 	createShips.newTask();
 	Interface.addShip(ship,function(){
 	    createShips.complete();
+	    console.log("ship::::",ship);
 	});
     }
     createShips.on("finish",function(){
@@ -142,6 +145,7 @@ var createStarStations = new MapTask();
 createGalaxy.on("finish",function(){
     console.log("add starStations for Nolava");
     Interface.removeAllStarStations(function(){
+	console.log("~~~");
 	for(var i=0,length=StarStations.length;i < length;i++){
 	    var item = StarStations[i];
 	    Interface.addStarStation(item,createStarStations.newTask());

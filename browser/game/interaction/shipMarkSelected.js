@@ -11,7 +11,6 @@
     }
     ShipMarkSelected.prototype.set = function(ship){
 	this.ship = ship;
-	Static.world.selectedShip = ship;
 	if(!ship)return;
 	this.position = ship.cordinates;
 	this.outterRotation = 0;
@@ -57,7 +56,7 @@
 	context.lineWidth = 1;
 	context.stroke();
 	this.innerRotation-=this.innerRotateSpeed; 
-	this.outterRotation+=this.outterRotateSpeed; 
+	this.outterRotation+=this.outterRotateSpeed;
     }
     ShipMarkSelected.prototype.drawTargetPoint = function(context){
 	if(!this.ship.AI.destination.targetPoint){
@@ -93,18 +92,28 @@
 	context.restore();
     }
     ShipMarkSelected.prototype.drawLockTarget = function(context){
-	if(!this.ship.AI.destination.target){
+	var targets = [];
+	var handlers = this.ship.moduleManager.events.onIntent;
+	if(!handlers){
 	    return;
 	}
-	var p = this.ship.AI.destination.target.cordinates.sub(this.ship.cordinates);
-	context.save();
-	context.beginPath();
-	context.moveTo(0,0);
-	context.lineTo(p.x,p.y);
-	context.lineWidth=0.4;
-	context.strokeStyle = "red";
-	context.stroke();
-	context.restore();
+	for(var i=0,length=handlers.length;i < length;i++){
+	    var item = handlers[i];
+	    item(targets);
+	}
+	for(var i=0,length=targets.length;i < length;i++){
+	    var target = targets[i].target;
+	    var color = targets[i].color;
+	    var p = target.cordinates.sub(this.ship.cordinates);
+	    context.save();
+	    context.beginPath();
+	    context.moveTo(0,0);
+	    context.lineTo(p.x,p.y);
+	    context.lineWidth=0.4;
+	    context.strokeStyle = color?color:"green";
+	    context.stroke();
+	    context.restore();
+	}
     }
     ShipMarkSelected.prototype.onDraw = function(context){
 	if(!this.ship){

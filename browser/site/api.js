@@ -1,8 +1,12 @@
 API = function(){
     APIManager.call(this);
     this.apis = {
-	"getGalaxyInfoByName":["name"] 
+	"getGalaxyInfoByName":["name"]
 	,"getStationInfoByName":["name"]
+	,"requestShipUndocking":["shipId","stationName"]
+    }
+    this.apiEx = {
+	"template":["template/all.json"]
     }
     this.initAPI();
 }

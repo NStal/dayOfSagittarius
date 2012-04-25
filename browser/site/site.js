@@ -5,7 +5,7 @@ var Site = function(){
 	//test
 	this.initGame(self.loginUsernameInputJ.val());
 	self.landingPageJ.hide();
-    } 
+    }
 }
 Site.prototype.initGame = function(username){
     settings.width = $("body").width();

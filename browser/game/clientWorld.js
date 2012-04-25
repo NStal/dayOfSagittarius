@@ -4,19 +4,21 @@
     var BattleField = require("./battleField").BattleField;
     var SyncWorker = require("./syncWorker").SyncWorker;
     var GameInstance = require("./share/gameUtil").GameInstance;
+    var Drawable = require("./drawaing/drawable").Drawable;
     var runOnce = require("./share/util.js").runOnce;
     var GALAXIES = require("./share/resource/galaxies").GALAXIES;
     var GalaxyMap = require("./galaxy/galaxyMap").GalaxyMap;
     var Toaster = require("./interaction/toast").Toaster;
-    var Interaction = require("./interaction/interaction").Interaction;
+    var InteractionDisplayer = require("./interaction/interactionDisplayer").InteractionDisplayer;
+    var GlobalCaptureLayer = require("./interaction/interactionLayer").GlobalCaptureLayer;
     var Key = require("./util").Key;
     var Gateway = require("./gateway").Gateway
     var ClientWorld = World.sub();
     //ClientWorld inherit from World
-    //Do the quite same things but optimized for browsers
+    //Do the quite same things but optimized for browsers 
     ClientWorld.prototype._init = function(worldInfo){
 	ClientWorld.parent.prototype._init.call(this,worldInfo);
-	var self = this;
+	var self = this; 
 	//initialze canvas
 	this.canvas = $("#battleScene #screen")[0];
 	this.canvas.style.display="block";
@@ -24,6 +26,9 @@
 	this.canvas.height = settings.height;
 	//default net work delay
 	this.delay = worldInfo.delay;//300ms 
+	Static.globalCaptureLayer = new GlobalCaptureLayer(this);
+	Static.interactionDisplayer = new InteractionDisplayer(this);
+	Static.UIDisplayer = new UIDisplayer(this);
 	Static.battleField = new BattleField({world:this,time:worldInfo.time}); 
 	Static.battleFieldDisplayer = new BattleFieldDisplayer(Static.battleField);
 	Static.gateway = new Gateway(Static.battleField);
@@ -32,10 +37,86 @@
 	//setup galaxy
 	Static.galaxyMap = new GalaxyMap(GALAXIES);
 	Static.world = this;
-	//initialize interaction
-	Static.interactionManager = new InteractionManager(this);
-	this.galaxySelectInteraction = new GalaxySelectInteraction();
+	//initialize interaction 
+	this.add(Static.battleFieldDisplayer); 
+	this.add(Static.interactionDisplayer);
+	this.add(Static.UIDisplayer);
+	this.add(Static.globalCaptureLayer);
+	this.KEYS = [];
 	
+	function nodePointToPoint(e){
+	    if(typeof e.clientX!="undefined")
+		return new Point(e.clientX,e.clientY);
+	    return new Point(e.layerX,e.layerY);
+	}
+	this.mouseEventDistributer = new MouseEventDistributer(this);
+	window.oncontextmenu = function(){
+	    return false;
+	} 
+	//optimized for ipad
+	this.canvas.ontouchstart = function(e){
+	    this.hasTouch = true;
+	    if(e.button==2){
+		var event = "rightMouseDown";
+	    }else{
+		var event = "mouseDown"
+	    }
+	    
+	    self.mouseEventDistributer.distribute(event,nodePointToPoint(e)); 
+	    self.mouseEventDistributer.distribute("mouseUp",nodePointToPoint(e));
+	}
+	this.canvas.ontouchend = function(e){
+	    return true;
+	    this.hasTouch = true; 
+	    if(e.button==2){
+		var event = "rightMouseUp";
+	    }else{
+		var event = "mouseUp"
+	    }
+	    self.mouseEventDistributer.distribute(event,nodePointToPoint(e));
+	}
+	this.canvas.ontouchmove = function(e){
+	    self.mouseEventDistributer.distribute("mouseMove",nodePointToPoint(e));
+	    if(self._lastMove){
+		self.mouseEventDistributer.distribute("mouseLeave",nodePointToPoint(e),self._lastMove); 
+		self.mouseEventDistributer.distribute("mouseEnter",self._lastMove,nodePointToPoint(e));
+	    }
+	    self._lastMove = nodePointToPoint(e);
+	}
+	//end optimaized for ipad
+	this.canvas.onmousedown = function(e){
+	    if(this.hasTouch)return;
+	    if(e.button==2){
+		var event = "rightMouseDown";
+	    }else{
+		var event = "mouseDown"
+	    }
+	    self.mouseEventDistributer.distribute(event,nodePointToPoint(e));
+	}
+	this.canvas.onmouseup = function(e){
+	    if(this.hasTouch)return;
+	    if(e.button==2){
+		var event = "rightMouseUp";
+	    }else{
+		var event = "mouseUp"
+	    }
+	    self.mouseEventDistributer.distribute(event,nodePointToPoint(e));
+	}
+	this.canvas.onmousemove = function(e){
+	    if(this.hasTouch)return;
+	    self.mouseEventDistributer.distribute("mouseMove",nodePointToPoint(e));
+	    if(self._lastMove){
+		self.mouseEventDistributer.distribute("mouseLeave",nodePointToPoint(e),self._lastMove); 
+		self.mouseEventDistributer.distribute("mouseEnter",self._lastMove,nodePointToPoint(e));
+	    }
+	    self._lastMove = nodePointToPoint(e);
+	}
+	window.onkeydown =function(e){
+	    self.KEYS[e.which] = true;
+	}
+	window.onkeyup = function(e){
+	    self.KEYS[e.which] = false;
+	}
     }
     ClientWorld.prototype.start = function(){
 	ClientWorld.parent.prototype.start.call(this);
@@ -43,15 +124,13 @@
 	//connect to server to sync battleFieldInfo
 	this.changeGalaxy("Nolava");
 	var self = this;
-	/*window.onhashchange = function(){
-	    self.changeGalaxy(window.location.hash.replace("#",""));
-	}*/
 	return this;
     }
     ClientWorld.prototype.setTime = function(time){
 	this.time = time;
 	Static.battleField.time = time;
     }
+    
     ClientWorld.prototype.changeGalaxy = function(where){
 	settings.whereAmI = where;
 	var self = this;
@@ -75,131 +154,25 @@
     ClientWorld.prototype.next = function(){
 	ClientWorld.parent.prototype.next.call(this);
 	this.solveKeyEvent();
+	Static.battleField.next(context);
 	var context = this.canvas.getContext("2d");
 	context.clearRect(0,0,settings.width,settings.height);
 	context.save();
-	Static.battleField.next(context);
-	Static.battleFieldDisplayer.draw(context);
-	Static.interactionManager.position = Static.battleFieldDisplayer.position;
-	Static.interactionManager.scale = Static.battleFieldDisplayer.scale;
-	Static.interactionManager.draw(context);
-	context.restore();
-	context.save();
-	if(this.showMap){
-	    this.galaxyMap.draw(context);
-	}
-	Static.interactionManager.globalParts.draw(context);
+	this.draw(context);
 	context.restore();
     }
     ClientWorld.prototype.solveKeyEvent = function(){
-	if(window.KEY[Key.z]){
-	    if(window.KEY[Key.shift]){
-		if(Static.battleFieldDisplayer.scale>=1)return;
-		Static.battleFieldDisplayer.scale*=1.1;
+	if(this.KEYS[Key.z]){
+	    if(this.KEYS[Key.shift]){
+		Static.battleFieldDisplayer.scale *= 1.1; 
 	    }else{
-		if(Static.battleFieldDisplayer.scale<0.1)return;
-		Static.battleFieldDisplayer.scale*=0.9;
+		Static.battleFieldDisplayer.scale *= 0.9;
 	    }
+	    if(Static.battleFieldDisplayer.scale >=1)Static.battleFieldDisplayer.scale=1;
+	    if(Static.battleFieldDisplayer.scale <0.1)Static.battleFieldDisplayer.scale=0.1;
 	}
-	if(window.KEY[Key.left]){
-	    Static.battleFieldDisplayer.position.x+=10;
-	} 
-	if(window.KEY[Key.right]){
-	    Static.battleFieldDisplayer.position.x-=10;
-	} 
-	if(window.KEY[Key.up]){
-	    Static.battleFieldDisplayer.position.y+=10;
-	}
-	if(window.KEY[Key.down]){
-	    Static.battleFieldDisplayer.position.y-=10;
-	}
-	if(window.KEY[Key.m]){
-	    window.KEY[Key.m] = false;
-	    if(this.selectedShip){
-		if(this.selectedShip.owner != Static.username)return;
-		Static.interactionManager.pushCriticalInteraction(
-		    new MoveToInteraction(this.selectedShip));
-	    }else{
-		console.log("please select a ship");
-	    }
-	}
-	if(window.KEY[Key.r]){
-	    window.KEY[Key.r] = false;
-	    if(this.selectedShip){
-		if(this.selectedShip.owner != Static.username)return;
-		Static.interactionManager.pushCriticalInteraction(
-		    new RoundAtInteraction(this.selectedShip));
-	    }else{
-		console.log("please select a ship"); 
-	    }
-	}
-	if(window.KEY[Key.a]){
-	    window.KEY[Key.a] = false;
-	    if(this.selectedShip){
-		if(this.selectedShip.owner != Static.username)return;
-		Static.interactionManager.pushCriticalInteraction(
-		new LockAtInteraction(this.selectedShip));
-	    }else{
-		console.log("please select a ship"); 
-	    }
-	}
-	if(window.KEY[Key.g]){
-	    window.KEY[Key.g] = false;
-	    if(this.showMap){
-		this.showMap = false;
-		Static.interactionManager.popCriticalInteraction(this.galaxySelectInteraction);
-	    }
-	    else{
-		Static.interactionManager.pushCriticalInteraction(this.galaxySelectInteraction);
-		this.showMap = true;
-	    } 
-	}
-	if(window.KEY[Key.r]){
-	    window.KEY[Key.r] = false;
-	    if(this.selectedShip){
-		
-		if(this.selectedShip.owner != Static.username)return;
-	    Static.interactionManager.pushCriticalInteraction(
-		new RoundAtInteraction(this.selectedShip));
-	    }else{
-		console.log("please select a ship"); 
-	    }
-	}
-	if(window.KEY[Key.a]){
-	    window.KEY[Key.a] = false;
-	    if(this.selectedShip){
-		
-		if(this.selectedShip.owner != Static.username)return;
-		Static.interactionManager.pushCriticalInteraction(
-		    new LockAtInteraction(this.selectedShip));
-	    }else{
-		console.log("please select a ship"); 
-	    }
-	}
-	if(window.KEY[Key.g]){
-	    window.KEY[Key.g] = false;
-	    if(this.showMap){
-		this.showMap = false;
-		Static.interactionManager.popCriticalInteraction(this.galaxySelectInteraction);
-	    }
-	    else{
-		Static.interactionManager.pushCriticalInteraction(this.galaxySelectInteraction);
-		this.showMap = true;
-	    } 
-	}
-	if(window.KEY[Key.j]){
-	    window.KEY[Key.j] = false;
-	    if(this.selectedShip){
-		
-		if(this.selectedShip.owner != Static.username)return;
-		Static.interactionManager.pushCriticalInteraction(
-		    new PassStarGateInteraction(this.selectedShip)
-		);
-	    }else{
-		console.log("please select a ship"); 
-	    }
-	}
-	
-    }
+    } 
+    Drawable.mixin(ClientWorld);
+    MouseEventConsumer.mixin(ClientWorld);
     exports.ClientWorld = ClientWorld;
 })(exports)

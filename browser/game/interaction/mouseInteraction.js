@@ -76,37 +76,5 @@
 	}
     }
     var MouseInteraction = Interaction.sub();
-    
-    MouseInteraction.prototype._init = function(){
-	var self = this;
-	this.handlers = [
-	    {
-		where:"game"
-		,type:"mouseMove"
-		,handler:function(position){
-		    self.pointer.position = position;
-		}
-	    }
-	];
-	this.pointer = new MouseSprite();
-	this.pointer.type = this.pointer.types.normal;
-    }
-    MouseInteraction.prototype.init = function(manager){
-	MouseInteraction.parent.prototype.init.call(this,manager);
-	this.manager.addGlobal(this.pointer);
-    }
-    MouseInteraction.prototype.clear = function(){
-	MouseInteraction.parent.prototype.clear.call(this);
-	this.manager.removeGlobal(this.pointer);
-    }
-    MouseInteraction.prototype.show = function(){
-	this.pointer.show = true;
-	return this;
-    }
-    MouseInteraction.prototype.unshow = function(){
-	this.pointer.show = false;
-    }
-    
-    exports.MouseInteraction = MouseInteraction;
     exports.MouseSprite = MouseSprite;
 })(exports)

@@ -4,20 +4,23 @@
     var MissileSoul = require("../share/ship/module").MissileSoul;
     var MissileEmitterSoul = require("../share/ship/module").MissileEmitterSoul;
     var ModuleManager = require("../share/ship/moduleManager").ModuleManager;
+    var Shield = require("../share/ship/moduleManager").Shield;
+    var Armor = require("../share/ship/moduleManager").Armor;
     Allumition.prototype.start = function(){
 	Allumition.parent.prototype.start.call(this);
-	Static.interactionManager.add(this);
-	this.position = new Point(this.weapon.ship.AI.destination.target.cordinates);
+	this.type = "ammunition";
+	Static.battleFieldDisplayer.add(this);
+	this.position = new Point(this.weapon.target.cordinates);
     }
     Allumition.prototype.stop = function(){
-	Static.interactionManager.remove(this);
+	Static.battleFieldDisplayer.remove(this);
 	Allumition.parent.prototype.stop.call(this);
     }
     var Cannon = CannonSoul.sub().extend(Allumition);
     Cannon.prototype.start = function(){
 	CannonSoul.prototype.start.call(this);
-	Static.interactionManager.add(this);
-	var __p = new Point(this.weapon.ship.AI.destination.target.cordinates);
+	Static.battleFieldDisplayer.add(this);
+	var __p = new Point(this.weapon.target.cordinates);
 	__p.x += (Math.random()-0.5) *10;
 	__p.y += (Math.random()-0.5)*10;
 	this.position = __p
@@ -31,9 +34,9 @@
     var Beam = BeamSoul.sub().extend(Allumition);
     Beam.prototype.start = function(){
 	BeamSoul.prototype.start.call(this);
-	Static.interactionManager.add(this);
+	Static.battleFieldDisplayer.add(this);
 	this.from = this.weapon.ship.cordinates;
-	this.to = this.weapon.ship.AI.destination.target.cordinates;
+	this.to = this.weapon.target.cordinates;
 	this.position = {x:0,y:0};
     }
     Beam.prototype.next = BeamSoul.prototype.next;
@@ -67,11 +70,12 @@
 	this.Allumition = Allumition;
 	this.autoFire = false;
 	this.listen("onPresent");
-	this.name = "Weapon"
+	this.listen("onIntent");
+	this.name = "Weapon";
 	this.readyFire = true;//used for indicate fire command hasn't been send
     }
     Weapon.prototype.fire = function(){
-	if(this.manager.ship.AI.destination.target){
+	if(this.target){
 	    Static.gateway.send((new ShipController(this.manager.ship)).activeModule(this));
 	    console.log("send fired");
 	    return;
@@ -84,18 +88,27 @@
     }
     Weapon.prototype.onNextTick = function(){
 	Weapon.parent.prototype.onNextTick.call(this);
-	if(this.autoFire && this.manager.ship.AI.destination.target && this.readyState>=this.coolDown && this.readyFire == true){
+	if(this.autoFire && this.target && this.readyState>=this.coolDown && this.readyFire == true){
 	    this.fire();
 	    this.readyFire = false;
 	}
     }
     Weapon.prototype.onPresent = function(objects){
 	var self = this;
+	if(!self.shakeEffect){
+	    self.shakeEffect = new Twinkle({min:0.6});
+	}
 	objects.push({
-	    callback:function(){
+	    onActive:function(){
+		//self.autoFire = !self.autoFire;
+		new ModuleLockAtInteraction(self).init();
+	    }
+	    ,onActive2:function(){
 		self.autoFire = !self.autoFire;
+		
 	    }
 	    ,present:function(context){
+		if(self.autoFire)self.shakeEffect.onBeforeRender(context);
 		context.beginPath();
 		context.moveTo(0,0);
 		context.lineTo(20,0)
@@ -109,6 +122,15 @@
 		context.fillText(self.name,0,3);
 	    }
 	});
+    }
+    Weapon.prototype.onIntent = function(objects){
+	var self = this;
+	if(self.target){
+	    objects.push({
+		color:"red"
+		,target:self.target
+	    })
+	}
     }
     var CannonEmitter = CannonEmitterSoul.sub();
     CannonEmitter.extend(Weapon);
@@ -139,6 +161,8 @@
 	0:CannonEmitter
 	,1:BeamEmitter
 	,2:MissileEmitter
+	,3:Shield
+	,4:Armor
     }
     exports.MissileEmitter = MissileEmitter;
     exports.Weapon = Weapon;

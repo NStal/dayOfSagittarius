@@ -1,7 +1,8 @@
 (function(exports){
     var Class = require("../util").Class; 
     var Point = require("../util").Point;
-    var Module = Class.sub();
+    var EventEmitter = require("../util").EventEmitter;
+    var Module = EventEmitter.sub();
     var GameInstance = require("../gameUtil").GameInstance;
     //Some basic model of modules.
     //Weapon,Shield,Armor
@@ -13,6 +14,7 @@
 	else{
 	    this.state = {};
 	}
+	this.ability = {};
     }
     Module.prototype.init = function(moduleManager){
 	this.manager = moduleManager;
@@ -37,6 +39,70 @@
 	    //console.log(event,self);
 	    return self[event].apply(self,arguments);
 	}
+    } 
+    var ShieldSoul = Module.sub();
+    ShieldSoul.prototype._init = function(state){
+	ShieldSoul.parent.call(this,state);
+	this.ability.capacity = 1000;
+	this.listen("onBeforeHit");
+	this.moduleId = 3;
+	if(state&&state.capacity){
+	    this.state.capacity = state.capacity;
+	}
+    }
+    ShieldSoul.prototype.init = function(manager){
+	Module.prototype.init.call(this,manager);
+	if(!this.state.capacity){
+	    this.state.capacity = this.ability.capacity;
+	}
+    }
+    ShieldSoul.prototype.onBeforeHit = function(value,bywho){
+	var left = this.state.capacity-value;
+	//debug
+	if(left<=0){
+	    this.state.capacity = 0;
+	    return -left;
+	}
+	this.state.capacity = left;
+	return 0;
+    }
+    ShieldSoul.prototype.toData = function(){
+	return {
+	    id:this.moduleId
+	    ,capacity:this.state.capacity
+	};
+    }
+    var ArmorSoul = Module.sub();
+    ArmorSoul.prototype._init = function(state){
+	ArmorSoul.parent.call(this,state);
+	this.ability.resistPoint = 1000;
+	this.listen("onDamage");
+	this.moduleId = 4;
+	if(state&&state.resistPoint){
+	    this.state.resistPoint = state.resistPoint;
+	}
+    }
+    ArmorSoul.prototype.init = function(manager){
+	Module.prototype.init.call(this,manager);
+	if(!this.state.resistPoint){
+	    this.state.resistPoint = this.ability.resistPoint;
+	}
+    }
+    ArmorSoul.prototype.onDamage = function(value,bywho){
+	var left = this.state.resistPoint-value;
+	//debug
+	if(left<=0){
+	    this.state.resistPoint = 0;
+	    return -left;
+	}
+	this.state.resistPoint = left;
+	return 0;
+    }
+    ArmorSoul.prototype.toData = function(){
+	return {
+	    id:this.moduleId
+	    ,resistPoint:this.state.resistPoint
+	};
     }
     var AllumitionSoul = GameInstance.sub();
     AllumitionSoul.prototype._init = function(weapon){
@@ -45,7 +111,7 @@
 	}
 	this.count = 15;
 	this.index = 0;
-	this.target = weapon.ship.AI.destination.target;
+	this.target = weapon.target;
 	this.weapon = weapon;
     }
     AllumitionSoul.prototype.next = function(){
@@ -117,6 +183,7 @@
 	this.readyState = this.readyState?this.readyState:0;
 	this.Allumition = AllumitionSoul;
 	this.moduleId = 0;
+	this.target = null;
     }
     WeaponSoul.prototype.isReady = function(){
 	return this.coolDown<=this.readyState;
@@ -127,8 +194,28 @@
     WeaponSoul.prototype.setAllumition = function(allumition){
 	this.Allumition = allumition;
     }
+    WeaponSoul.prototype.setTarget = function(target){
+	if(!this.targetLostHandler){
+	    var self = this;
+	    this.targetLostHandler=function(who,byWho){
+		if(who==self.target)
+		    self.releaseTarget(); 
+	    }
+	}
+	if(this.target){
+	    this.target.unbind("dead",this.targetLostHandler);
+	}
+	this.target = target;
+	var self = this;
+	this.target.on("dead",this.targetLostHandler);
+	this.emit("target",this,this.target);
+    }
+    WeaponSoul.prototype.releaseTarget = function(){
+	this.emit("release","target");
+	this.target = null;
+    }
     WeaponSoul.prototype.active = function(){
-	if(!this.manager.ship.AI.destination.target){
+	if(!this.target){
 	    console.log("can't fire without target");
 	    console.trace();
 	    return;
@@ -139,8 +226,8 @@
 	    console.log("weapon not ready");
 	    return;
 	}
-	var target = this.manager.ship.AI.destination.target; 
-	var allumition = new (this.Allumition)(this); 
+	var target = this.target;
+	var allumition = new (this.Allumition)(this);
 	allumition.start();
 	console.log("fired!");
 	this.readyState = 0;
@@ -149,6 +236,7 @@
 	return {
 	    id:this.moduleId
 	    ,readyState:this.readyState
+	    ,target:this.target?this.target.id:undefined
 	}
     }
     var CannonEmitterSoul = WeaponSoul.sub();
@@ -172,6 +260,11 @@
 	this.coolDown = 200;
 	this.moduleId = 2;
     }
+    exports.ShieldSoul = ShieldSoul;
+    exports.Shield = ShieldSoul;
+    exports.ArmorSoul = ArmorSoul;
+    exports.Armor = ArmorSoul;
+    
     exports.AllumitionSoul = AllumitionSoul;
     exports.WeaponSoul = WeaponSoul;
     exports.CannonEmitterSoul = CannonEmitterSoul;

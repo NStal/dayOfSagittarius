@@ -5,163 +5,124 @@
     var Drawable = require("./drawing/drawable").Drawable;
     var ShipMark = require("./shipSelectInteraction").ShipMark;
     var MoveToInteraction = Interaction.sub();
-    MoveToInteraction.prototype._init = function(ship){
-	
-	if(!ship){
-	    return;
-	}
-	
-	var ShipController = require("../shipController").ShipController;
-	var self = this;
-	this.shipMark = new ShipMark();
-	this.shipMark.set(ship);
-	this.ship = ship;
-	this.shipController = new ShipController(ship);
-	this.handlers = [
-	    {
-		where:"battleFieldDisplayer"
-		,type:"mouseUp"
-		,handler:function(position){
-		    position = self.manager.battleFieldDisplayer.screenToBattleField(position);
-		    Static.gateway.send(self.shipController.moveTo(position));
-		    self.manager.popCriticalInteraction(self);
-		}
-	    }
-	];
-    }
-    MoveToInteraction.prototype.init = function(manager){
-	MoveToInteraction.parent.prototype.init.call(this,manager);
-	manager.add(this.shipMark);
-    }
-    MoveToInteraction.prototype.clear = function(){
-	MoveToInteraction.parent.prototype.clear.call(this);
-	this.manager.remove(this.shipMark);
-    }
-    var RoundMarker = Drawable.sub();
-    RoundMarker.prototype._init = function(obj){
-	this.obj = obj; 
-	this.color = "#60dfff";
-    }
-    RoundMarker.prototype.onDraw = function(context){
-	if(!this.obj)return;
-	if(!this.obj.point||!this.obj.r)return;
-	var p = this.obj.point;
-	context.beginPath();
-	context.arc(p.x,p.y,this.obj.r
-		    ,0,Math.PI*2);
-	context.strokeStyle = this.color;
-	context.stroke();
-	context.beginPath();
-	context.arc(p.x,p.y,2
-		    ,0,Math.PI*2);
-	context.fillStyle = this.color;
-	context.fill();
-    }
-    var RoundAtInteraction = Interaction.sub();
-    RoundAtInteraction.prototype._init = function(ship){
-	
-	if(!ship){
-	    return;
-	}	
-	var ShipController = require("../shipController").ShipController;
-	var self = this;
-	this.shipMark = new ShipMark();
-	this.shipMark.set(ship);
-	this.roundMark = new RoundMarker(this);
-	this.ship = ship;
-	this.shipController = new ShipController(ship);
-	this.handlers = [
-	    {
-		where:"battleFieldDisplayer"
-		,type:"mouseDown"
-		,handler:function(position){
-		    self.point = self.manager.battleFieldDisplayer.screenToBattleField(position);
-		    //self.manager.popCriticalInteraction(self);
-		    console.log(self.point);
-		}
-	    }
-	    ,{
-		where:"battleFieldDisplayer"
-		,type:"mouseMove"
-		,handler:function(position){
-		    if(!self.point)return;
-		    self.r = self.manager.battleFieldDisplayer.screenToBattleField(position).distance(self.point); 		}
-	    }
-	    ,{
-		where:"battleFieldDisplayer"
-		,type:"mouseUp"
-		,handler:function(position){
-		    if(!self.point)return false;
-		    if(!self.r)return false;
-		    if(self.r < 10)self.r=10;
-		    Static.gateway.send(self.shipController.roundAt(self.point,self.r,true));
-		    self.manager.popCriticalInteraction(self);
-		}
-	    }
-	];
-    }
-    RoundAtInteraction.prototype.init = function(manager){
-	RoundAtInteraction.parent.prototype.init.call(this,manager);
-	manager.add(this.shipMark);
-	manager.add(this.roundMark);
-    }
-    RoundAtInteraction.prototype.clear = function(){
-	RoundAtInteraction.parent.prototype.clear.call(this);
-	this.manager.remove(this.shipMark);
-	this.manager.remove(this.roundMark);
-    }
-
-    var LockAtInteraction = Interaction.sub();
-    LockAtInteraction.prototype._init = function(ship){
+    MoveToInteraction.prototype._init = function(ship){	
 	if(!ship){
 	    return;
 	} 
 	var ShipController = require("../shipController").ShipController;
 	var self = this;
-	this.shipMark = new ShipMark();
-	this.shipMark.set(ship);
+	this.ship = ship;
+	this.shipController = new ShipController(ship); 
+    }
+    MoveToInteraction.prototype.init = function(){
+	var self = this;
+	Static.globalCaptureLayer.capture("mouseDown",function(e){
+	    var p = Static.battleFieldDisplayer.screenToBattleField(e);
+	    Static.gateway.send(self.shipController.moveTo(p));
+	    Static.globalCaptureLayer.release("mouseDown");
+	    return true;
+	})
+    }
+    var RoundAtInteraction = Drawable.sub();
+    RoundAtInteraction.prototype._init = function(ship){
+	if(!ship){
+	    return;
+	}	
+	var ShipController = require("../shipController").ShipController;
+	var self = this;
 	this.ship = ship;
 	this.shipController = new ShipController(ship);
-	this.handlers = [
-	    {
-		where:"battleFieldDisplayer"
-		,type:"mouseUp"
-		,handler:function(position){
-		    position = self.manager.battleFieldDisplayer.screenToBattleField(position);
-		    var target = self.manager.battleFieldDisplayer.findShipByPosition(position);
-		    if(!target)return;
-		    Static.gateway.send(self.shipController.lockAt(target));
-		    self.manager.popCriticalInteraction(self);
-		}
+	this.color = "grey"
+    }
+    RoundAtInteraction.prototype.init = function(manager){
+	var self = this;
+	Static.interactionDisplayer.add(this);
+	Static.globalCaptureLayer.capture("mouseUp",function(e){
+	    Static.globalCaptureLayer.release("mouseDown");
+	    Static.globalCaptureLayer.release("mouseMove"); 
+	    Static.globalCaptureLayer.release("mouseUp");
+	    Static.interactionDisplayer.remove(self);
+	    var p = Static.battleFieldDisplayer.screenToBattleField(e); 
+	    var cmd = self.shipController.roundAt(self.centerPoint,p.distance(self.position),true);
+	    Static.gateway.send(cmd);
+	    return true
+	});
+	Static.globalCaptureLayer.capture("mouseDown",function(e){
+	    if(!self.centerPoint){
+		self.centerPoint = Static.battleFieldDisplayer.screenToBattleField(e);
+		return true;
 	    }
-	    ,{
-		where:"battleFieldDisplayer"
-		,type:"mouseMove"
-		,handler:function(position){
-		    //change cursor type to attack style
-		    position = self.manager.battleFieldDisplayer.screenToBattleField(position);
-		    var target = self.manager.battleFieldDisplayer.findShipByPosition(position);
-		    var pointer = self.manager.mouse.pointer;
-			
-		    if(target){
-			pointer.type = pointer.types.attack;
-		    }
-		    else{
-			pointer.type = pointer.types.normal; 
-		    }
-		}
+	    return true;
+	})
+	Static.globalCaptureLayer.capture("mouseMove",function(e){
+	    self.mousePoint = Static.battleFieldDisplayer.screenToBattleField(e);
+	})
+    }
+    RoundAtInteraction.prototype.onDraw = function(context){
+	if(!this.centerPoint)return;
+	this.position = this.centerPoint;
+	context.beginPath();
+	context.arc(0,0,3,0,Math.PI*2);
+	context.closePath();
+	context.strokeStyle = this.color;
+	context.stroke();
+	context.beginPath();
+	context.arc(0,0,this.mousePoint.distance(this.position),0,Math.PI*2);
+	context.stroke();
+    }
+    var LockAtInteraction = Drawable.sub();
+    LockAtInteraction.prototype._init = function(ship){	
+	if(!ship){
+	    return;
+	} 
+	var ShipController = require("../shipController").ShipController;
+	var self = this;
+	this.ship = ship;
+	this.shipController = new ShipController(ship); 
+    }
+    LockAtInteraction.prototype.init = function(){
+	var self = this;
+	Static.globalCaptureLayer.capture("mouseDown",function(e){
+	    var p = Static.battleFieldDisplayer.screenToBattleField(e);
+	    var ship =Static.battleFieldDisplayer.findShipByPosition(p);
+	    if(!ship){
+		Toast("please select a ship");
+		return true;
 	    }
-	    
-	];
+	    if(ship == self.ship){
+		Toast("Lock yourself? No.");
+		return true;
+	    }
+	    Static.gateway.send(self.shipController.lockAt(ship));
+	    Static.globalCaptureLayer.release("mouseDown");
+	    return true;
+	});
     }
-    LockAtInteraction.prototype.init = function(manager){
-	LockAtInteraction.parent.prototype.init.call(this,manager);
-	manager.add(this.shipMark);
+    var DockAtInteraction = Drawable.sub();
+    DockAtInteraction.prototype._init = function(ship){	
+	if(!ship){
+	    return;
+	} 
+	var ShipController = require("../shipController").ShipController;
+	var self = this;
+	this.ship = ship;
+	this.shipController = new ShipController(ship); 
     }
-    LockAtInteraction.prototype.clear = function(){
-	LockAtInteraction.parent.prototype.clear.call(this);
-	this.manager.remove(this.shipMark);
+    DockAtInteraction.prototype.init = function(){
+	var self = this;
+	Static.globalCaptureLayer.capture("mouseDown",function(e){
+	    var p = Static.battleFieldDisplayer.screenToBattleField(e);
+	    var station =Static.battleFieldDisplayer.findStarStationByPosition(p);
+	    if(!station){
+		Toast("please select a Station");
+		return true;
+	    }
+	    Static.gateway.send(self.shipController.setDockStation(station));
+	    Static.globalCaptureLayer.release("mouseDown");
+	    return true;
+	});
     }
+    
     var PassStarGateInteraction = Interaction.sub();
     PassStarGateInteraction.prototype._init = function(ship){
 	if(!ship){
@@ -213,6 +174,38 @@
 	PassStarGateInteraction.parent.prototype.clear.call(this);
 	this.manager.remove(this.shipMark);
     }
+    var ModuleLockAtInteraction = Drawable.sub();
+    ModuleLockAtInteraction.prototype._init = function(module){	
+	if(!module){
+	    return;
+	} 
+	var ShipController = require("../shipController").ShipController;
+	var self = this;
+	this.ship = module.ship;
+	this.module = module;
+	this.shipController = new ShipController(module.ship);
+    }
+    ModuleLockAtInteraction.prototype.init = function(){
+	var self = this;
+	Static.globalCaptureLayer.capture("mouseDown",function(e){
+	    var p = Static.battleFieldDisplayer.screenToBattleField(e);
+	    var ship =Static.battleFieldDisplayer.findShipByPosition(p);
+	    if(!ship){
+		Toast("please select a ship");
+		return true;
+	    }
+	    if(ship == self.ship){
+		Toast("ModuleLock yourself? No.");
+		return true;
+	    }
+	    Static.gateway.send(self.shipController.setModuleTarget(self.module,ship));
+	    Static.globalCaptureLayer.release("mouseDown");
+	    return true;
+	});
+    }
+    
+    exports.ModuleLockAtInteraction = ModuleLockAtInteraction;
+    exports.DockAtInteraction = DockAtInteraction;
     exports.LockAtInteraction = LockAtInteraction;
     exports.RoundAtInteraction = RoundAtInteraction;
     exports.MoveToInteraction = MoveToInteraction;

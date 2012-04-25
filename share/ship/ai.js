@@ -13,14 +13,15 @@
     }
     AI.prototype.calculate = function(){
 	//release target when it's dead
-	if(this.destination.target){
+	//now target use modules
+	/*if(this.destination.target){
 	    if(this.destination.target.missed){
 		this.destination.target = null;
 	    }
 	    if(this.destination.target.state.structure<=0){
 		this.destination.target = null;
 	    }
-	}
+	}*/
 	if(this.destination.starGate){
 	    if(typeof this.destination.starGate == "string"){
 		this.destination.starGate = this.ship.parentContainer.getStarGateById(this.destination.starGate);
@@ -177,6 +178,7 @@
     }
     AI.prototype.roundAt =function(p,r,antiClockWise){
 	this.clearDestination();
+	if(r<20)r=20;
 	this.destination.roundRoute = {point:p
 				       ,radius:r
 				       ,antiClockWise:antiClockWise};
@@ -186,7 +188,7 @@
 	    destination:{
 		targetPoint:this.destination.targetPoint
 		,roundRoute:this.destination.roundRoute
-		,target:this.destination.target?this.destination.target.id:null
+		//,target:this.destination.target?this.destination.target.id:null
 		,chaseTarget:this.destination.chaseTarget?this.destination.chaseTarget.id:null
 	    }
 	}

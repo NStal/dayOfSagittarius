@@ -20,10 +20,10 @@
     Toaster.prototype.show = function(text){
 	this.text = text;
 	this.position = new Point(settings.width/2,settings.height/2);
-	Static.interactionManager.addGlobal(this);
+	Static.UIDisplayer.add(this);
     }
     Toaster.prototype.hide = function(){
-	Static.interactionManager.removeGlobal(this);
+	Static.UIDisplayer.remove(this);
 	this.instance.stop();
     }
     Toaster.prototype.next = function(){

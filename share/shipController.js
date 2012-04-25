@@ -57,6 +57,18 @@
 	    }
 	}
     }
+    ShipController.prototype.setModuleTarget = function(which,target){
+	return {
+	    time:this.ship.parentContainer.time+ShipController.delay
+	    ,cmd:14
+	    ,data:{
+		id:this.ship.id
+		,moduleId:this.ship.moduleManager.indexOf(which)
+		,targetId:target.id
+	    }
+	}
+    }
+    
     ShipController.prototype.passStarGate = function(gate){
 	return {
 	    time:this.ship.parentContainer.time+ShipController.delay

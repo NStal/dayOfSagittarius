@@ -7,6 +7,9 @@
     var MissileEmitterSoul = require("./module").MissileEmitterSoul;
     var CannonEmitterSoul = require("./module").CannonEmitterSoul;
     var BeamEmitterSoul = require("./module").BeamEmitterSoul;
+    var ShieldSoul = require("./module").ShieldSoul;
+    
+    var ArmorSoul = require("./module").ArmorSoul;
     //Event
     //"OnPresent":
     //parameter:array object
@@ -15,11 +18,16 @@
 	onDamage:0
 	,onPresent:1
 	,onNextTick:2
+	,onIntent:3
+	,onBeforeHit:4
+	,onDamage:5
     }
     ModuleManager.prototype.moduleEnum = {
 	0:CannonEmitterSoul
 	,1:BeamEmitterSoul
 	,2:MissileEmitterSoul
+	,3:ShieldSoul
+	,4:ArmorSoul
     }
     ModuleManager.prototype._init = function(ship){
 	this.ship = ship;
@@ -70,7 +78,7 @@
 	    //comeform database
 	    return new (this.moduleEnum[info])();
 	}
-	var __m = new (this.moduleEnum[info.id])();
+	var __m = new (this.moduleEnum[info.id])(info);
 	Util.update(__m,info);
 	return __m;
     }

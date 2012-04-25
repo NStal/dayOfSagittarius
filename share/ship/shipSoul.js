@@ -20,6 +20,7 @@
 	this.id = info.id;
 	this.name = info.name
 	this.ability = info.ability;
+	console.log("~~~",this.ability);
 	this.state = info.state?info.state:null;
 	this.action = info.action?info.action:{
 	    rotateFix:0
@@ -72,11 +73,17 @@
     }
     ShipSoul.prototype.clear = function(){
 	this.parentContainer.remove(this);
+	this.emit("cleared");
     }
     ShipSoul.prototype.onHit = function(byWho,value){
 	if(this.isDead == true)return; 
 	value = require("../util").HashRandomInt(byWho.weapon.manager.ship.parentContainer.time
 						 ,value);
+	
+	for(var i=0;i<this.moduleManager.events.onBeforeHit.length;i++){
+	    var item = this.moduleManager.events.onBeforeHit[i];
+	    value = item(value);
+	} 
 	for(var i=0;i<this.moduleManager.events.onDamage.length;i++){
 	    var item = this.moduleManager.events.onDamage[i];
 	    value = item(value);

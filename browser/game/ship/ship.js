@@ -4,17 +4,13 @@
     var Drawable = require("../drawing/drawable").Drawable;
     var Toast = require("../interaction/toast.js").Toast;
     Ship = ShipSoul.sub();
-    Ship.extend(Drawable);
     Ship.prototype._init = function(info){
-	
 	var ShipInfoMark = require("../interaction/shipInfoMark").ShipInfoMark;
 	Ship.parent.prototype._init.call(this,info);
-	   //this.onDraw = info.draw;
-	this.infoMark = new ShipInfoMark(this);
-	this.infoMark.show();
 	var self = this;
 	this.on("docked",function(){
-	    console.log(self);
+	    Static.UIDisplayer.starStationInfoDisplayer.show(self.AI.destination.starStation);
+	    return;
 	    if(Static.username == self.pilot){
 		Static.starStationScene.onEnterStation(self.AI.destination.starStation.name);
 	    }
@@ -26,16 +22,20 @@
 	context.lineTo(6,0);
 	context.lineTo(-6,3);
 	context.closePath();	
+	context.globalAlpha = 0.6;
+	context.shadowBlur=7;
 	if(this.owner==Static.username){
 	    context.fillStyle = "red";
+	    context.shadowColor="red";
 	}
-	else
-	    context.fillStyle = "blue";
+	else{
+	    context.fillStyle = "blue"; 
+	    context.shadowColor="blue";
+	}
 	context.fill();
     }
     Ship.prototype.onDead = function(byWho){
 	Ship.parent.prototype.onDead.call(this,byWho);
-	this.infoMark.hide();
 	if(this.owner == Static.username){
 	    console.log(byWho);
 	    Toast("your ship is terminated by "+byWho.weapon.manager.ship.name);
@@ -48,5 +48,6 @@
 	    
 	}
     }
+    //Drawable.mixin(Ship);
     exports.Ship = Ship;
 })(exports)
