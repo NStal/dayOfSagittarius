@@ -9,7 +9,7 @@ var getShipTemplate = function(){
 	,cordinates:{x:100,y:100}
 	,category:0
 	,ability:{
-	    maxSpeed:25
+	    maxSpeed:8
 	    ,structure:10000
 	    ,maxRotateSpeed:0.2
 	    ,speedFactor:0.8
@@ -82,6 +82,7 @@ Interface.removeAllShips(function(){
 	ship.pilot = user;
 	ship.modules = [0,1,2,2 //weapon
 			,3,3 //shield
+			,4,4 //armor
 		       ];
 	ship.cordinates = {x:Math.random()*600
 			   ,y:Math.random()*600

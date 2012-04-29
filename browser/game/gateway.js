@@ -33,8 +33,8 @@
 	//Here all cmd should be validated
 	if(msg.cmd==1){
 	    this.battleField.initShips(msg.data.ships,Static.world.galaxy);
-	    clientWorld.setTime(msg.time);
-	    console.log(msg.time);
+	    Static.world.setTime(msg.time);
+	    console.log(msg);
 	    this.battleField.ready = true;
 	    Static.waitingPage.endWaiting();
 	    return;

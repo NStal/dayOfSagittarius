@@ -1,6 +1,7 @@
 (function(exports){
-    var Class = require("./util").Class
-    var SyncWorker = Class.sub();
+    var EventEmitter = require("./share/util").EventEmitter
+    var SyncWorker = EventEmitter.sub();
+    var WebSocket = require("ws");
     //SyncWorker do simple things,and know nothing about the game
     //1.parse data to json and pass it to gateway
     //2.inform gateway on close and on open
@@ -9,26 +10,24 @@
     SyncWorker.prototype._init = function(host,port,gateway){
 	this.setServer(host,port);
 	this.ws = null;
-	this.gateway = gateway;
     }
     SyncWorker.prototype.start = function(){
 	this.ws = new WebSocket("ws://"+this.host+":"+this.port);
 	var self = this;
-	this.ws.onopen = function(){
-	    self.gateway.onConnect(self);
+	this.ws.on("open",function(){
+	    self.emit("open",self);
 	    self.ready = true;
-	}
-	this.ws.onmessage = function(msg){
-	    var data = JSON.parse(msg.data.toString());
-	    console.log(msg.data.toString());
-	    console.log(data);
-	    self.gateway.onMessage(data,self);
-	}
-	this.ws.onclose = function(){
-	    self.gateway.onDisconnect(self);
+	});
+	this.ws.on("message",function(msg){
+	    var data = JSON.parse(msg);
+	    self.emit("message",msg)
+	});
+	this.ws.on("close",function(){
+	    self.emit("close");
 	    self.ready = false;
 	    self.ws = null;
-	}
+	});
+	return this;
     }
     SyncWorker.prototype.setServer = function(host,port){
 	this.host = host;

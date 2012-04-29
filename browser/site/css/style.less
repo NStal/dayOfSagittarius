@@ -6,7 +6,9 @@ html,body{
     overflow:hidden;
 }
 .scene{
-    margin:0 auto;
+    position:absolute;
+    left:0;
+    top:0;
     width:100%;
     height:100%;
 }
@@ -19,10 +21,7 @@ html,body{
     height:700px;
     border-left:1px solid #888;
 }
-#screen,#waitingPage{
-    position:absolute;
-    top:0;
-    left:0;
+#screen{
     cursor:none;
     width:100%;
 }
@@ -33,8 +32,15 @@ html,body{
     button{
 	margin:20px auto;
     }
-    margin:100px auto;
-    width:700px;
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    .wrapper{
+	margin:100px auto;
+	width:700px;
+    }
 }
 #starStationInfoDisplayer{
     width:800px;
@@ -42,4 +48,7 @@ html,body{
     background-color:white;
     border:1px solid grey;
     radius-border:5px;
+}
+#waitingScene{
+    adisplay:none;
 }

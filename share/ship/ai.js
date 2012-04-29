@@ -94,8 +94,7 @@
 	if(!Math.floatEqual(rad,
 			    ship.toward)){
 	    //need rotate
-	    var rdistance = Math.radSub(ship.physicsState.toward,rad);
-	    
+	    var rdistance = Math.radSub(ship.physicsState.toward,rad); 
 	    if(rdistance>0){
 		clockWise = 1;
 	    }else{
@@ -103,13 +102,12 @@
 	    }
 	    var rotateSpeed = (1-ship.state.speedFactor)*ship.state.maxRotateSpeed;
 	    
-	    if(Math.abs(rdistance) > rotateSpeed){
-		ship.action.rotateFix = 1* clockWise; 
+	    if(Math.abs(rdistance) > Math.abs(rotateSpeed)){
+		ship.action.rotateFix = 1* clockWise;
 	    }else{
-
-		ship.action.rotateFix = clockWise * rdistance/rotateSpeed; 
-	    } 
-
+		ship.action.rotateFix = rdistance/rotateSpeed;
+		//console.log(ship.action.rotateFix*rotateSpeed);
+	    }
 	    //big ship cant curve-forwarding
 	    if(!this.ship.state.curveForwarding)return false;
 	}

@@ -21,11 +21,15 @@
 	this.modulePanel = new ModulePanel(); 
 	var ShipInterface = require("./shipInterface").ShipInterface;
 	this.starStationInterface = new StarStationInterface();
-this.shipInterface = new ShipInterface(); 
+	this.shipInterface = new ShipInterface(); 
+	
+	var ShipInfoDisplayer = require("./shipInfoDisplayer").ShipInfoDisplayer;
+	this.shipInfoDisplayer = new ShipInfoDisplayer()
 	this.add(this.shipInterface);
 	this.add(this.modulePanel);
 	this.add(this.starStationInterface);
 	this.add(this.mouse);
+	//this.add(this.shipInfoDisplayer);
 	this.starStationInfoDisplayer = new StarStationInfoDisplayer(Static.template.starStationInfoDisplayer);
     }
     MouseEventConsumer.mixin(UIDisplayer);

@@ -48,7 +48,9 @@
     MouseEventConsumer.mixin(ModulePanel); 
     var ModuleInteractItem = Drawable.sub()
     ModuleInteractItem.prototype._init = function(onDraw,handler,handler2){
-	this.onDraw = onDraw;
+	this.onDraw = function(context){
+	    onDraw(context,this.position);
+	};
 	this.consumeType.mouseUp = true;
 	this.consumeType.mouseDown = true;
 	this.consumeType.rightMouseUp = true;

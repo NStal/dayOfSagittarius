@@ -22,10 +22,10 @@
 	this.done =false;
 	this.r = this.ship.state.size?this.ship.state.size*1.2:20;
 	this.realR = this.r*20;
-	this.minAlpha = 0.3;
-	this.maxAlpha = 1;
-	this.alpha = 1;
-	this.alphaStep = 0.03;
+	this.minAlpha = 0.2;
+	this.maxAlpha = 0.4;
+	this.alpha = 0.4;
+	this.alphaStep = 0.01;
     }
     ShipMarkSelected.prototype.release = function(){
 	this.ship = null;

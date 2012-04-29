@@ -17,21 +17,31 @@
 	})
     }
     Ship.prototype.onDraw = function(context){
+	context.globalAlpha = 0.8;
+	context.shadowBlur=10;
+	if(this.owner==Static.username){
+	    context.fillStyle = "orange";
+	    context.shadowColor="orange";
+	}
+	else{
+	    context.fillStyle = "#60dfff"; 
+	    context.shadowColor="#60dfff";
+	}
+	
+	if(!this.shipImage){
+	    this.shipImage = Static.resourceLoader.get("ship_banshee");
+	}
+	if(this.shipImage){
+	    //context.rotate(Math.PI/2);
+	    //context.drawImage(this.shipImage
+	//		      ,-15,-25,30,50);
+	    //return;
+	}
 	context.beginPath();
 	context.moveTo(-6,-3);
 	context.lineTo(6,0);
 	context.lineTo(-6,3);
-	context.closePath();	
-	context.globalAlpha = 0.6;
-	context.shadowBlur=7;
-	if(this.owner==Static.username){
-	    context.fillStyle = "red";
-	    context.shadowColor="red";
-	}
-	else{
-	    context.fillStyle = "blue"; 
-	    context.shadowColor="blue";
-	}
+	context.closePath();
 	context.fill();
     }
     Ship.prototype.onDead = function(byWho){

@@ -25,7 +25,7 @@
 	this.canvas.width = settings.width;
 	this.canvas.height = settings.height;
 	//default net work delay
-	this.delay = worldInfo.delay;//300ms 
+	this.delay = worldInfo.delay;//300ms
 	Static.globalCaptureLayer = new GlobalCaptureLayer(this);
 	Static.interactionDisplayer = new InteractionDisplayer(this);
 	Static.UIDisplayer = new UIDisplayer(this);
@@ -117,6 +117,10 @@
 	window.onkeyup = function(e){
 	    self.KEYS[e.which] = false;
 	}
+	$(window).resize(function(){
+	    settings.width = $(document).width();
+	    settings.height = $(document).height();
+	})
     }
     ClientWorld.prototype.start = function(){
 	ClientWorld.parent.prototype.start.call(this);
@@ -155,6 +159,8 @@
 	ClientWorld.parent.prototype.next.call(this);
 	this.solveKeyEvent();
 	Static.battleField.next(context);
+	this.canvas.width = settings.width;
+	this.canvas.height = settings.height;
 	var context = this.canvas.getContext("2d");
 	context.clearRect(0,0,settings.width,settings.height);
 	context.save();

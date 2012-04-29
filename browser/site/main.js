@@ -13,7 +13,7 @@
 	    Static.site = new Site();
 	    var hash = window.location.hash;
 	    if(hash=="#debug"){
-		Static.site.loginUsernameInputJ.val("AI");
+		Static.site.loginUsernameInputJ.val("nstal");
 		Static.site.onClickLoginButton();
 	    }
 	})

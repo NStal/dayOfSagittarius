@@ -1,46 +1,51 @@
 (function(exports){
     var Weapon = require("../share/ship/module").WeaponSoul.sub();
-    var Allumition = (require("../share/ship/module").AllumitionSoul).sub();
+    var Allumition = require("../share/ship/module").AllumitionSoul;
     var MissileSoul = require("../share/ship/module").MissileSoul;
     var MissileEmitterSoul = require("../share/ship/module").MissileEmitterSoul;
     var ModuleManager = require("../share/ship/moduleManager").ModuleManager;
     var Shield = require("../share/ship/moduleManager").Shield;
     var Armor = require("../share/ship/moduleManager").Armor;
-    Allumition.prototype.start = function(){
-	Allumition.parent.prototype.start.call(this);
+    Allumition.prototype.onStart = function(){
 	this.type = "ammunition";
 	Static.battleFieldDisplayer.add(this);
 	this.position = new Point(this.weapon.target.cordinates);
     }
-    Allumition.prototype.stop = function(){
+    Allumition.prototype.onStop = function(){
 	Static.battleFieldDisplayer.remove(this);
-	Allumition.parent.prototype.stop.call(this);
     }
-    var Cannon = CannonSoul.sub().extend(Allumition);
+    Allumition.mixin = function(c){
+	c.prototype.onStart = Allumition.prototype.onStart;
+	c.prototype.onStop = Allumition.prototype.onStop;
+    }
+    var Cannon = CannonSoul.sub();
+    Allumition.mixin(Cannon);
     Cannon.prototype.start = function(){
 	CannonSoul.prototype.start.call(this);
-	Static.battleFieldDisplayer.add(this);
 	var __p = new Point(this.weapon.target.cordinates);
 	__p.x += (Math.random()-0.5) *10;
 	__p.y += (Math.random()-0.5)*10;
-	this.position = __p
+	this.position = __p;
     }
     Cannon.prototype.onDraw = function(context){
 	context.beginPath();
 	context.arc(0,0,1.5+Math.sin(this.index)/Math.PI,0,Math.PI*2);
 	context.fillStyle = "red";
 	context.fill();
+	console.log(this.index);
     }
-    var Beam = BeamSoul.sub().extend(Allumition);
+    var Beam = BeamSoul.sub();
+    Allumition.mixin(Beam);
     Beam.prototype.start = function(){
 	BeamSoul.prototype.start.call(this);
-	Static.battleFieldDisplayer.add(this);
 	this.from = this.weapon.ship.cordinates;
 	this.to = this.weapon.target.cordinates;
+	if(this.isMissed){
+	    this.to.x += (Math.random()-0.5)/0.5*40; 
+	    this.to.y += (Math.random()-0.5)/0.5*40;
+	}
 	this.position = {x:0,y:0};
     }
-    Beam.prototype.next = BeamSoul.prototype.next;
-    Beam.prototype.hit = BeamSoul.prototype.hit;
     Beam.prototype.onDraw = function(context){
 	context.beginPath();
 	context.moveTo(this.from.x,this.from.y);
@@ -49,12 +54,12 @@
 	context.lineWidth = Math.random()*1.5;
 	context.stroke();
     }
-    var Missile  = MissileSoul.sub().extend(Allumition);
+    var Missile  = MissileSoul.sub();
+    Allumition.mixin(Missile);
     Missile.prototype.start = function(){
 	Allumition.prototype.start.call(this);
 	this.position = new Point(this.weapon.ship.cordinates);
     }
-    Missile.prototype.next = MissileSoul.prototype.next;
     Missile.prototype.onDraw = function(context){
 	context.beginPath();
 	context.moveTo(0,0);
@@ -107,19 +112,56 @@
 		self.autoFire = !self.autoFire;
 		
 	    }
-	    ,present:function(context){
+	    ,present:function(context,position){
 		if(self.autoFire)self.shakeEffect.onBeforeRender(context);
+		//draw intent line to target
+		context.save()
+		if(self.target){
+		    var t = Static.battleFieldDisplayer.battleFieldToScreen(self.target.cordinates).sub(position);
+		    context.strokeStyle = "orange";
+		    context.lineWidth = 0.5;
+		    context.globalAlpha = 0.5;
+		    context.beginPath();
+		    context.moveTo(0,0);
+		    context.lineTo(t.x,t.y);
+		    context.stroke();
+		}
+		if(self.target 
+		   && self.target.cordinates.distance(self.ship.cordinates)
+		   > self.ammunitionInfo.range){
+		    self.innerColor = "grey";
+		}else{
+		    self.innerColor = "white";
+		}
+		context.restore();
+		context.beginPath();
+		context.arc(0,0,50,0,Math.PI*2);
+		context.fillStyle = "#00bbff";
+		context.globalAlpha*=0.5;
+		context.fill();
+		context.globalAlpha *= 2;
+		context.beginPath();
+		context.arc(0,0,40,0,Math.PI*2); 
+		context.shadowBlur = 20;
+		context.clip();
 		context.beginPath();
 		context.moveTo(0,0);
 		context.lineTo(20,0)
 		context.arc(0,0,40,0,Math.PI*2*self.readyState/self.coolDown);
 		context.closePath();
-		context.fillStyle = "black";
+		context.fillStyle = self.innerColor;
 		context.fill();
-		context.beginPath();
-		context.fillStyle = "white";
-		context.textAlign = "center";
-		context.fillText(self.name,0,3);
+		if(self.weaponImage){
+		    context.save();
+		    context.drawImage(self.weaponImage,0,0,256,256,-40,-40,80,80);
+		    context.restore();
+		}else{
+		    context.beginPath();
+		    context.fillStyle = "black";
+		    context.textAlign = "center";
+		    context.fillText(self.name,0,3); 
+		}
+		
 	    }
 	});
     }
@@ -127,7 +169,7 @@
 	var self = this;
 	if(self.target){
 	    objects.push({
-		color:"red"
+		color:"orange"
 		,target:self.target
 	    })
 	}
@@ -145,6 +187,7 @@
     BeamEmitter.prototype._init = function(state){
 	BeamEmitter.parent.prototype._init.call(this,state);
 	Weapon.prototype._init.call(this);
+	this.weaponImage = Static.resourceLoader.get("weapon_beam");
 	this.Allumition = Beam;
 	this.name= "Beam";
     }

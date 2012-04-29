@@ -25,15 +25,13 @@
 	this.consumeType.rightMouseDown = true;
 	
 	var self = this;
-	this.gridPattern = new Image();
-	this.gridPattern.src = "image/grid.png";
-	this.gridPattern.onload = function(){
-	    self.gridPattern.ready = true;
-	}
+	this.gridImage = Static.resourceLoader.get("grid");
+	console.log(this.gridImage);
 	this.on("rightMouseDown",function(){
 	    Static.UIDisplayer.modulePanel.show(null);
 	    Static.UIDisplayer.shipInterface.show(null);
 	    Static.UIDisplayer.starStationInterface.show(null); 
+	    Static.UIDisplayer.shipInfoDisplayer.show(null);
 	    return true;
 	})
 	this.on("rightMouseUp",function(){
@@ -47,6 +45,7 @@
 		return;
 	    } 
 	    self.shipMark.set(ship);
+	    Static.UIDisplayer.shipInfoDisplayer.show(ship);
 	    Static.UIDisplayer.modulePanel.show(ship);
 	    Static.UIDisplayer.shipInterface.show(ship);
 	    return true;
@@ -84,11 +83,12 @@
 	context.scale(this.scale,this.scale);
     }
     BattleFieldDisplayer.prototype.drawGrid = function(context){
-	//return;
-	if(!this.gridPattern.ready)return;
 	context.rect(0,0,this.size.x,this.size.y);
-	var pattern = context.createPattern(this.gridPattern,"repeat");
-	context.fillStyle = pattern;
+	if(!this.gridPattern){
+	    this.gridPattern = context.createPattern(this.gridImage,"repeat");
+	    console.log("pattern",this.gridPattern);
+	}
+	context.fillStyle = this.gridPattern;
 	context.fill();
 	
 	/*

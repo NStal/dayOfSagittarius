@@ -20,7 +20,6 @@
 	this.id = info.id;
 	this.name = info.name
 	this.ability = info.ability;
-	console.log("~~~",this.ability);
 	this.state = info.state?info.state:null;
 	this.action = info.action?info.action:{
 	    rotateFix:0
@@ -126,14 +125,14 @@
 	}
 	rotateSpeed = (1-this.state.speedFactor)*this.state.maxRotateSpeed;
 	this.physicsState.toward += fix*rotateSpeed;
-	this.physicsState.toward = Math.mod(this.physicsState.toward,Math.PI*2); 
-	
+	this.physicsState.toward = Math.mod(this.physicsState.toward,Math.PI*2);
 	var fix = this.action.speedFix;
 	var speed = (1-this.state.speedFactor)*this.state.maxSpeed;
 	//move
 	this.cordinates.x+=Math.cos(this.physicsState.toward) *speed*fix;
 	this.cordinates.y+=Math.sin(this.physicsState.toward) *speed*fix;
-	
+	this.action.speedFix = 0;
+	this.action.rotateFix = 0;
 	//map edge detection;
 	if(this.cordinates.x<-1)this.cordinates.x =1; 
 	if(this.cordinates.y<-1)this.cordinates.y =1; 

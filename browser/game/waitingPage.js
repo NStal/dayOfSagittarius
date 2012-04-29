@@ -5,8 +5,10 @@
     var Instance = require("./share/util").Instance;
     var Point = require("./share/util").Point;
     var WaitingPage = Drawable.sub();
-    WaitingPage.prototype._init = function(canvas){
-	this.canvas = canvas;
+    WaitingPage.prototype._init = function(node){
+	Widget.call(this,node)
+	
+	this.canvas = this.screenNode;
 	this.canvas.width = settings.width;
 	this.canvas.height = settings.height;
 	this.drawingInstance = new Instance();
@@ -28,6 +30,7 @@
     WaitingPage.prototype.hide = function(){
 	this.drawingInstance.stop();
 	this.canvas.style.display = "none";
+	this.nodeJ.css({"display":"none"});
 	this.isWaiting = false;
     }
     WaitingPage.prototype.next = function(){
@@ -40,7 +43,7 @@
 		this.r+=5;
 	    else
 		this.r = 3;
-	    if(this.alpha<=0){
+	    if(this.alpha<=0.1){
 		this.isEnd = true;
 	    }
 	}

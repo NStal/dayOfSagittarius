@@ -78,6 +78,8 @@
 	    //comeform database
 	    return new (this.moduleEnum[info])();
 	}
+	if(info.id==3)
+	    console.log("info",info);
 	var __m = new (this.moduleEnum[info.id])(info);
 	Util.update(__m,info);
 	return __m;

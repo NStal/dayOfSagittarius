@@ -4,8 +4,12 @@
     var EventEmitter = require("../util").EventEmitter;
     var Module = EventEmitter.sub();
     var GameInstance = require("../gameUtil").GameInstance;
+    var Static = require("../static").Static;
+    var BattleJudge = require("./battleJudge").BattleJudge;
     //Some basic model of modules.
     //Weapon,Shield,Armor
+    //Weapon defined what ammunition can be used
+    //while ammunition actually defined accuracy,damage and etc.
     Module.prototype._init = function(state){
 	this.handlers = {};
 	if(state){
@@ -16,6 +20,7 @@
 	}
 	this.ability = {};
     }
+    
     Module.prototype.init = function(moduleManager){
 	this.manager = moduleManager;
 	this.ship = this.manager.ship;
@@ -42,17 +47,18 @@
     } 
     var ShieldSoul = Module.sub();
     ShieldSoul.prototype._init = function(state){
+	this.type = "shield";
 	ShieldSoul.parent.call(this,state);
 	this.ability.capacity = 1000;
 	this.listen("onBeforeHit");
 	this.moduleId = 3;
-	if(state&&state.capacity){
+	if(state && typeof state.capacity == "number"){
 	    this.state.capacity = state.capacity;
 	}
     }
     ShieldSoul.prototype.init = function(manager){
 	Module.prototype.init.call(this,manager);
-	if(!this.state.capacity){
+	if(typeof this.state.capacity != "number"){
 	    this.state.capacity = this.ability.capacity;
 	}
     }
@@ -77,14 +83,15 @@
 	ArmorSoul.parent.call(this,state);
 	this.ability.resistPoint = 1000;
 	this.listen("onDamage");
+	this.type = "armor"
 	this.moduleId = 4;
-	if(state&&state.resistPoint){
+	if(state&&typeof state.resistPoint == "number"){
 	    this.state.resistPoint = state.resistPoint;
 	}
     }
     ArmorSoul.prototype.init = function(manager){
 	Module.prototype.init.call(this,manager);
-	if(!this.state.resistPoint){
+	if(typeof this.state.resistPoint != "number"){
 	    this.state.resistPoint = this.ability.resistPoint;
 	}
     }
@@ -105,54 +112,75 @@
 	};
     }
     var AllumitionSoul = GameInstance.sub();
-    AllumitionSoul.prototype._init = function(weapon){
+    AllumitionSoul.prototype._init = function(weapon,info){
 	if(!weapon){
 	    return;
-	}
-	this.count = 15;
-	this.index = 0;
+	} 
 	this.target = weapon.target;
 	this.weapon = weapon;
+	this.count = 15;
+	this.index = 0;
+	this.range = info.range;
+	this.damagePoint = info.damagePoint;
+	this.count = info.count;
+    }
+    AllumitionSoul.prototype.start = function(){
+	AllumitionSoul.parent.prototype.start.call(this);
+	//this.emit("start");
+	if(this.onStart)this.onStart();
+    }
+    AllumitionSoul.prototype.stop = function(){
+	//this.emit("stop");
+	if(this.onStop)this.onStop();
+	AllumitionSoul.parent.prototype.stop.call(this);
     }
     AllumitionSoul.prototype.next = function(){
 	this.index++;
 	if(this.index==this.count){
-	    this.hit();
+	    if(!this.isMissed)
+		this.hit();
+	    this.stop();
 	}
     }
     AllumitionSoul.prototype.hit = function(){
 	this.target.onHit(this,this.damagePoint); 
-	this.stop();
     }
     var CannonSoul = AllumitionSoul.sub();
-    CannonSoul.prototype._init = function(weapon){
-	CannonSoul.parent.prototype._init.call(this,weapon);
-	this.damagePoint = 30;
+    CannonSoul.prototype._init = function(weapon,info){
+	CannonSoul.parent.prototype._init.call(this,weapon,info);
+    }
+    CannonSoul.prototype.start = function(){
+	CannonSoul.parent.prototype.start.call(this); 
+	this.isMissed = BattleJudge.isMissed(this); 
     }
     var BeamSoul = AllumitionSoul.sub();
-    BeamSoul.prototype._init = function(weapon){
-	BeamSoul.parent.prototype._init.call(this,weapon);
-	this.damagePoint = 4;
-	this.count = 30; 
+    BeamSoul.prototype._init = function(weapon,info){
+	BeamSoul.parent.prototype._init.call(this,weapon,info);
+    }
+    BeamSoul.prototype.start = function(){
+	BeamSoul.parent.prototype.start.call(this);
+	//judge is missed;
+	this.isMissed = BattleJudge.isMissed(this); 
     }
     BeamSoul.prototype.hit = function(){
 	this.target.onHit(this,this.damagePoint);
     }
     BeamSoul.prototype.next = function(){
 	this.index++;
-	this.hit();
+	if(!this.isMissed){
+	    this.hit();
+	}
 	if(this.index==this.count){
 	    this.stop();
 	}
     }
     var MissileSoul = AllumitionSoul.sub();
-    MissileSoul.prototype._init = function(weapon){
+    MissileSoul.prototype._init = function(weapon,info){
 	if(!weapon){
 	    return;
 	}
-	MissileSoul.parent.prototype._init.call(this,weapon);
-	this.speed = 1; 
-	this.damagePoint = 30000;
+	MissileSoul.parent.prototype._init.call(this,weapon,info);
+	this.speed = 1;
 	this.maxSpeed = 7;
 	this.position = new Point(weapon.ship.cordinates);
     }
@@ -163,6 +191,7 @@
 	var distance = this.target.cordinates.distance(this.position);
 	if(distance<0.2){
 	    this.hit();
+	    this.stop();
 	    return;
 	}
 	if(distance<this.speed){
@@ -227,7 +256,7 @@
 	    return;
 	}
 	var target = this.target;
-	var allumition = new (this.Allumition)(this);
+	var allumition = new (this.Allumition)(this,this.ammunitionInfo);
 	allumition.start();
 	console.log("fired!");
 	this.readyState = 0;
@@ -244,21 +273,36 @@
 	WeaponSoul.prototype._init.call(this);
 	this.Allumition = CannonSoul;
 	this.moduleId=0;
-	this.coolDown=30;
+	this.coolDown=30; 
+	this.ammunitionInfo = {
+	    damagePoint:220
+	    ,range:300
+	    ,count:8
+	}
     }
     var BeamEmitterSoul = WeaponSoul.sub();
     BeamEmitterSoul.prototype._init = function(){
 	WeaponSoul.prototype._init.call(this);
 	this.Allumition = BeamSoul;
 	this.moduleId = 1;
-	this.coolDown = 100;
+	this.coolDown = 100; 
+	this.accuracyFactor = 1.4;
+	this.ammunitionInfo = {
+	    damagePoint:30
+	    ,count:15
+	    ,range:600
+	}
     }
     var MissileEmitterSoul = WeaponSoul.sub();
     MissileEmitterSoul.prototype._init = function(state){
 	MissileEmitterSoul.parent.prototype._init.call(this,state);
 	this.Allumition = MissileSoul; 
-	this.coolDown = 200;
+	this.coolDown = 250;
 	this.moduleId = 2;
+	this.ammunitionInfo = {
+	    damagePoint:800
+	    ,range:1800
+	}
     }
     exports.ShieldSoul = ShieldSoul;
     exports.Shield = ShieldSoul;

@@ -1,5 +1,6 @@
 (function(exports){
     var Instance = require("./util").Instance;
+    var Static = require("./static").Static;
     var GameInstance = require("./gameUtil").GameInstance;
     var Ship = require("./ship/shipSoul").ShipSoul;
     //World is a Base class for other world like:AI World,ClientWorld,ServerWorld
@@ -30,6 +31,7 @@
     }
     World.prototype.next = function(){
 	this.time+=1;
+	Static.time = this.time;
 	GameInstance.nextTick();
 	this.emit("nextTick",this.time);
     }

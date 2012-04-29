@@ -95,6 +95,31 @@
 	    this.finished = true;
 	}
     }
+    var StateMachine = EventEmitter.sub();
+    StateMachine.prototype._init = function(){
+	this.currentState = 0;
+    }
+    StateMachine.prototype.setMatrix = function(matrix,n){
+	if(this.matrix.length!=n*n || n<=0){
+	    console.error("invalid state matrix info");
+	    console.trace();
+	    return false;
+	}
+	this.matrix = matrix;
+	this.totalStateLength = n;
+	return true;
+    }
+    StateMachine.prototype.next = function(){
+	for(var i=0;i<this.totalStateLength;i++){
+	    var judgement = this.matrix[this.currentState+this.totalStateLength*i];
+	    if(judgement.judge &&judgement.judge(this.data)){
+		this.currentState = i;
+		if(typeof judgement.sideEffect == "function"){
+		    judgement.sideEffect();
+		}
+	    }
+	}
+    }
     var Instance = EventEmitter.sub();
     Instance.prototype._init = function(){
 	this.finished = true;
@@ -237,7 +262,7 @@
 	return a*x*x+b*x+c;
     }
 
-    Math.minFloat = 0.002;
+    Math.minFloat = 0.000000002;
     Math.pointEqual = function(a,b){
 	if(Math.abs(a.x-b.x) < Math.minFloat && Math.abs(a.y-b.y) < Math.minFloat)
 	    return true
