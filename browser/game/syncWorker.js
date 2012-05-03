@@ -19,9 +19,10 @@
 	    self.ready = true;
 	}
 	this.ws.onmessage = function(msg){
-	    var data = JSON.parse(msg.data);
+	    var data = JSON.parse(msg.data.toString());
+	    console.log(msg.data.toString());
+	    console.log(data);
 	    self.gateway.onMessage(data,self);
-	    console.log("recieve",data);
 	}
 	this.ws.onclose = function(){
 	    self.gateway.onDisconnect(self);

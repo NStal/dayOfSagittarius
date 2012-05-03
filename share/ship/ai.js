@@ -13,13 +13,18 @@
     }
     AI.prototype.calculate = function(){
 	//release target when it's dead
-	if(this.destination.target){
+	//now target use modules
+	/*if(this.destination.target){
 	    if(this.destination.target.missed){
 		this.destination.target = null;
 	    }
 	    if(this.destination.target.state.structure<=0){
 		this.destination.target = null;
 	    }
+	}*/
+	if(this.destination.roundTarget&&
+	    this.destination.roundRoute){
+	    this.destination.roundRoute.point = this.destination.roundTarget.cordinates;
 	}
 	if(this.destination.starGate){
 	    if(typeof this.destination.starGate == "string"){
@@ -93,8 +98,7 @@
 	if(!Math.floatEqual(rad,
 			    ship.toward)){
 	    //need rotate
-	    var rdistance = Math.radSub(ship.physicsState.toward,rad);
-	    
+	    var rdistance = Math.radSub(ship.physicsState.toward,rad); 
 	    if(rdistance>0){
 		clockWise = 1;
 	    }else{
@@ -102,13 +106,12 @@
 	    }
 	    var rotateSpeed = (1-ship.state.speedFactor)*ship.state.maxRotateSpeed;
 	    
-	    if(Math.abs(rdistance) > rotateSpeed){
-		ship.action.rotateFix = 1* clockWise; 
+	    if(Math.abs(rdistance) > Math.abs(rotateSpeed)){
+		ship.action.rotateFix = 1* clockWise;
 	    }else{
-
-		ship.action.rotateFix = clockWise * rdistance/rotateSpeed; 
-	    } 
-
+		ship.action.rotateFix = rdistance/rotateSpeed;
+		//console.log(ship.action.rotateFix*rotateSpeed);
+	    }
 	    //big ship cant curve-forwarding
 	    if(!this.ship.state.curveForwarding)return false;
 	}
@@ -175,8 +178,13 @@
 	this.clearDestination();
 	this.destination.targetPoint = targetPoint;
     }
+    AI.prototype.roundAtTarget = function(target,r,antiClockWise){
+	this.roundAt(target.cordinates,r,antiClockWise);
+	this.destination.roundTarget = target;
+    }
     AI.prototype.roundAt =function(p,r,antiClockWise){
 	this.clearDestination();
+	if(r<20)r=20;
 	this.destination.roundRoute = {point:p
 				       ,radius:r
 				       ,antiClockWise:antiClockWise};
@@ -186,7 +194,7 @@
 	    destination:{
 		targetPoint:this.destination.targetPoint
 		,roundRoute:this.destination.roundRoute
-		,target:this.destination.target?this.destination.target.id:null
+		,roundTarget:this.destination.roundTarget?this.destination.roundTarget.id:null
 		,chaseTarget:this.destination.chaseTarget?this.destination.chaseTarget.id:null
 	    }
 	}

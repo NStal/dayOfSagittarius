@@ -4,38 +4,60 @@
     var Drawable = require("../drawing/drawable").Drawable;
     var Toast = require("../interaction/toast.js").Toast;
     Ship = ShipSoul.sub();
-    Ship.extend(Drawable);
     Ship.prototype._init = function(info){
-	
 	var ShipInfoMark = require("../interaction/shipInfoMark").ShipInfoMark;
 	Ship.parent.prototype._init.call(this,info);
-	   //this.onDraw = info.draw;
-	this.infoMark = new ShipInfoMark(this);
-	this.infoMark.show();
 	var self = this;
 	this.on("docked",function(){
-	    console.log(self);
+	    Static.UIDisplayer.starStationInfoDisplayer.show(self.AI.destination.starStation);
+	    return;
 	    if(Static.username == self.pilot){
 		Static.starStationScene.onEnterStation(self.AI.destination.starStation.name);
 	    }
 	})
+	var color;
+	console.log(this.pilot,this.owner,Static.username);
+	if(this.pilot==Static.username){
+	    color = "orange"
+	}else{
+	    if(this.owner==Static.username){
+		console.log("!!!!!");
+		color = "#60dfff";
+	    }else{
+		color = "red";
+	    }
+	}
+	this.color = color;
     }
     Ship.prototype.onDraw = function(context){
+	context.globalAlpha = 0.8;
+	context.shadowBlur=5;
+	
+	context.fillStyle = this.color;
+	context.shadowColor=this.color;
+	/*if(!this.shipImage){
+	    this.shipImage = Static.resourceLoader.get("ship_banshee");
+	}
+	if(this.shipImage){
+	    context.rotate(Math.PI/2);
+	    context.drawImage(this.shipImage
+			      ,-15,-25,30,50);
+	    return;
+	}*/
 	context.beginPath();
 	context.moveTo(-6,-3);
 	context.lineTo(6,0);
 	context.lineTo(-6,3);
-	context.closePath();	
-	if(this.owner==Static.username){
-	    context.fillStyle = "red";
-	}
-	else
-	    context.fillStyle = "blue";
+	context.closePath();
+	context.globalAlpha = 0.3;
 	context.fill();
+	context.globalAlpha = 1;
+	context.strokeStyle = this.color;
+	context.stroke();
     }
     Ship.prototype.onDead = function(byWho){
 	Ship.parent.prototype.onDead.call(this,byWho);
-	this.infoMark.hide();
+	return;
 	if(this.owner == Static.username){
 	    console.log(byWho);
 	    Toast("your ship is terminated by "+byWho.weapon.manager.ship.name);
@@ -48,5 +70,6 @@
 	    
 	}
     }
+    //Drawable.mixin(Ship);
     exports.Ship = Ship;
 })(exports)

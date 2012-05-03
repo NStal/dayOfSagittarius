@@ -20,14 +20,15 @@
 	//no auth info
 	if(!msg.auth||!msg.auth.username){
 	    console.log("recieved unauthed package");
-	    if(msg.cmd!=Protocol.clientCommand.comeFromGate){
+	    if(msg.cmd!=Protocol.clientCommand.comeFromGate
+	       &&false){//not judge at alpha version
 		//this come from server 
 		//no need to ...
 		console.log("recieve server command");
 		return;
 	    }
 	}
-	if(msg.time==0){
+	if(msg.time===0){
 	    Interface.getUserData(msg.auth.username,
 				function(user){
 				    who.send({
@@ -41,6 +42,11 @@
 				})
 	    return;
 	}
+	if(typeof msg.channel !="undefined"){
+	    //chat message
+	    this.syncManager.boardCast(msg);
+	    return;
+	}
 	if(msg.cmd==Protocol.clientCommand.comeFromGate){
 	    //current alpha version don't judge if it's come from trust server 
 	    msg.time = this.battleField.time+settings.delay;
@@ -49,11 +55,21 @@
 	    return;
 	}
 	//fatal latency
+	if(typeof msg.time !="number"){
+	    console.log("recieve cmd at recent time");
+	    msg.time = this.battleField.time+settings.delay
+	    this.battleField.onInstruction(msg);
+	    this.syncManager.boardCast(msg);
+	    return;
+	}
 	if(msg.time<=this.battleField.time){
 	    console.log("it's",this.battleField.time);
 	    console.log("drop outdated message",msg);
+	    who.send({
+		outDated:true
+	    })
 	    return;
-	} 
+	}
 	//
 	console.log(msg.time-settings.delay);
 	console.log(msg.time,this.battleField.time);

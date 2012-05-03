@@ -33,6 +33,7 @@
 	this.owner = info.owner;
 	this.pilot = info.pilot;
 	this.reward = info.reward;
+	this.cagos = info.cagos?info.cagos:[];
     }
     ShipSoul.prototype.init = function(modules){
 	for(var i=0;i<modules.length;i++){
@@ -51,7 +52,6 @@
 	Util.update(this.state
 		    ,this.ability);
     }
-    
     ShipSoul.prototype.toData = function(){
 	var data ={
 	    id:this.id
@@ -67,21 +67,27 @@
 	    ,owner:this.owner
 	    ,pilot:this.pilot
 	    ,reward:this.reward
+	    ,cagos:this.cagos
 	}
 	return data;
     }
     ShipSoul.prototype.clear = function(){
 	this.parentContainer.remove(this);
+	this.emit("cleared");
     }
     ShipSoul.prototype.onHit = function(byWho,value){
 	if(this.isDead == true)return; 
 	value = require("../util").HashRandomInt(byWho.weapon.manager.ship.parentContainer.time
 						 ,value);
+	
+	for(var i=0;i<this.moduleManager.events.onBeforeHit.length;i++){
+	    var item = this.moduleManager.events.onBeforeHit[i];
+	    value = item(value);
+	} 
 	for(var i=0;i<this.moduleManager.events.onDamage.length;i++){
 	    var item = this.moduleManager.events.onDamage[i];
 	    value = item(value);
 	}
-	
 	/*console.log("at",byWho.weapon.manager.ship.parentContainer.time
 	  ,"recieve ",value,"points of hit");*/
 	this.state.structure-=value;
@@ -119,14 +125,14 @@
 	}
 	rotateSpeed = (1-this.state.speedFactor)*this.state.maxRotateSpeed;
 	this.physicsState.toward += fix*rotateSpeed;
-	this.physicsState.toward = Math.mod(this.physicsState.toward,Math.PI*2); 
-	
+	this.physicsState.toward = Math.mod(this.physicsState.toward,Math.PI*2);
 	var fix = this.action.speedFix;
 	var speed = (1-this.state.speedFactor)*this.state.maxSpeed;
 	//move
 	this.cordinates.x+=Math.cos(this.physicsState.toward) *speed*fix;
 	this.cordinates.y+=Math.sin(this.physicsState.toward) *speed*fix;
-	
+	this.action.speedFix = 0;
+	this.action.rotateFix = 0;
 	//map edge detection;
 	if(this.cordinates.x<-1)this.cordinates.x =1; 
 	if(this.cordinates.y<-1)this.cordinates.y =1; 

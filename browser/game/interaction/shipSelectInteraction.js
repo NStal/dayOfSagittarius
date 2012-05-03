@@ -4,12 +4,12 @@
     var Interaction = require("./interaction").Interaction;
     var Drawable = require("./drawing/drawable").Drawable;
     var ShipSelectInteraction = Interaction.sub();
-    var ShipMark = Drawable.sub();
-    ShipMark.prototype._init = function(){
+    var ShipMarkSelected = Drawable.sub();
+    ShipMarkSelected.prototype._init = function(){
 	this.count=8;
 	this.color = "#60dfff";
     }
-    ShipMark.prototype.set = function(ship){
+    ShipMarkSelected.prototype.set = function(ship){
 	this.ship = ship;
 	Static.world.selectedShip = ship;
 	if(!ship)return;
@@ -23,16 +23,16 @@
 	this.done =false;
 	this.r = this.ship.state.size?this.ship.state.size*1.2:20;
 	this.realR = this.r*20;
-	this.minAlpha = 0.3;
+	this.minAlpha = 0.6;
 	this.maxAlpha = 1;
 	this.alpha = 1;
 	this.alphaStep = 0.03;
     }
-    ShipMark.prototype.release = function(){
+    ShipMarkSelected.prototype.release = function(){
 	this.ship = null;
 	this.done = false;
     }
-    ShipMark.prototype.drawSelection = function(context){
+    ShipMarkSelected.prototype.drawSelection = function(context){
 	if(!this.done){
 	    if(this.realR>this.r){
 		this.realR*=3.5/5;
@@ -59,7 +59,7 @@
 	this.innerRotation-=this.innerRotateSpeed; 
 	this.outterRotation+=this.outterRotateSpeed; 
     }
-    ShipMark.prototype.drawTargetPoint = function(context){
+    ShipMarkSelected.prototype.drawTargetPoint = function(context){
 	if(!this.ship.AI.destination.targetPoint){
 	    return;
 	}
@@ -75,7 +75,7 @@
 	context.fill();
 	context.restore();
     }
-    ShipMark.prototype.drawRoundRoute = function(context){
+    ShipMarkSelected.prototype.drawRoundRoute = function(context){
 	if(!this.ship.AI.destination.roundRoute)return;
 	context.save();
 	var p = this.ship.cordinates.sub(this.ship.AI.destination.roundRoute.point);
@@ -92,7 +92,7 @@
 	context.fill();
 	context.restore();
     }
-    ShipMark.prototype.drawLockTarget = function(context){
+    ShipMarkSelected.prototype.drawLockTarget = function(context){
 	if(!this.ship.AI.destination.target){
 	    return;
 	}
@@ -101,12 +101,12 @@
 	context.beginPath();
 	context.moveTo(0,0);
 	context.lineTo(p.x,p.y);
-	context.lineWidth=0.4;
+	context.lineWidth=4;
 	context.strokeStyle = "red";
 	context.stroke();
 	context.restore();
     }
-    ShipMark.prototype.onDraw = function(context){
+    ShipMarkSelected.prototype.onDraw = function(context){
 	if(!this.ship){
 	    return;
 	}
@@ -124,54 +124,5 @@
 	this.drawLockTarget(context);
 	context.globalAlpha = 1;
     }
-    
-    ShipSelectInteraction.prototype._init = function(){
-	var self = this;
-	this.shipMark = new ShipMark();
-	this.handlers = [
-	    {
-		where:"battleFieldDisplayer"
-		,type:"mouseUp"
-		,handler:function(position){
-		    var p = self.manager.battleFieldDisplayer.screenToBattleField(position); 
-		    var ship =  self.manager.battleFieldDisplayer.findShipByPosition(p);
-		    if(ship){
-			self.shipMark.set(ship);
-			console.log("set ship");
-			self.manager.modulePanel.show(ship);
-			return true;
-		    }else{
-			self.shipMark.set(null);
-			console.log("unset ship");
-			self.manager.modulePanel.show(null);
-		    }
-		} 
-	    }
-	    ,{
-		where:"battleFieldDisplayer"
-		,type:"mouseMove"
-		,handler:function(position){
-		    //change cursor to different types;
-		    var p = self.manager.battleFieldDisplayer.screenToBattleField(position);
-		    var ship =  self.manager.battleFieldDisplayer.findShipByPosition(p);
-		    if(ship){
-			self.manager.mouse.pointer.type = self.manager.mouse.pointer.types.onShip;
-		    }else{
-			self.manager.mouse.pointer.type = self.manager.mouse.pointer.types.normal;
-		    }
-		}
-	    }
-	]
-    }
-    
-    ShipSelectInteraction.prototype.init = function(manager){
-	ShipSelectInteraction.parent.prototype.init.call(this,manager);
-	manager.add(this.shipMark);
-    }
-    ShipSelectInteraction.prototype.clear = function(){
-	ShipSelectInteraction.parent.prototype.clear.call(this);
-	this.manager.remove(this.shipMark);
-    }
-    exports.ShipSelectInteraction = ShipSelectInteraction;
-    exports.ShipMark = ShipMark;
+    exports.ShipMarkSelected = ShipMarkSelected;
 })(exports)

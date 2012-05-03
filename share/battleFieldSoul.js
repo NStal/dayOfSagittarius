@@ -17,7 +17,8 @@
     //3.listen instructions come from the gateway and conduct it.
     BattleFieldSoul.prototype._init = function(info){
 	this.parts = [];
-	this.size = new Point(10000,10000);
+	if(this.size)this.size.release();
+	this.size = Point.Point(10000,10000);
 	this.listener = [];
 	this.instructionQueue = [];
 	if(!info)return;
@@ -48,28 +49,62 @@
     BattleFieldSoul.prototype.applyInstruction = function(time){
 	this.time = time;
 	//console.log("at",this.time,this.instructionQueue.length);
-	while(true){
 	    /*if(this.instructionQueue[0] && typeof this.instructionQueue[0].time == "number" &&
 	      this.instructionQueue[0].time < this.time){
-		console.log("fatal Error! recieve outdated instruction from gateway"); 
-		console.trace(); 
-		//throw "Logic Error";
-	    }*/
+	      console.log("fatal Error! recieve outdated instruction from gateway"); 
+	      console.trace(); 
+	      //throw "Logic Error";
+	      }*/
 	    //console.log(this.instructionQueue[0]?this.instructionQueue[0].time:null);
-	    if(this.instructionQueue[0] && 
-	       this.instructionQueue[0].time == this.time){
-		
-		var ins = this.instructionQueue.shift();
-		//console.log("excute cmd",ins);
-		this._excute(ins);
-		
-		continue;
+	for(var i=0,length=this.instructionQueue.length;i < length;i++){
+	    var item = this.instructionQueue[i];
+	    if(item.time<this.time){
+		console.error("fatal error");
+		process.kill();
 	    }
-	    return;
+	    if(item.time == this.time){
+		var ins = item;
+		this._excute(ins);
+		this.instructionQueue.splice(i,1);
+		i--;
+		length--;
+	    }
 	}
+	
     }
     BattleFieldSoul.prototype._excute = function(instruction){
 	//see protocol.js => clientCommand to all the command implemented here 
+	
+	if(instruction.cmd==clientCommand.setModuleTarget){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id);
+		console.trace();
+		return;
+	    }
+	    if(instruction.data.moduleId>=ship.moduleManager.parts.length){
+		console.log("invalid module id");
+		return;
+	    }
+	    var m = ship.moduleManager.parts[instruction.data.moduleId];
+	    if(!m){
+		console.log("get module of"+m);
+		console.trace();
+		return false;
+	    }
+	    var target = this.getShipById(instruction.data.targetId);
+	    if(!target){
+		console.log("target not exist set target to null");
+	    }
+	    if(m.setTarget){
+		m.setTarget(target);
+		return true;
+	    }
+	    console.log("module can't set target");
+	    return false;
+	}
 	if(instruction.cmd == clientCommand.GOD_shipDocked){
 	    var ship = this.getShipById(instruction.data.id);
 	    if(ship){
@@ -181,10 +216,19 @@
 	    
 	    return;
 	}
-	//come from starGate
-	if(instruction.cmd == clientCommand.comeFromGate){
-	    this.enterShip(instruction.data.ship);
-	    console.log("new ship",instruction.data.ship,"is entered!");
+	//enter ship
+	if(instruction.cmd == clientCommand.GOD_enterShip){
+	    if(instruction.data.ship instanceof Array){
+		for(var i=0,length=instruction.data.ship.length;i < length;i++){
+		    var item = instruction.data.ship[i];
+		    console.log("~~~~~",item);
+		    this.initShip(item);
+		}
+	    }
+	    else{
+		this.initShip(instruction.data.ship);
+	    }
+	    console.log("new ship entered",instruction.data.ship);
 	} 
 	//pass star gate instruction
 	if(instruction.cmd == clientCommand.passStarGate){
@@ -217,7 +261,7 @@
 		return;
 	    }
 	    console.log("move to",instruction.data.point);
-	    ship.AI.moveTo(new Point(instruction.data.point));
+	    ship.AI.moveTo(Point.Point(instruction.data.point));
 	}
 	if(instruction.cmd==clientCommand.roundAt){
 	    var ship = this.getShipById(instruction.data.id);
@@ -229,10 +273,32 @@
 		return;
 	    }
 	    console.log("round at",instruction.data.point);
-	    ship.AI.roundAt(new Point(instruction.data.point)
+	    ship.AI.roundAt(Point.Point(instruction.data.point)
 			    ,instruction.data.radius
 			    ,instruction.data.antiClockWise);
 	}
+	if(instruction.cmd==clientCommand.roundAtTarget){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id); 
+		console.trace();
+		return;
+	    }
+	    var target = this.getShipById(instruction.data.targetId);
+	    if(target){
+		console.log("get target of id",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id);
+		console.trace();
+		return;
+	    }
+	    console.log("round at target",target.id);
+	    ship.AI.roundAtTarget(target
+			    ,instruction.data.radius
+			    ,instruction.data.antiClockWise);
+	} 
 	if(instruction.cmd==clientCommand.lockTarget){
 	    var ship = this.getShipById(instruction.data.id); 
 	    if(ship){
@@ -367,7 +433,7 @@
 	this.galaxy = galaxy;
 	var self = this;
 	var _ships = [];
-	//add stargate
+	//add starga
 	for(var i=0;i<this.galaxy.starGates.length;i++){
 	    this.add(new StarGate(this.galaxy.starGates[i]));
 	}
@@ -385,6 +451,20 @@
 	    }
 	}
     }
+    //add a ship and transform any targetId into a target
+    BattleFieldSoul.prototype.initShip = function(ship){
+	var ship = this.enterShip(ship);
+	if(ship.target){
+	    ship.target = this.getShipById(ship.target);
+	}
+	if(ship.AI&&ship.AI.destination.chaseTarget){
+	    var id = ship.AI.destination.chaseTarget;
+	    console.log("id",id);
+	    ship.AI.destination.chaseTarget = this.getShipById(id);
+	} 
+	this.emit("shipInitialized",[ship]);
+	return ship;
+    }
     BattleFieldSoul.prototype.initShips = function(ships){
 	this.removeAll("ship");
 	var __ships = [];
@@ -395,21 +475,26 @@
 	ships = __ships;
 	for(var i=0;i < ships.length;i++){
 	    var ship = ships[i];
-	    if(ship.AI&&ship.AI.destination.target){
-		var id = ship.AI.destination.target;
-		//target should be valid
-		//this work must be done here
-		//before here:we can't find ship by id
-		//after here:game is already start
-		//invalid target will cause 
-		//fatal unsync
-		console.log("id",id);
-		ship.AI.destination.target = this.getShipById(id);
-	    } 
+	    //target should be valid
+	    //this work must be done here
+	    //before here:we can't find ship by id
+	    //after here:game is already start
+	    //invalid target will cause 
+	    //fatal unsync
+	    for(var j=0,length=ship.moduleManager.parts.length;j < length;j++){
+		var item = ship.moduleManager.parts[j];
+		if(item.target){
+		    item.target = this.getShipById(item.target);
+		}
+	    }
 	    if(ship.AI&&ship.AI.destination.chaseTarget){
 		var id = ship.AI.destination.chaseTarget;
 		console.log("id",id);
 		ship.AI.destination.chaseTarget = this.getShipById(id);
+	    }
+	    if(ship.AI&&ship.AI.destination.roundTarget){
+		var id = ship.AI.destination.roundTarget;
+		ship.AI.destination.roundTarget = this.getShipById(id);
 	    }
 	}
 	this.emit("shipInitialized",ships);

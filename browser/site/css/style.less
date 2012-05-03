@@ -6,7 +6,9 @@ html,body{
     overflow:hidden;
 }
 .scene{
-    margin:0 auto;
+    position:absolute;
+    left:0;
+    top:0;
     width:100%;
     height:100%;
 }
@@ -19,10 +21,7 @@ html,body{
     height:700px;
     border-left:1px solid #888;
 }
-#screen,#waitingPage{
-    position:absolute;
-    top:0;
-    left:0;
+#screen{
     cursor:none;
     width:100%;
 }
@@ -33,6 +32,72 @@ html,body{
     button{
 	margin:20px auto;
     }
-    margin:100px auto;
-    width:700px;
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    .wrapper{
+	margin:100px auto;
+	width:700px;
+    }
+}
+#starStationInfoDisplayer{
+    width:800px;
+    height:500px;
+    background-color:white;
+    border:1px solid grey;
+    radius-border:5px;
+}
+#waitingScene{
+    adisplay:none;
+}
+#chatBox{
+    position:absolute;
+    bottom:0;
+    right:0;
+    width:300px;
+    height:400px;
+    background-color:rgb(255,255,255,0.3);
+    #chatRoom{
+	#content{
+	    height:300px;
+	    overflow:auto;
+	}
+    }
+    box-sizing:border-box;
+    padding:10px;
+    border:1px solid grey;
+    opacity:0.5;
+    display:none;
+    #channelSelector{
+	display:none;
+    }
+}
+#itemDisplayer{
+    position:absolute;
+    top:0;
+    left:0;
+    width:480px;
+    height:450px;
+    background-color:rgb(255,255,255,0.3);
+    padding:10px;
+    border:1px solid grey;
+    opacity:0.5;
+    display:none;
+    .itemBox{
+	float:left;
+	width:100px;
+	height:100px;
+	margin:6px;
+	text-align:center;
+	box-sizing:border-box;
+	border:1px dashed grey;
+	font-size:12px; 
+    }
+    #container{
+	overflow:auto;
+	height:350px;
+	width:480px;
+    }
 }

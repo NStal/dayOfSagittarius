@@ -251,6 +251,10 @@
 	if(ship.at.namespace){
 	    console.log("namespace",ship.at.namespace);
 	    this._getCollection(ship.at.namespace,function(err,col){
+		if(err || !col){
+		    console.trace();
+		    console.log("dberr at");
+		}
 		col.update({
 		    _id:ship.at.oid
 		} ,{
@@ -259,7 +263,13 @@
 			    $id:new mongodb.ObjectID(ship._id.toString())
 			}
 		    }
+		},{
+		    safe:true
+		}, function(){
+		    if(callback)callback(ship);
 		});
+
+
 	    })
 	}
     }
@@ -346,7 +356,8 @@
 		console.warn("fail to get collection starStations");
 		return;
 	    }
-	    col.remove({safe:true},callback);
+	    
+	    col.remove(null,{safe:true},callback);
 	})
     }
     Interface.getStarStation = function(name,callback){

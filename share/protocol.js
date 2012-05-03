@@ -1,5 +1,4 @@
 (function(exports){
-    
     //This module is still in design
     //It's design purpose is to give 
     //convinience to the Server Client Communication
@@ -26,13 +25,13 @@
 	,lockTarget:4
 	,activeModule:5
 	,passStarGate:6
-	,comeFromGate:7
 	,chaseTarget:8
 	,roundAtTarget:9
 	,setDockStation:10
 	,GOD_removeShip:11
 	,GOD_enterShip:12
 	,GOD_shipDocked:13
+	,setModuleTarget:14
     }
     response = {
 	t:defineType.time      // t=0 meas need initial sync

@@ -6,24 +6,32 @@
     <link rel="stylesheet/less" href="site/css/style.less" type="text/css" media="screen" />
 	<link rel="stylesheet" href="site/css/dockStyle.css" type="text/css" media="screen" />
     <script type="text/javascript" src="site/less-1.2.1.min.js"></script>
-
+    
     <script type="text/javascript" src="game/static.js"></script>
     <script type="text/javascript" src="game/settings.js"></script>
-    
     <!-- LOADING SITE --> 
     <script type="text/javascript" src="site/jquery-1.5.min.js"></script>
     <script type="text/javascript" src="site/jXFrame/jTool.js"></script>
     <script type="text/javascript" src="site/jXFrame/apiManager.js"></script>
-    <script type="text/javascript" src="site/jXFrame/widget.js"></script>
+    <script type="text/javascript" src="site/jXFrame/widget.js"></script> 
+    <script type="text/javascript" src="site/jXFrame/popupBox.js"></script>
     <script type="text/javascript" src="site/api.js"></script>
     <script type="text/javascript" src="site/site.js"></script>
-
+    <script type="text/javascript" src="game/chatBox.js"></script>
+    <script type="text/javascript" src="game/itemDisplayer.js"></script>
+    
+    <script type="text/javascript" src="share/gameResourceManager.js"></script>
+    <script type="text/javascript" src="share/resource/item.js"></script>
     <!-- LOADING GAMES -->
     <!-- game frameworks -->
     <script type="text/javascript" src="share/util.js"></script> 
     <script type="text/javascript" src="share/gameUtil.js"></script> 
-    <script type="text/javascript" src="game/drawing/drawable.js"></script> 
-    <script type="text/javascript" src="game/drawing/effect.js"></script>
+    <script type="text/javascript" src="game/framework/drawable.js"></script> 
+    <script type="text/javascript" src="game/framework/effect.js"></script>
+    <script type="text/javascript" src="game/framework/mouseEventDistributer.js"></script>
+    <script type="text/javascript" src="game/framework/textPrinter.js"></script>
+    <script type="text/javascript" src="game/resource.js"></script>
+    <script type="text/javascript" src="game/framework/resourceLoader.js"></script>
     <script type="text/javascript" src="game/waitingPage.js"></script>
     
     <!-- temperory load resources using this style later becomming dynamic loading using javascript-->
@@ -36,35 +44,45 @@
     <!-- end third party utils -->
     <!-- loading shares -->
     <!-- over write modules -->
+    
+    <script type="text/javascript" src="share/ship/battleJudge.js"></script>
     <script type="text/javascript" src="share/ship/module.js"></script> 
     <script type="text/javascript" src="share/ship/moduleManager.js"></script> 
     <script type="text/javascript" src="game/ship/module.js"></script>
     <script type="text/javascript" src="share/shipController.js"></script>
     
-
     <script type="text/javascript" src="share/protocol.js"></script>
     <script type="text/javascript" src="share/world.js"></script> 
     <script type="text/javascript" src="share/ship/ai.js"></script>
-    <script type="text/javascript" src="share/ship/shipSoul.js"></script> 
+    <script type="text/javascript" src="share/ship/shipSoul.js"></script>
     <script type="text/javascript" src="game/ship/ship.js"></script>
-    <script type="text/javascript" src="share/ship/starGate.js"></script> 
+    <script type="text/javascript" src="share/ship/starGate.js"></script>
     <script type="text/javascript" src="share/ship/starStation.js"></script>
-    <script type="text/javascript" src="game/ship/starGate.js"></script> 
+    <script type="text/javascript" src="game/ship/starGate.js"></script>
     <script type="text/javascript" src="game/ship/starStation.js"></script>
-    
+    <script type="text/javascript" src="game/ship/starStationInfoDisplayer.js"></script>
     <script type="text/javascript" src="share/battleFieldSoul.js"></script>
     <script type="text/javascript" src="share/galaxy/galaxyMapSoul.js"></script>
     <!-- end share -->
     <!-- loading share overrides -->
     <script type="text/javascript" src="game/interaction/interaction.js"></script>
     <script type="text/javascript" src="game/interaction/mouseInteraction.js"></script>
-    <script type="text/javascript" src="game/interaction/shipSelectInteraction.js"></script> 
+    <script type="text/javascript" src="game/interaction/shipMarkSelected.js"></script> 
+    <script type="text/javascript" src="game/interaction/shipFollowedMark.js"></script>
     <script type="text/javascript" src="game/interaction/interactionManager.js"></script>
+    <script type="text/javascript" src="game/interaction/interactionDisplayer.js"></script>
+    <script type="text/javascript" src="game/interaction/UIDisplayer.js"></script>
+    <script type="text/javascript" src="game/interaction/globalCaptureLayer.js"></script>
     <script type="text/javascript" src="game/interaction/commandInteraction.js"></script>
     <script type="text/javascript" src="game/interaction/galaxySelectInteraction.js"></script>
     <script type="text/javascript" src="game/interaction/modulePanel.js"></script>
+    <script type="text/javascript" src="game/interaction/shipInfoDisplayer.js"></script>
     <script type="text/javascript" src="game/interaction/toast.js"></script>
     <script type="text/javascript" src="game/interaction/shipInfoMark.js"></script>
+    <script type="text/javascript" src="game/interaction/shipInterface.js"></script>
+    
+    <script type="text/javascript" src="game/interaction/actionInterface.js"></script>
+    <script type="text/javascript" src="game/interaction/starStationInterface.js"></script>
     <script type="text/javascript" src="game/battleField.js"></script>
     <script type="text/javascript" src="game/galaxy/galaxy.js"></script>
     <script type="text/javascript" src="game/galaxy/galaxyMap.js"></script>
@@ -75,7 +93,6 @@
     
     <!-- Code below is for Giyya -->
     <script type="text/javascript" src="game/starStationScene/starStationScene.js"></script>
-
     <script type="text/javascript" src="site/main.js"></script>
     <script type="text/javascript">
       window.onload = function(){
@@ -85,11 +102,6 @@
     </script>
   </head>
   <body>
-    <div id="landingPage">
-      <input type="text" name="" id="loginUsernameInput" value="" placeholder="用户名" />
-      <button id="loginButton">登录</button>
-      <button id="signUpButton" >注册</button>
-    </div>
     <div class="scene" id="battleScene"> 
       <canvas id="screen">
       </canvas> 
@@ -114,6 +126,13 @@
     <div class="scene" id="waitingScene"> 
       <canvas id="screen">
       </canvas>
+    </div> 
+    <div id="landingPage">
+      <div class="wrapper"> 
+	<input type="text" name="" id="loginUsernameInput" value="" placeholder="用户名" />
+	<button id="loginButton">登录</button>
+	<button id="signUpButton" >注册</button>
+      </div>
     </div>
   </body>
 </html>

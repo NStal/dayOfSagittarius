@@ -16,8 +16,8 @@
     ShipController.prototype.moveTo = function(point){
 	console.log(this.ship.parentContainer.time);
 	return {
-	    time:this.ship.parentContainer.time+ShipController.delay
-	    ,cmd:2
+	    //time:this.ship.parentContainer.time+ShipController.delay
+	    cmd:2
 	    ,data:{
 		id:this.ship.id
 		,point:point
@@ -27,8 +27,8 @@
     ShipController.prototype.roundAt = function(point,radius,antiClockWise){
 	antiClockWise = antiClockWise?true:false;
 	return {
-	    time:this.ship.parentContainer.time+ShipController.delay
-	    ,cmd:3
+	    //time:this.ship.parentContainer.time+ShipController.delay
+	    cmd:3
 	    ,data:{
 		id:this.ship.id
 		,point:point
@@ -39,8 +39,8 @@
     }
     ShipController.prototype.lockAt = function(target){
 	return {
-	    time:this.ship.parentContainer.time+ShipController.delay
-	    ,cmd:4
+	    //time:this.ship.parentContainer.time+ShipController.delay
+	    cmd:4
 	    ,data:{
 		id:this.ship.id
 		,targetId:target.id
@@ -49,18 +49,30 @@
     }
     ShipController.prototype.activeModule = function(which){
 	return {
-	    time:this.ship.parentContainer.time+ShipController.delay
-	    ,cmd:5
+	    //time:this.ship.parentContainer.time+ShipController.delay
+	    cmd:5
 	    ,data:{
 		id:this.ship.id
 		,moduleId:this.ship.moduleManager.indexOf(which)
 	    }
 	}
     }
+    ShipController.prototype.setModuleTarget = function(which,target){
+	return {
+	    //time:this.ship.parentContainer.time+ShipController.delay
+	    cmd:14
+	    ,data:{
+		id:this.ship.id
+		,moduleId:this.ship.moduleManager.indexOf(which)
+		,targetId:target?target.id:null
+	    }
+	}
+    }
+    
     ShipController.prototype.passStarGate = function(gate){
 	return {
-	    time:this.ship.parentContainer.time+ShipController.delay
-	    ,cmd:6
+	    //time:this.ship.parentContainer.time+ShipController.delay
+	    cmd:6
 	    ,data:{
 		id:this.ship.id
 		,gateId:gate.id
@@ -69,8 +81,8 @@
     }
     ShipController.prototype._genTemplate = function(cmdNumber){
 	return {
-	    time:this.ship.parentContainer.time+ShipController.delay
-	    ,cmd:cmdNumber
+	    //time:this.ship.parentContainer.time+ShipController.delay
+	    cmd:cmdNumber
 	    ,data:{
 		id:this.ship.id
 	    }
@@ -89,8 +101,8 @@
     ShipController.prototype.roundAtTarget =function(target,radius,antiClockWise){
 	console.log(this.ship.parentContainer.time);
 	return {
-	    time:this.ship.parentContainer.time+ShipController.delay
-	    ,cmd:9
+	    //time:this.ship.parentContainer.time+ShipController.delay
+	    cmd:9
 	    ,data:{
 		id:this.ship.id
 		,targetId:target.id

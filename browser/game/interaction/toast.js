@@ -5,6 +5,31 @@
     var settings = require("../settings").settings;
     var Point = require("./util").Point;
     var Toaster = Drawable.sub();
+    Toaster.count = 0;
+    Toaster.items = []
+    Toaster.add = function(item){
+	this.count++;
+	this.items.push(item);
+	item.position.y = settings.height/2+18*this.count;
+    }
+    Toaster.remove = function(toRemove){
+	var hasRemove = false;
+	for(var i=0,length=this.items.length;i < length;i++){
+	    var item = this.items[i];
+	    if(item==toRemove){
+		this.items.splice(i,1);
+		this.count--;
+		hasRemove = true;
+		continue;
+	    }
+	    if(hasRemove){
+		if(item)
+		    item.position.y -=18;
+	    }
+	}
+	if(hasRemove)return true;
+	return false;
+    }
     Toaster.prototype._init = function(){
 	var self = this;
 	this.instance = new Instance();
@@ -19,11 +44,14 @@
     }
     Toaster.prototype.show = function(text){
 	this.text = text;
-	this.position = new Point(settings.width/2,settings.height/2);
-	Static.interactionManager.addGlobal(this);
+	this.position = Point.Point(settings.width/2,settings.height/2);
+	Static.UIDisplayer.add(this); 
+	Toaster.add(this);
     }
     Toaster.prototype.hide = function(){
-	Static.interactionManager.removeGlobal(this);
+	Toaster.remove(this);
+	Static.UIDisplayer.remove(this);
+	this.position.release();
 	this.instance.stop();
     }
     Toaster.prototype.next = function(){

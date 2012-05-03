@@ -1,10 +1,15 @@
 (function(exports){
-    var Class = require("../share/util").Class;
+    var EventEmitter = require("../share/util").EventEmitter;
     var clientCommand = require("../share/protocol").clientCommand;
     var Interface = require("../../database/interface").Interface;
-    var God = Class.sub();
+    var BadgeSystem =require("./badgeSystem").BadgeSystem;
+    var KillingRewardSystem =require("./killingRewardSystem").KillingRewardSystem;
+    
+    var God = EventEmitter.sub();
     God.prototype._init = function(){
 	this.worlds = [];
+	this.badgeSystem = new BadgeSystem(this);
+	this.killingRewardSystem = new KillingRewardSystem(this); 
     }
     God.prototype.log = function(){
 	var godWord = ["GOD:"];
@@ -17,15 +22,8 @@
 	var self = this;
 	this.worlds.push(world);
 	world.battleField.on("shipDead",function(ship,byWho){
-	    console.log(ship);
-	    self.log(ship.id,"is killed by",byWho.weapon.ship.id);
-	    Interface.getUserData(byWho.weapon.ship.owner,function(data){
-		data.credits+=ship.reward;
-		Interface.setUserData(byWho.weapon.ship.owner,data,function(err,obj){
-		    self.log("give award of",ship.reward,"to",byWho.weapon.ship.owner);
-		}) 
-	    });
-	})
+	    self.emit("shipDead",world,ship,byWho);
+	}); 
 	world.battleField.on("shipDocking",function(ship,station){
 	    if(ship.removedByGod)return;
 	    ship.removedByGod = true;
