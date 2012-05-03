@@ -206,18 +206,23 @@
 	this.position.x =Math.sin(Math.PI+Math.PI*2/6*this.index)*this.extend;
 	this.position.y =Math.cos(Math.PI+Math.PI*2/6*this.index)*this.extend;
 	context.closePath();
-	context.strokeStyle = "black";
+	context.strokeStyle = "#60dfff";
 	context.lineWidth=this.lineWidth; 
-	context.fillStyle = "white";
+	context.globalAlpha = 0.3;
+	context.fillStyle = "#60dfff";
 	context.fill();
 	
 	if(this.lineWidth>this.lineWidthToBe)this.lineWidth-=0.1;
 	if(this.lineWidth<this.lineWidthToBe)this.lineWidth+=0.1;
+	context.globalAlpha = 1; 
+	context.shadowBlur = 4;
+	context.shadowColor = "#60dfff";
 	context.stroke();
 	context.restore();
 	context.textAlign="center";
 	context.translate(0,6);
 	context.beginPath();
+	context.fillStyle = "white";
 	context.fillText(this.name,0,0);
     }
     MouseEventConsumer.mixin(ActionInterfaceItem);

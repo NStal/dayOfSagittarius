@@ -1,3 +1,4 @@
+var vuvu="115.156.219.166"
 var Interface = require("../database/interface").Interface;
 var MapTask =require("../share/util").MapTask;
 var users = ["nstal","changtongliu"]//,"AI"];
@@ -40,7 +41,7 @@ var GALAXIES = [{
     ,starStations:[]
     ,starGates:[]
     ,server:{
-	host:"localhost"
+	host:vuvu
 	,localport:20000
 	,port:10000
     }
@@ -89,7 +90,7 @@ Interface.removeAllShips(function(){
 	    ship.pilot = user;
 	}
 	ship.modules = [13,13 //2 Cannon small
-			,7,1,3//Missile//Beam small//Beam Big
+			,7,1//,3//Missile//Beam small//Beam Big
 			,19 //small shield
 			,25 //small armor
 		       ];

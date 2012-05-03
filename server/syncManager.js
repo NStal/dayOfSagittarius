@@ -26,12 +26,14 @@
 	    //console.log("msg recieved",msg); 
 	    self.manager.onMessage(instruction,self);
 	});
+	this.sequnce = 0;
 	return this;
     }
     SyncWorker.prototype.send = function(msg){
 	if(this.over)return;
 	//console.log("send msg",msg);
-
+	this.sequnce ++;
+	msg.sequnce = this.sequnce;
 	this.ws.send(JSON.stringify(msg));
 	return this;
     }

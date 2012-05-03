@@ -80,6 +80,9 @@
 	    self.mouseEventDistributer.distribute(event,nodePointToPoint(e));
 	    
 	}
+	window.onresize = function(){
+	    alert("");
+	}
 	this.canvas.ontouchmove = function(e){
 	    self.mouseEventDistributer.distribute("mouseMove",nodePointToPoint(e));
 	    if(self._lastMove){
@@ -143,8 +146,7 @@
     ClientWorld.prototype.setTime = function(time){
 	this.time = time;
 	Static.battleField.time = time;
-    }
-    
+    } 
     ClientWorld.prototype.changeGalaxy = function(where){
 	settings.whereAmI = where;
 	var self = this;

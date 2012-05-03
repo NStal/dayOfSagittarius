@@ -19,6 +19,7 @@
 	this.isConnected = true; 
 	this.worker = worker; 
 	this.send({time:0});
+	this.sequnce = 0;
     }
     Gateway.prototype.getAuthInfo =function(){
 	return {username: this.username};
@@ -30,7 +31,12 @@
     Gateway.prototype.onMessage = function(msg,worker){
 	console.log("recieve msg",msg);
 	//In future version
-	//Here all cmd should be validated
+	//Here all cmd should be validated 
+	if(msg.sequnce!=this.sequnce+1){
+	    alert("networkerror!");
+	    return;
+	}
+	this.sequnce++;
 	if(msg.badge){
 	    if(msg.owner == Static.username)
 		Toast("you "+msg.content);
@@ -42,6 +48,7 @@
 	    return;
 	}
 	if(msg.outDated){
+	    alert("out dated!!!");
 	    this.emit("outdate");
 	    return;
 	}
@@ -51,6 +58,7 @@
 	}
 	if(msg.cmd==1){
 	    this.battleField.initShips(msg.data.ships,Static.world.galaxy);
+	    this.sequnce = msg.sequnce; 
 	    Static.world.setTime(msg.time);
 	    console.log(msg);
 	    this.battleField.ready = true;

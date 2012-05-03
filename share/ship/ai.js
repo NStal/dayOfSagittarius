@@ -55,6 +55,7 @@
 	    this.destination.targetPoint  = this.destination.chaseTarget.cordinates;
 	}
 	if(this.destination.roundRoute){
+	    if(this.destination.roundRoute===this.ship.cordinates)return;
 	    this._adjustRoundAt(this.destination.roundRoute.point,
 				this.destination.roundRoute.radius,
 				this.destination.roundRoute.antiClockWise);

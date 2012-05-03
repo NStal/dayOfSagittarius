@@ -32,7 +32,7 @@
 	this._animateIndex*=1.15;
 	context.beginPath();
 	context.globalAlpha = 1/this._animateIndex;
-	context.arc(0,0,this._animateIndex,0,Math.PI*2);
+	context.arc(0,0,this._animateIndex*1.2,0,Math.PI*2);
 	context.fillStyle = "red";
 	context.fill();
     }
