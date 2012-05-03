@@ -1,6 +1,7 @@
 (function(exports){
-    var settings = require("./settings").settings;
+    var settings = require("./settings").settings; 
     var World = require("./share/world").World;
+    var EventEmitter = require("./share/util").EventEmitter;
     var BattleField = require("./battleField").BattleField;
     var SyncWorker = require("./syncWorker").SyncWorker;
     var GameInstance = require("./share/gameUtil").GameInstance;
@@ -16,6 +17,7 @@
     var ClientWorld = World.sub();
     //ClientWorld inherit from World
     //Do the quite same things but optimized for browsers 
+    EventEmitter.mixin(ClientWorld);
     ClientWorld.prototype._init = function(worldInfo){
 	ClientWorld.parent.prototype._init.call(this,worldInfo);
 	var self = this; 
@@ -26,6 +28,8 @@
 	this.canvas.height = settings.height;
 	//default net work delay
 	this.delay = worldInfo.delay;//300ms
+	
+	Static.world = this;
 	Static.globalCaptureLayer = new GlobalCaptureLayer(this);
 	Static.interactionDisplayer = new InteractionDisplayer(this);
 	
@@ -40,7 +44,6 @@
 	Static.gateway.username = worldInfo.username;
 	//setup galaxy
 	Static.galaxyMap = new GalaxyMap(GALAXIES);
-	Static.world = this;
 	//initialize interaction 
 	this.add(Static.battleFieldDisplayer); 
 	this.add(Static.interactionDisplayer);
@@ -79,9 +82,6 @@
 	    }
 	    self.mouseEventDistributer.distribute(event,nodePointToPoint(e));
 	    
-	}
-	window.onresize = function(){
-	    alert("");
 	}
 	this.canvas.ontouchmove = function(e){
 	    self.mouseEventDistributer.distribute("mouseMove",nodePointToPoint(e));
@@ -128,8 +128,12 @@
 	    self.KEYS[e.which] = false;
 	}
 	$(window).resize(function(){
-	    settings.width = $(document).width();
-	    settings.height = $(document).height();
+	    settings.width = $("body").width();
+	    settings.height = $("body").height();
+	    self.canvas.width = settings.width;
+	    self.canvas.height = settings.height;
+	    console.log(settings.width,settings.height);
+	    self.emit("resize");
 	})
     }
     ClientWorld.prototype.start = function(){

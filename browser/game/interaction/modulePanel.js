@@ -8,7 +8,17 @@
 	this.ship = null;
 	this.presentObjects = [];
 	this.handlers = [];
-	var self = this;
+	var self = this; 
+	Static.world.on("resize",function(){
+	    
+	    var startX = 100;
+	    for(var i=0,length=self.parts.length;i < length;i++){
+		var item = self.parts[i];
+		item.position.x =  startX,startX+=100;
+		item.position.y = settings.height-100;
+		//console.log(item.position.toString());
+	    } 
+	});
     }
     ModulePanel.prototype.onDraw = function(context){
 	/*context.save();
