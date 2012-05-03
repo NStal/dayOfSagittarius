@@ -141,10 +141,9 @@
 	Static.waitingPage.startWaiting();
 	//connect to server to sync battleFieldInfo
 	this.changeGalaxy("Nolava");
-	var audio = Static.resourceLoader.get("music_bgm");
+	var audio = new Audio(Static.resourceLoader.get("music_bgm").src);
 	audio.play();
 	audio.loop = true;
-	audio.volume = 0.5;
 	return this;
     }
     ClientWorld.prototype.setTime = function(time){

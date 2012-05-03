@@ -21,20 +21,30 @@ Site.prototype.initGame = function(username){
 	,delay:settings.delay
     } 
     Static.username = username;
-    
     Static.resourceLoader = new ResourceLoader();
     Static.resourceLoader.add(GameResource);
+    
+    var self = this;
     var initTask = new MapTask();
+    if(!this.isSoundReady){
+	initTask.newTask();
+	this.soundReady = function(){
+	    initTask.complete();
+	    self.isSoundReady = true;
+	}
+    }
+    
     initTask.newTask();
     Static.resourceLoader.on("finish",function(){
 	self.ready = true;
 	initTask.complete();
     })
     Static.resourceLoader.start();
-    var self = this;
     initTask.on("finish",function(){
+	
 	main.clientWorld = new ClientWorld(__config); 
-	main.clientWorld.start(); 
+	main.clientWorld.start();
+	//console.error(self.isSoundReady);
 	var StarStationScene = require("./starStationScene/starStationScene").StarStationScene;
 	Static.starStationScene = new StarStationScene(self.starStationSceneNode);
     })
