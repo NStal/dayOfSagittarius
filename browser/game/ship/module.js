@@ -75,6 +75,28 @@
 	context.fillStyle = "red";
 	context.fill();
     }
+    var ShieldRepairPulse =ShieldRepairPulseSoul.sub();
+    Allumition.mixin(ShieldRepairPulse);
+    ShieldRepairPulse.prototype.start = function(){
+	ShieldRepairPulseSoul.prototype.start.call(this);
+	this.from = this.weapon.ship.cordinates;
+	if(this.isMissed){
+	    this.to = new Point(this.weapon.target.cordinates);
+	    this.to.x += (Math.random()-0.5)/0.5*30; 
+	    this.to.y += (Math.random()-0.5)/0.5*30;
+	}else{
+	    this.to = this.weapon.target.cordinates;
+	}
+	this.position = {x:0,y:0};
+    }
+    ShieldRepairPulse.prototype.onDraw = function(context){
+	context.beginPath();
+	context.moveTo(this.from.x,this.from.y);
+	context.lineTo(this.to.x,this.to.y);
+	context.strokeStyle = "blue";
+	context.lineWidth = Math.random()*1.5;
+	context.stroke();
+    }
     Weapon.prototype._init = function(){
 	this.Allumition = Allumition;
 	this.autoFire = false;
@@ -200,6 +222,93 @@
 	    }
 	});
     }
+    var RemoteShieldRecharger = RemoteShieldRechargerSoul.sub();
+    RemoteShieldRecharger.extend(Weapon);
+    RemoteShieldRecharger.prototype._init = function(state){
+	RemoteShieldRecharger.parent.prototype._init.call(this,state);
+	Weapon.prototype._init.call(this);
+	this.Allumition = ShieldRepairPulse;
+	this.name = "RemoteShieldRecharger";
+	this.on("active",function(){
+	    (new Audio(Static.resourceLoader.get("sound_beam").src)).play();
+	})
+    }
+    RemoteShieldRecharger.prototype.onPresent = function(objects){
+	var self = this;
+	if(!self.shakeEffect){
+	    self.shakeEffect = new Twinkle({min:0.6});
+	}
+	objects.push({
+	    onActive:function(){
+		//self.autoFire = !self.autoFire;
+		new ModuleLockAtInteraction(self).init();
+	    }
+	    ,onActive2:function(){
+		self.autoFire = !self.autoFire; 
+	    }
+	    ,present:function(context,position){
+		if(self.autoFire)self.shakeEffect.onBeforeRender(context);
+		//draw intent line to target
+		context.save()
+		if(self.target){
+		    var t = Static.battleFieldDisplayer.battleFieldToScreen(self.target.cordinates).sub(position);
+		    context.strokeStyle = "green";
+		    context.lineWidth = 0.5;
+		    context.globalAlpha = 1;
+		    context.beginPath();
+		    context.moveTo(0,0);
+		    context.lineTo(t.x,t.y);
+		    context.stroke();
+		}
+		if(self.target 
+		   && self.target.cordinates.distance(self.ship.cordinates)
+		   > self.ammunitionInfo.range){
+		    self.innerColor = "grey";
+		}else{
+		    self.innerColor = "white";
+		}
+		context.restore();
+		context.beginPath();
+		context.arc(0,0,50,0,Math.PI*2);
+		context.fillStyle = "#00bbff";
+		context.globalAlpha*=0.5;
+		context.fill();
+		context.globalAlpha *= 2;
+		context.beginPath();
+		context.arc(0,0,40,0,Math.PI*2); 
+		context.shadowBlur = 20;
+		context.clip();
+		context.beginPath();
+		context.moveTo(0,0);
+		context.lineTo(20,0)
+		context.arc(0,0,40,0,Math.PI*2*self.readyState/self.coolDown);
+		context.closePath();
+		context.fillStyle = self.innerColor;
+		context.fill();
+		if(self.weaponImage){
+		    context.save();
+		    context.drawImage(self.weaponImage,0,0,256,256,-40,-40,80,80);
+		    context.restore();
+		}else{
+		    context.beginPath();
+		    context.fillStyle = "black";
+		    context.textAlign = "center";
+		    context.fillText(self.name,0,3); 
+		}
+		
+	    }
+	});
+    }
+    RemoteShieldRecharger.prototype.onIntent = function(objects){
+	var self = this;
+	if(self.target){
+	    objects.push({
+		color:"green"
+		,target:self.target
+	    })
+	}
+    }
+    
     var BeamEmitter = BeamEmitterSoul.sub();
     BeamEmitter.extend(Weapon);
     BeamEmitter.prototype._init = function(state){
@@ -227,7 +336,9 @@
 	,2:MissileEmitter
 	,3:Shield
 	,4:Armor
+	,5:RemoteShieldRecharger
     }
+    exports.RemoteShieldRecharger = RemoteShieldRecharger;
     exports.MissileEmitter = MissileEmitter;
     exports.Weapon = Weapon;
 })(exports)

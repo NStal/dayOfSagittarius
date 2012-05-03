@@ -10,6 +10,7 @@
     var ShieldSoul = require("./module").ShieldSoul;
     var Static = require("../static").Static;
     var ArmorSoul = require("./module").ArmorSoul;
+    var RemoteShieldRechargerSoul = require("./module").RemoteShieldRechargerSoul;
     //Event
     //"OnPresent":
     //parameter:array object
@@ -21,6 +22,7 @@
 	,onIntent:3
 	,onBeforeHit:4
 	,onDamage:5
+	,onShieldRecharge:6
     }
     ModuleManager.prototype.moduleEnum = {
 	0:CannonEmitterSoul
@@ -28,6 +30,7 @@
 	,2:MissileEmitterSoul
 	,3:ShieldSoul
 	,4:ArmorSoul
+	,5:RemoteShieldRechargerSoul
     }
     ModuleManager.prototype._init = function(ship){
 	this.ship = ship;

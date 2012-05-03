@@ -8,6 +8,7 @@
 	,MissileEmitter:2
 	,Shield:3
 	,Armor:4
+	,RemoteShieldRecharger:5
     }
     var m = exports.ModuleEnum;
     var e = exports.ItemEnum;
@@ -267,7 +268,7 @@
 	,attribute:{
 	    moduleId:m.Shield
 	    ,ability:{
-		capacity:150//0
+		capacity:1500
 		,recoverInterval:540
 		,recoverAmmount:400
 		,electricityConsumption:190
@@ -342,7 +343,7 @@
 	,attribute:{
 	    moduleId:m.Armor
 	    ,ability:{
-		resistPoint:500 //0
+		resistPoint:5000
 	    }
 	}
     },{
@@ -383,6 +384,77 @@
 	    moduleId:m.Armor
 	    ,ability:{
 		resistPoint:1500000
+	    }
+	}
+    },{
+	id:30
+	,name:"RemoteShieldRecharger (tiny)"
+	,type:e.module
+	,attribute:{
+	    moduleId:m.RemoteShieldRecharger
+	    ,coolDown:300
+	    ,accuracyFactor:1.2
+	    ,ammunitionInfo:{
+		repairAmmount:300
+		,range:400
+		,count: 15
+	    }
+	}
+    },{
+	id:31
+	,name:"RemoteShieldRecharger (small)"
+	,type:e.module
+	,attribute:{
+	    moduleId:m.RemoteShieldRecharger
+	    ,coolDown:330
+	    ,accuracyFactor:1.15
+	    ,ammunitionInfo:{
+		repairAmmount:600
+		,range:400 
+		,count: 15
+	    }
+	}
+    },{
+	id:32
+	,name:"RemoteShieldRecharger (middle)"
+	,type:e.module
+	,attribute:{
+	    moduleId:m.RemoteShieldRecharger
+	    ,coolDown:360
+	    ,accuracyFactor:1.1
+	    ,ammunitionInfo:{
+		repairAmmount:1000
+		,range:390 
+		,count: 15
+	    }
+	}
+    },{
+	id:33
+	,name:"RemoteShieldRecharger (Big)"
+	,type:e.module
+	,attribute:{
+	    moduleId:m.RemoteShieldRecharger
+	    ,coolDown:420
+	    
+	    ,accuracyFactor:1.05
+	    ,ammunitionInfo:{
+		repairAmmount:2000
+		,range:370
+		,count: 15 
+	    }
+	}
+    },{
+	id:34
+	,name:"RemoteShieldRecharger (Massive)"
+	,type:e.module
+	,attribute:{
+	    moduleId:m.RemoteShieldRecharger
+	    ,coolDown:600
+	    ,accuracyFactor:1
+	    ,ammunitionInfo:{
+		repairAmmount:4000
+		,range:350 
+		,count: 15
 	    }
 	}
     }]

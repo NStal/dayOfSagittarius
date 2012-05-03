@@ -63,6 +63,7 @@
 	this.ability.electricityConsumption = 300;*/
 	this.listen("onBeforeHit");
 	this.listen("onNextTick");
+	this.listen("onShieldRecharge");
 	this.moduleId = 3;
 	if(state){
 	    if(typeof state.capacity == "number")
@@ -72,6 +73,15 @@
 	}
     }
     //check if recover it.
+    ShieldSoul.prototype.onShieldRecharge = function(value){
+	if(this.ability.capacity-this.state.capacity>value){
+	    this.state.capacity+=value;
+	    return 0;
+	}
+	var used = this.ability.capacity - this.state.capacity;
+	this.state.capacity = this.ability.capacity;
+	return value - used;
+    }
     ShieldSoul.prototype.onNextTick = function(){
 	if(this.ship.state.electricity<=0)return; 
 	if(this.state.capacity>=this.ability.capacity)return;
@@ -91,6 +101,7 @@
 	if(typeof this.state.capacity != "number"){
 	    this.state.capacity = this.ability.capacity;
 	}
+	
 	if(typeof this.state.recoverState != "number"){
 	    this.state.recoverState = 0;
 	}
@@ -117,9 +128,7 @@
     ArmorSoul.prototype._init = function(state){
 	ArmorSoul.parent.call(this,state);
 	this.listen("onDamage");
-	this.type = "armor"
-	/*this.moduleId = 4;
-	 this.ability.resistPoint = 1000; */
+	this.type = "armor";
 	if(state&&typeof state.resistPoint == "number"){
 	    this.state.resistPoint = state.resistPoint;
 	}
@@ -182,6 +191,39 @@
     }
     AllumitionSoul.prototype.hit = function(){
 	this.target.onHit(this,this.damagePoint); 
+    }
+    
+    var ShieldRepairPulseSoul = AllumitionSoul.sub();
+    ShieldRepairPulseSoul.prototype._init = function(weapon,info){
+	ShieldRepairPulseSoul.parent.prototype._init.call(this,weapon,info);
+	if(info){
+	    this.repairAmmount = info.repairAmmount;
+	    this.count = info.count;
+	}
+    }
+    ShieldRepairPulseSoul.prototype.start = function(){
+	ShieldRepairPulseSoul.parent.prototype.start.call(this);
+	if(this.weapon.ship.cordinates.distance(this.target)>this.range){
+	    this.isMissed = true;
+	}
+	this.isMissed = false;
+    }
+    ShieldRepairPulseSoul.prototype.next = function(){
+	if(this.index==0){
+	    if(!this.isMissed){
+		console.log("hit repair",this.repairAmmount);
+		var left = this.repairAmmount;
+		var tempArr = this.target.moduleManager.events["onShieldRecharge"]
+		for(var i=0,length=tempArr.length;i < length;i++){
+		    var item = tempArr[i];
+		    left = item(left); 
+		}
+	    }
+	}
+	if(this.index==this.count){
+	    this.stop();
+	}
+	this.index++;
     }
     var CannonSoul = AllumitionSoul.sub();
     CannonSoul.prototype._init = function(weapon,info){
@@ -327,11 +369,20 @@
 	WeaponSoul.prototype._init.call(this);
 	this.Allumition = BeamSoul;
     }
+    var RemoteShieldRechargerSoul = WeaponSoul.sub();
+    RemoteShieldRechargerSoul.prototype._init = function(state){
+	RemoteShieldRechargerSoul.parent.prototype._init.call(this,state);
+	this.Allumition = ShieldRepairPulseSoul;
+	
+    } 
+    
     var MissileEmitterSoul = WeaponSoul.sub();
     MissileEmitterSoul.prototype._init = function(state){
 	MissileEmitterSoul.parent.prototype._init.call(this,state);
 	this.Allumition = MissileSoul; 
     }
+    exports.RemoteShieldRechargerSoul = RemoteShieldRechargerSoul;
+    exports.ShieldRepairPulseSoul = ShieldRepairPulseSoul;
     exports.ShieldSoul = ShieldSoul;
     exports.Shield = ShieldSoul;
     exports.ArmorSoul = ArmorSoul;

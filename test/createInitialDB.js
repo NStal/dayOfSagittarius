@@ -93,6 +93,7 @@ Interface.removeAllShips(function(){
 			,7,1//,3//Missile//Beam small//Beam Big
 			,19 //small shield
 			,25 //small armor
+			,31 //small shieldRecharger
 		       ];
 	ship.cagos = [1,2,3,4,1,4,2,6,5];
 	ship.cordinates = {x:Math.random()*600+200
