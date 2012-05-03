@@ -21,7 +21,7 @@
     ShipInfoDisplayer.prototype.onDraw = function(context){
 	this.position.x = settings.width/2;
 	this.position.y = settings.height-180;
-	var HPCenter = {x:75,y:75};
+	var HPCenter = {x:72,y:73};
 	context.drawImage(this.bgImage,0,0);
 	//drawStructureetc
 	context.save();
@@ -43,7 +43,7 @@
 	}
 	if(armorMax==0)armorMax=1;
 	if(shieldMax==0)shieldMax=1;
-	context.globalAlpha = 0.6;
+	context.globalAlpha = 0.3;
 	this.drawPie(context,"#73d7ed",60
 		     ,(shield/shieldMax));
 	this.drawPie(context,"#3dc05c",40
@@ -53,10 +53,12 @@
 		       /this.ship.ability.structure));
 	context.restore();
 	context.save();
-	context.translate(62,0); 
-	var ecPercentage = 0.6;
+	context.translate(72,2); 
+	 
+	//drawElectricity
+	var ecPercentage = this.ship.state.electricity/this.ship.ability.electricity;
 	var height = 53;
-	context.rect(0,ecPercentage*height,300,300);
+	context.rect(0,(1-ecPercentage)*height,300,300);
 	context.clip();
 	context.drawImage(this.ecImage,0,0);
 	context.restore();
@@ -66,7 +68,6 @@
 		    ,"maxRotateSpeed:"+this.ship.state.maxRotateSpeed];
 	
 	this.statusText.setText(text.join("\n"));
-	//drawElectricity
     }
     ShipInfoDisplayer.prototype.drawPie = function(context,color,radius,percentage){
 	context.beginPath();

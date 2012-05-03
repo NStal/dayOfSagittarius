@@ -80,6 +80,7 @@
 	if(!this.station){
 	    return;
 	}
+	this.position = Static.battleFieldDisplayer.battleFieldToScreen(this.station.position);
 	if(!this.done){
 	    this.index++;
 	    if(this.index==this.length)this.done = true;

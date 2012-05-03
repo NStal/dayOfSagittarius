@@ -337,7 +337,29 @@
 	}
 	this.x = x;
 	this.y = y;
+	this.counter=1;
+    } 
+    //Point pools to avoid memory GC
+    Point.pools = [];
+    Point.Point = function(x,y){
+	if(Point.pools.length>0){
+	    var p = Point.pools.pop();
+	    p.unused = false;
+	    Point.prototype._init.call(p,x,y);
+	    return p;
+	}
+	return new Point(x,y);
     }
+    Point.prototype.refer = function(){
+	this.counter++;
+	return this;
+    }
+    Point.prototype.release = function(){
+	this.counter--;
+	if(this.counter!=0)return;
+	this.unused = true; 
+	Point.pools.push(this);
+    } 
     Point.prototype.clone = function(){
 	return new Point(this);
     }

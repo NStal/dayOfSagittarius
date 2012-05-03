@@ -22,6 +22,10 @@
 		this.destination.target = null;
 	    }
 	}*/
+	if(this.destination.roundTarget&&
+	    this.destination.roundRoute){
+	    this.destination.roundRoute.point = this.destination.roundTarget.cordinates;
+	}
 	if(this.destination.starGate){
 	    if(typeof this.destination.starGate == "string"){
 		this.destination.starGate = this.ship.parentContainer.getStarGateById(this.destination.starGate);
@@ -174,6 +178,10 @@
 	this.clearDestination();
 	this.destination.targetPoint = targetPoint;
     }
+    AI.prototype.roundAtTarget = function(target,r,antiClockWise){
+	this.roundAt(target.cordinates,r,antiClockWise);
+	this.destination.roundTarget = target;
+    }
     AI.prototype.roundAt =function(p,r,antiClockWise){
 	this.clearDestination();
 	if(r<20)r=20;
@@ -186,7 +194,7 @@
 	    destination:{
 		targetPoint:this.destination.targetPoint
 		,roundRoute:this.destination.roundRoute
-		//,target:this.destination.target?this.destination.target.id:null
+		,roundTarget:this.destination.roundTarget?this.destination.roundTarget.id:null
 		,chaseTarget:this.destination.chaseTarget?this.destination.chaseTarget.id:null
 	    }
 	}

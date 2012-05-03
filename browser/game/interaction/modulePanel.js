@@ -23,6 +23,7 @@
 	context.restore();*/
     }
     ModulePanel.prototype.show = function(ship){
+	if(ship && ship.owner!=Static.username)ship = null;
 	if(ship){
 	    this.ship = ship;
 	    this.presentObjects.length = 0;
@@ -57,6 +58,7 @@
 	this.consumeType.rightMouseDown = true;
 	this.mouseReactSize = 50;
 	this.on("mouseUp",function(e){
+	    (new Audio(Static.resourceLoader.get("sound_click1").src)).play();
 	    if(handler)
 		handler();
 	    return true;
@@ -67,7 +69,8 @@
 	
 	this.on("rightMouseUp",function(e){
 	    if(handler2)
-		handler2();
+		handler2(); 
+	    (new Audio(Static.resourceLoader.get("sound_click2").src)).play();
 	    return true;
 	})
 	this.on("rightMouseDown",function(e){

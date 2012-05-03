@@ -16,7 +16,11 @@
     <script type="text/javascript" src="site/jXFrame/popupBox.js"></script>
     <script type="text/javascript" src="site/api.js"></script>
     <script type="text/javascript" src="site/site.js"></script>
+    <script type="text/javascript" src="game/chatBox.js"></script>
+    <script type="text/javascript" src="game/itemDisplayer.js"></script>
     
+    <script type="text/javascript" src="share/gameResourceManager.js"></script>
+    <script type="text/javascript" src="share/resource/item.js"></script>
     <!-- LOADING GAMES -->
     <!-- game frameworks -->
     <script type="text/javascript" src="share/util.js"></script> 
@@ -63,6 +67,7 @@
     <script type="text/javascript" src="game/interaction/interaction.js"></script>
     <script type="text/javascript" src="game/interaction/mouseInteraction.js"></script>
     <script type="text/javascript" src="game/interaction/shipMarkSelected.js"></script> 
+    <script type="text/javascript" src="game/interaction/shipFollowedMark.js"></script>
     <script type="text/javascript" src="game/interaction/interactionManager.js"></script>
     <script type="text/javascript" src="game/interaction/interactionDisplayer.js"></script>
     <script type="text/javascript" src="game/interaction/UIDisplayer.js"></script>
@@ -74,6 +79,8 @@
     <script type="text/javascript" src="game/interaction/toast.js"></script>
     <script type="text/javascript" src="game/interaction/shipInfoMark.js"></script>
     <script type="text/javascript" src="game/interaction/shipInterface.js"></script>
+    
+    <script type="text/javascript" src="game/interaction/actionInterface.js"></script>
     <script type="text/javascript" src="game/interaction/starStationInterface.js"></script>
     <script type="text/javascript" src="game/battleField.js"></script>
     <script type="text/javascript" src="game/galaxy/galaxy.js"></script>
@@ -107,8 +114,7 @@
       </canvas>
     </div> 
     <div id="landingPage">
-      <div class="wrapper">
-	
+      <div class="wrapper"> 
 	<input type="text" name="" id="loginUsernameInput" value="" placeholder="用户名" />
 	<button id="loginButton">登录</button>
 	<button id="signUpButton" >注册</button>

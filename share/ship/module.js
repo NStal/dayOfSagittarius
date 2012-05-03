@@ -10,6 +10,9 @@
     //Weapon,Shield,Armor
     //Weapon defined what ammunition can be used
     //while ammunition actually defined accuracy,damage and etc.
+    
+    //Allumition and it's sub class is only a weapon module
+    //they don't store any information
     Module.prototype._init = function(state){
 	this.handlers = {};
 	if(state){
@@ -19,8 +22,13 @@
 	    this.state = {};
 	}
 	this.ability = {};
+    }   
+    Module.prototype.attachItemInfo = function(itemInfo){
+	for(var item in itemInfo.attribute){
+	    this[item] = itemInfo.attribute[item];
+	}
+	this.itemId = itemInfo.id;
     }
-    
     Module.prototype.init = function(moduleManager){
 	this.manager = moduleManager;
 	this.ship = this.manager.ship;
@@ -35,7 +43,7 @@
 	this.manager = null;
     }
     Module.prototype.listen = function(event){
-	var self = this; 
+	var self = this;
 	if(!event || !self[event]){
 	    console.trace();
 	    throw "no " + event + "handler";
@@ -48,18 +56,43 @@
     var ShieldSoul = Module.sub();
     ShieldSoul.prototype._init = function(state){
 	this.type = "shield";
-	ShieldSoul.parent.call(this,state);
-	this.ability.capacity = 1000;
+	ShieldSoul.parent.prototype._init.call(this,state);
+	/*this.ability.capacity = 1000;
+	this.ability.recoverInterval = 900; // 300point/30s
+	this.ability.recoverAmmount = 300;
+	this.ability.electricityConsumption = 300;*/
 	this.listen("onBeforeHit");
+	this.listen("onNextTick");
 	this.moduleId = 3;
-	if(state && typeof state.capacity == "number"){
-	    this.state.capacity = state.capacity;
+	if(state){
+	    if(typeof state.capacity == "number")
+		this.state.capacity = state.capacity;
+	    if(typeof state.recoverState == "number")
+		this.state.recoverState = state.recoverState;
+	}
+    }
+    //check if recover it.
+    ShieldSoul.prototype.onNextTick = function(){
+	if(this.ship.state.electricity<=0)return; 
+	if(this.state.capacity>=this.ability.capacity)return;
+	if(this.state.recoverState<this.ability.recoverInterval){
+	    this.state.recoverState+=1;
+	}
+	if(this.state.recoverState>=this.ability.recoverInterval 
+	   && this.ship.state.electricity>this.ability.electricityConsumption){
+	    this.state.recoverState = 0; 
+	    this.ship.state.electricity -= this.ability.electricityConsumption;
+	    this.state.capacity+=this.ability.recoverAmmount;
+	    if(this.state.capacity>this.ability.capacity)this.state.capacity=this.ability.capacity;
 	}
     }
     ShieldSoul.prototype.init = function(manager){
 	Module.prototype.init.call(this,manager);
 	if(typeof this.state.capacity != "number"){
 	    this.state.capacity = this.ability.capacity;
+	}
+	if(typeof this.state.recoverState != "number"){
+	    this.state.recoverState = 0;
 	}
     }
     ShieldSoul.prototype.onBeforeHit = function(value,bywho){
@@ -74,17 +107,19 @@
     }
     ShieldSoul.prototype.toData = function(){
 	return {
-	    id:this.moduleId
+	    itemId:this.itemId
 	    ,capacity:this.state.capacity
+	    ,recoverState:this.state.recoverState
+
 	};
     }
     var ArmorSoul = Module.sub();
     ArmorSoul.prototype._init = function(state){
 	ArmorSoul.parent.call(this,state);
-	this.ability.resistPoint = 1000;
 	this.listen("onDamage");
 	this.type = "armor"
-	this.moduleId = 4;
+	/*this.moduleId = 4;
+	 this.ability.resistPoint = 1000; */
 	if(state&&typeof state.resistPoint == "number"){
 	    this.state.resistPoint = state.resistPoint;
 	}
@@ -107,7 +142,7 @@
     }
     ArmorSoul.prototype.toData = function(){
 	return {
-	    id:this.moduleId
+	    itemId:this.itemId
 	    ,resistPoint:this.state.resistPoint
 	};
     }
@@ -135,12 +170,15 @@
 	AllumitionSoul.parent.prototype.stop.call(this);
     }
     AllumitionSoul.prototype.next = function(){
-	this.index++;
-	if(this.index==this.count){
+	if(this.index==0){
 	    if(!this.isMissed)
-		this.hit();
+		this.hit(); 
+	}
+	if(this.index==this.count){
+	    //end explotion
 	    this.stop();
 	}
+	this.index++;
     }
     AllumitionSoul.prototype.hit = function(){
 	this.target.onHit(this,this.damagePoint); 
@@ -148,9 +186,10 @@
     var CannonSoul = AllumitionSoul.sub();
     CannonSoul.prototype._init = function(weapon,info){
 	CannonSoul.parent.prototype._init.call(this,weapon,info);
+	this.count = 8;
     }
     CannonSoul.prototype.start = function(){
-	CannonSoul.parent.prototype.start.call(this); 
+	CannonSoul.parent.prototype.start.call(this);
 	this.isMissed = BattleJudge.isMissed(this); 
     }
     var BeamSoul = AllumitionSoul.sub();
@@ -236,8 +275,10 @@
 	}
 	this.target = target;
 	var self = this;
-	this.target.on("dead",this.targetLostHandler);
-	this.emit("target",this,this.target);
+	if(this.target){
+	    this.target.on("dead",this.targetLostHandler);
+	    this.emit("target",this,this.target);
+	}
     }
     WeaponSoul.prototype.releaseTarget = function(){
 	this.emit("release","target");
@@ -263,46 +304,33 @@
     }
     WeaponSoul.prototype.toData = function(){
 	return {
-	    id:this.moduleId
-	    ,readyState:this.readyState
+	    readyState:this.readyState
 	    ,target:this.target?this.target.id:undefined
+	    ,itemId:this.itemId
 	}
     }
     var CannonEmitterSoul = WeaponSoul.sub();
     CannonEmitterSoul.prototype._init = function(){
 	WeaponSoul.prototype._init.call(this);
 	this.Allumition = CannonSoul;
+	/*
 	this.moduleId=0;
 	this.coolDown=30; 
 	this.ammunitionInfo = {
 	    damagePoint:220
 	    ,range:300
 	    ,count:8
-	}
+	}*/
     }
     var BeamEmitterSoul = WeaponSoul.sub();
     BeamEmitterSoul.prototype._init = function(){
 	WeaponSoul.prototype._init.call(this);
 	this.Allumition = BeamSoul;
-	this.moduleId = 1;
-	this.coolDown = 100; 
-	this.accuracyFactor = 1.4;
-	this.ammunitionInfo = {
-	    damagePoint:30
-	    ,count:15
-	    ,range:600
-	}
     }
     var MissileEmitterSoul = WeaponSoul.sub();
     MissileEmitterSoul.prototype._init = function(state){
 	MissileEmitterSoul.parent.prototype._init.call(this,state);
 	this.Allumition = MissileSoul; 
-	this.coolDown = 250;
-	this.moduleId = 2;
-	this.ammunitionInfo = {
-	    damagePoint:800
-	    ,range:1800
-	}
     }
     exports.ShieldSoul = ShieldSoul;
     exports.Shield = ShieldSoul;

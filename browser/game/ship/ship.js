@@ -15,37 +15,49 @@
 		Static.starStationScene.onEnterStation(self.AI.destination.starStation.name);
 	    }
 	})
+	var color;
+	console.log(this.pilot,this.owner,Static.username);
+	if(this.pilot==Static.username){
+	    color = "orange"
+	}else{
+	    if(this.owner==Static.username){
+		console.log("!!!!!");
+		color = "#60dfff";
+	    }else{
+		color = "red";
+	    }
+	}
+	this.color = color;
     }
     Ship.prototype.onDraw = function(context){
 	context.globalAlpha = 0.8;
-	context.shadowBlur=10;
-	if(this.owner==Static.username){
-	    context.fillStyle = "orange";
-	    context.shadowColor="orange";
-	}
-	else{
-	    context.fillStyle = "#60dfff"; 
-	    context.shadowColor="#60dfff";
-	}
+	context.shadowBlur=5;
 	
-	if(!this.shipImage){
+	context.fillStyle = this.color;
+	context.shadowColor=this.color;
+	/*if(!this.shipImage){
 	    this.shipImage = Static.resourceLoader.get("ship_banshee");
 	}
 	if(this.shipImage){
-	    //context.rotate(Math.PI/2);
-	    //context.drawImage(this.shipImage
-	//		      ,-15,-25,30,50);
-	    //return;
-	}
+	    context.rotate(Math.PI/2);
+	    context.drawImage(this.shipImage
+			      ,-15,-25,30,50);
+	    return;
+	}*/
 	context.beginPath();
 	context.moveTo(-6,-3);
 	context.lineTo(6,0);
 	context.lineTo(-6,3);
 	context.closePath();
+	context.globalAlpha = 0.3;
 	context.fill();
+	context.globalAlpha = 1;
+	context.strokeStyle = this.color;
+	context.stroke();
     }
     Ship.prototype.onDead = function(byWho){
 	Ship.parent.prototype.onDead.call(this,byWho);
+	return;
 	if(this.owner == Static.username){
 	    console.log(byWho);
 	    Toast("your ship is terminated by "+byWho.weapon.manager.ship.name);

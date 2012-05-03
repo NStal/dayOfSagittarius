@@ -19,6 +19,7 @@
     }
     StarStationInfoDisplayer.prototype._init = function(){
 	PopupBox.call(this,Static.template.starStationInfoDisplayer);
+	console.trace();
 	this.onClickCancel = function(){
 	    this.station = null;
 	    this.popoff();

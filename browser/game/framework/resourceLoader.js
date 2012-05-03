@@ -23,7 +23,9 @@
     }
     ResourceLoader.rcEnums = {
 	"image":Image
+	,"audio":Audio
     }
+    Audio.noOnLoad = true;
     ResourceLoader.prototype.start = function(){
 	if(this.isLoading){
 	    console.log("already loading");
@@ -40,14 +42,25 @@
 	this.isLoading = true;
 	for(var i=0,length=this.resources.length;i < length;i++){
 	    var item = this.resources[i];
-	    if(item.ready)continue;
+	    if(item.ready){
+		console.log(item,"is ready");
+		continue;
+	    }
 	    RC = ResourceLoader.rcEnums[item[1]];
 	    if(!RC){
 		console.warn("invalid resource type")
 		continue;
 	    }
-	    var rc = new RC();
+	    var rc = new RC(item[2]); 
 	    rc.src = item[2];
+	    //rc.autoplay = true;
+	    if(RC.noOnLoad){
+		self.loadedResources.push(item);
+		item.resource = rc;
+		item.type = item[0];
+		item.ready = true;
+		continue;
+	    }
 	    loadTask.newTask();
 	    (function(item,rc){
 		rc.onload = function(){
@@ -62,7 +75,7 @@
 	}
     }
     ResourceLoader.prototype.get = function(rcName){
-	if(this.ready){
+	if(!this.ready){
 	    console.warn("request resource when it's not all ready");
 	}
 	for(var i=0,length=this.loadedResources.length;i < length;i++){

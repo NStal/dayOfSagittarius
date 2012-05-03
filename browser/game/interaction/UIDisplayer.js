@@ -20,17 +20,26 @@
 	var ModulePanel = require("./modulPanel").ModulePanel;
 	this.modulePanel = new ModulePanel(); 
 	var ShipInterface = require("./shipInterface").ShipInterface;
+	var ActionInterface = require("./actionInterface").ActionInterface;
 	this.starStationInterface = new StarStationInterface();
 	this.shipInterface = new ShipInterface(); 
+	this.actionInterface = new ActionInterface();
 	
 	var ShipInfoDisplayer = require("./shipInfoDisplayer").ShipInfoDisplayer;
 	this.shipInfoDisplayer = new ShipInfoDisplayer()
 	this.add(this.shipInterface);
 	this.add(this.modulePanel);
-	this.add(this.starStationInterface);
+	this.add(this.starStationInterface); 
+	this.add(this.actionInterface);
 	this.add(this.mouse);
 	//this.add(this.shipInfoDisplayer);
 	this.starStationInfoDisplayer = new StarStationInfoDisplayer(Static.template.starStationInfoDisplayer);
+	this.chatBox = new ChatBox(Static.template.chatBox);
+	this.itemDisplayer = new ItemDisplayer(Static.template.itemDisplayer);
+	$("#battleScene").append(this.chatBox.node);
+	$("#battleScene").append(this.itemDisplayer.node);
+	//this.itemDisplayer.show();
+	//this.chatBox.show();
     }
     MouseEventConsumer.mixin(UIDisplayer);
     exports.UIDisplayer = UIDisplayer;

@@ -26,23 +26,27 @@
 	__p.x += (Math.random()-0.5) *10;
 	__p.y += (Math.random()-0.5)*10;
 	this.position = __p;
+	this._animateIndex = 3;
     }
     Cannon.prototype.onDraw = function(context){
+	this._animateIndex*=1.15;
 	context.beginPath();
-	context.arc(0,0,1.5+Math.sin(this.index)/Math.PI,0,Math.PI*2);
+	context.globalAlpha = 1/this._animateIndex;
+	context.arc(0,0,this._animateIndex,0,Math.PI*2);
 	context.fillStyle = "red";
 	context.fill();
-	console.log(this.index);
     }
     var Beam = BeamSoul.sub();
     Allumition.mixin(Beam);
     Beam.prototype.start = function(){
 	BeamSoul.prototype.start.call(this);
 	this.from = this.weapon.ship.cordinates;
-	this.to = this.weapon.target.cordinates;
 	if(this.isMissed){
-	    this.to.x += (Math.random()-0.5)/0.5*40; 
-	    this.to.y += (Math.random()-0.5)/0.5*40;
+	    this.to = new Point(this.weapon.target.cordinates);
+	    this.to.x += (Math.random()-0.5)/0.5*30; 
+	    this.to.y += (Math.random()-0.5)/0.5*30;
+	}else{
+	    this.to = this.weapon.target.cordinates;
 	}
 	this.position = {x:0,y:0};
     }
@@ -90,12 +94,19 @@
     Weapon.prototype.active = function(){
 	this.readyFire = true;
 	WeaponSoul.prototype.active.call(this)
+	this.emit("active",this);
     }
     Weapon.prototype.onNextTick = function(){
+	var outDated = 1000;
 	Weapon.parent.prototype.onNextTick.call(this);
-	if(this.autoFire && this.target && this.readyState>=this.coolDown && this.readyFire == true){
+	if(this.target && this.target.isDead){
+	    this.target = null;
+	    this.readyState = true;
+	}
+	if(this.autoFire && this.target && this.readyState>=this.coolDown && (this.readyFire == true||Date.now()-this.lastFireDate>outDated)){
 	    this.fire();
 	    this.readyFire = false;
+	    this.lastFireDate = Date.now();
 	}
     }
     Weapon.prototype.onPresent = function(objects){
@@ -109,8 +120,7 @@
 		new ModuleLockAtInteraction(self).init();
 	    }
 	    ,onActive2:function(){
-		self.autoFire = !self.autoFire;
-		
+		self.autoFire = !self.autoFire; 
 	    }
 	    ,present:function(context,position){
 		if(self.autoFire)self.shakeEffect.onBeforeRender(context);
@@ -120,7 +130,7 @@
 		    var t = Static.battleFieldDisplayer.battleFieldToScreen(self.target.cordinates).sub(position);
 		    context.strokeStyle = "orange";
 		    context.lineWidth = 0.5;
-		    context.globalAlpha = 0.5;
+		    context.globalAlpha = 1;
 		    context.beginPath();
 		    context.moveTo(0,0);
 		    context.lineTo(t.x,t.y);
@@ -181,6 +191,14 @@
 	Weapon.prototype._init.call(this);
 	this.Allumition = Cannon;
 	this.name= "Cannon";
+	this.sound = Static.resourceLoader.get("sound_cannon");
+	this.on("active",function(){
+	    if(this.sound){
+		var audio = new Audio(this.sound.src);
+		//audio.volume=0.2;
+		audio.play();
+	    }
+	});
     }
     var BeamEmitter = BeamEmitterSoul.sub();
     BeamEmitter.extend(Weapon);
@@ -190,6 +208,9 @@
 	this.weaponImage = Static.resourceLoader.get("weapon_beam");
 	this.Allumition = Beam;
 	this.name= "Beam";
+	this.on("active",function(){
+	    (new Audio(Static.resourceLoader.get("sound_beam").src)).play();
+	})
     }
     
     var MissileEmitter = MissileEmitterSoul.sub();

@@ -33,6 +33,7 @@
 	this.owner = info.owner;
 	this.pilot = info.pilot;
 	this.reward = info.reward;
+	this.cagos = info.cagos?info.cagos:[];
     }
     ShipSoul.prototype.init = function(modules){
 	for(var i=0;i<modules.length;i++){
@@ -51,7 +52,6 @@
 	Util.update(this.state
 		    ,this.ability);
     }
-    
     ShipSoul.prototype.toData = function(){
 	var data ={
 	    id:this.id
@@ -67,6 +67,7 @@
 	    ,owner:this.owner
 	    ,pilot:this.pilot
 	    ,reward:this.reward
+	    ,cagos:this.cagos
 	}
 	return data;
     }
@@ -87,7 +88,6 @@
 	    var item = this.moduleManager.events.onDamage[i];
 	    value = item(value);
 	}
-	
 	/*console.log("at",byWho.weapon.manager.ship.parentContainer.time
 	  ,"recieve ",value,"points of hit");*/
 	this.state.structure-=value;

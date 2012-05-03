@@ -1,6 +1,6 @@
 var Interface = require("../database/interface").Interface;
 var MapTask =require("../share/util").MapTask;
-var users = ["nstal","giyya","AI"];
+var users = ["nstal","changtongliu"]//,"AI"];
 var getShipTemplate = function(){
     return {
 	name:"name"
@@ -10,14 +10,16 @@ var getShipTemplate = function(){
 	,category:0
 	,ability:{
 	    maxSpeed:8
-	    ,structure:10000
+	    ,structure:8000
 	    ,maxRotateSpeed:0.2
 	    ,speedFactor:0.8
 	    ,cpu:10
 	    ,size:18
 	    ,curveForwarding:true
+	    ,electricity:20000
 	}
 	,modules:[]
+	,cagos:[]
 	,reward:1200
 	,action:{
 	    rotateFix:0
@@ -73,19 +75,27 @@ for(var i=0;i < users.length;i++){
 }
 console.log("removeAll ships") 
 var createShips = new MapTask();
-Interface.removeAllShips(function(){    
+Interface.removeAllShips(function(){
+    var shipsAPerson = 4;
     console.log("add a ship for every initial user");
-    for(var i=0;i < users.length;i++){
-	var user = users[i];
+    for(var i=0;i < users.length*shipsAPerson;i++){
+	var user = users[Math.floor(i/shipsAPerson)];
 	var ship = getShipTemplate();
 	ship.owner = user;
-	ship.pilot = user;
-	ship.modules = [0,1,2,2 //weapon
-			,3,3 //shield
-			,4,4 //armor
+	if(i/shipsAPerson!=Math.floor(i/shipsAPerson)){
+	    ship.pilot = user+"'sAI";
+	}
+	else{
+	    ship.pilot = user;
+	}
+	ship.modules = [13,13 //2 Cannon small
+			,7,1,3//Missile//Beam small//Beam Big
+			,19 //small shield
+			,25 //small armor
 		       ];
-	ship.cordinates = {x:Math.random()*600
-			   ,y:Math.random()*600
+	ship.cagos = [1,2,3,4,1,4,2,6,5];
+	ship.cordinates = {x:Math.random()*600+200
+			   ,y:Math.random()*600+200
 			  };
 	createShips.newTask();
 	Interface.addShip(ship,function(){
@@ -109,7 +119,6 @@ console.log("create initial galaxys");
 var createGalaxy = new MapTask();
 createShips.on("finish",function(){
     Interface.removeAllGalaxy(function(){
-	
 	for(var i=0;i < GALAXIES.length;i++){
 	    var g = GALAXIES[i];
 	    (function(g){

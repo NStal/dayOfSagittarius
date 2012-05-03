@@ -8,7 +8,7 @@
     var CannonEmitterSoul = require("./module").CannonEmitterSoul;
     var BeamEmitterSoul = require("./module").BeamEmitterSoul;
     var ShieldSoul = require("./module").ShieldSoul;
-    
+    var Static = require("../static").Static;
     var ArmorSoul = require("./module").ArmorSoul;
     //Event
     //"OnPresent":
@@ -75,14 +75,28 @@
     }
     ModuleManager.prototype.getModuleByInfo = function(info){
 	if(typeof info == "number"){
-	    //comeform database
-	    return new (this.moduleEnum[info])();
+	    //comeform database 
+	    var itemInfo = Static.gameResourceManager.get(info);
+	    if(!itemInfo){
+		console.error("invalid item id",info);
+		console.trace();
+		return;
+	    }
+	    var module =  new (this.moduleEnum[itemInfo.attribute.moduleId])();
+	    module.attachItemInfo(itemInfo);
+	    return module;
 	}
-	if(info.id==3)
-	    console.log("info",info);
-	var __m = new (this.moduleEnum[info.id])(info);
-	Util.update(__m,info);
-	return __m;
+	var itemInfo = Static.gameResourceManager.get(info.itemId);
+	if(!itemInfo){
+	    console.error("invalid item id",info.itemId);
+	    console.trace();
+	    return;
+	}
+	var module = new (this.moduleEnum[itemInfo.attribute.moduleId])(info);
+	module.attachItemInfo(itemInfo)
+	//update sth like readyState ,capacity left ,to the module
+	Util.update(module,info);
+	return module;
     }
     ModuleManager.prototype.remove = function(module){
 	if(ModuleManager.parent.prototype.remove.call(this,module)){

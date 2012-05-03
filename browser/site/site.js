@@ -10,6 +10,8 @@ var Site = function(){
 Site.prototype.initGame = function(username){
     settings.width = $("body").width();
     settings.height = $("body").height();
+    Static.gameResourceManager = gameResourceManager;
+    Static.gameResourceManager.init(Items);
     Static.waitingPage = new WaitingPage(this.waitingSceneNode);
     var StarStationScene = require("./starStationScene/starStationScene").StarStationScene;
     Static.starStationScene = new StarStationScene(this.starStationSceneNode);

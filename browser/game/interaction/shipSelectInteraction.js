@@ -23,7 +23,7 @@
 	this.done =false;
 	this.r = this.ship.state.size?this.ship.state.size*1.2:20;
 	this.realR = this.r*20;
-	this.minAlpha = 0.3;
+	this.minAlpha = 0.6;
 	this.maxAlpha = 1;
 	this.alpha = 1;
 	this.alphaStep = 0.03;
@@ -101,7 +101,7 @@
 	context.beginPath();
 	context.moveTo(0,0);
 	context.lineTo(p.x,p.y);
-	context.lineWidth=0.4;
+	context.lineWidth=4;
 	context.strokeStyle = "red";
 	context.stroke();
 	context.restore();

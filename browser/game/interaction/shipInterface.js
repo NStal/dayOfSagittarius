@@ -87,7 +87,7 @@
 	context.beginPath();
 	context.moveTo(0,0);
 	context.lineTo(p.x,p.y);
-	context.lineWidth=0.4;
+	context.lineWidth=0.6;
 	context.strokeStyle = "red";
 	context.stroke();
 	context.restore();

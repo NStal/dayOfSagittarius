@@ -22,8 +22,8 @@
 	this.done =false;
 	this.r = this.ship.state.size?this.ship.state.size*1.2:20;
 	this.realR = this.r*20;
-	this.minAlpha = 0.2;
-	this.maxAlpha = 0.4;
+	this.minAlpha = 0.4;
+	this.maxAlpha = 0.6;
 	this.alpha = 0.4;
 	this.alphaStep = 0.01;
     }

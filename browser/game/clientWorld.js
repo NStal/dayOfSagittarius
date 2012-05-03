@@ -28,10 +28,14 @@
 	this.delay = worldInfo.delay;//300ms
 	Static.globalCaptureLayer = new GlobalCaptureLayer(this);
 	Static.interactionDisplayer = new InteractionDisplayer(this);
-	Static.UIDisplayer = new UIDisplayer(this);
+	
 	Static.battleField = new BattleField({world:this,time:worldInfo.time}); 
 	Static.battleFieldDisplayer = new BattleFieldDisplayer(Static.battleField);
-	Static.gateway = new Gateway(Static.battleField);
+	Static.gateway = new Gateway(Static.battleField); 
+	Static.gateway.on("outdate",function(){
+	    ShipController.setDelay(ShipController.delay*2);
+	})
+	Static.UIDisplayer = new UIDisplayer(this);
 	//setup user auth info
 	Static.gateway.username = worldInfo.username;
 	//setup galaxy
@@ -74,6 +78,7 @@
 		var event = "mouseUp"
 	    }
 	    self.mouseEventDistributer.distribute(event,nodePointToPoint(e));
+	    
 	}
 	this.canvas.ontouchmove = function(e){
 	    self.mouseEventDistributer.distribute("mouseMove",nodePointToPoint(e));
@@ -104,7 +109,9 @@
 	}
 	this.canvas.onmousemove = function(e){
 	    if(this.hasTouch)return;
+	    
 	    self.mouseEventDistributer.distribute("mouseMove",nodePointToPoint(e));
+	    Static.mousePosition = nodePointToPoint(e);
 	    if(self._lastMove){
 		self.mouseEventDistributer.distribute("mouseLeave",nodePointToPoint(e),self._lastMove); 
 		self.mouseEventDistributer.distribute("mouseEnter",self._lastMove,nodePointToPoint(e));
@@ -127,7 +134,10 @@
 	Static.waitingPage.startWaiting();
 	//connect to server to sync battleFieldInfo
 	this.changeGalaxy("Nolava");
-	var self = this;
+	var audio = Static.resourceLoader.get("music_bgm");
+	audio.play();
+	audio.loop = true;
+	audio.volume = 0.5;
 	return this;
     }
     ClientWorld.prototype.setTime = function(time){
@@ -159,8 +169,6 @@
 	ClientWorld.parent.prototype.next.call(this);
 	this.solveKeyEvent();
 	Static.battleField.next(context);
-	this.canvas.width = settings.width;
-	this.canvas.height = settings.height;
 	var context = this.canvas.getContext("2d");
 	context.clearRect(0,0,settings.width,settings.height);
 	context.save();
@@ -176,6 +184,28 @@
 	    }
 	    if(Static.battleFieldDisplayer.scale >=1)Static.battleFieldDisplayer.scale=1;
 	    if(Static.battleFieldDisplayer.scale <0.1)Static.battleFieldDisplayer.scale=0.1;
+	}
+	if(this.KEYS[Key.f]){
+	    if(this.viewLastChange
+	       &&Date.now()-this.viewLastChange<settings.changeViewInterval)return;
+	    this.viewLastChange = Date.now();
+	    this.KEYS[Key.f] = false;
+	    Static.battleFieldDisplayer.followShip = !Static.battleFieldDisplayer.followShip;
+	} 
+	if(this.KEYS[Key.e]){
+	    if(this.viewLastChange
+	       &&Date.now()-this.viewLastChange<settings.changeViewInterval)return;
+	    this.viewLastChange = Date.now();
+	    this.KEYS[Key.e] = false;
+	    Static.UIDisplayer.itemDisplayer.toggle();
+	}
+	 
+	if(this.KEYS[Key.c]){
+	    if(this.viewLastChange
+	       &&Date.now()-this.viewLastChange<settings.changeViewInterval)return;
+	    this.viewLastChange = Date.now();
+	    this.KEYS[Key.c] = false;
+	    Static.UIDisplayer.chatBox.toggle();
 	}
     } 
     Drawable.mixin(ClientWorld);

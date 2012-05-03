@@ -42,6 +42,11 @@
 				})
 	    return;
 	}
+	if(typeof msg.channel !="undefined"){
+	    //chat message
+	    this.syncManager.boardCast(msg);
+	    return;
+	}
 	if(msg.cmd==Protocol.clientCommand.comeFromGate){
 	    //current alpha version don't judge if it's come from trust server 
 	    msg.time = this.battleField.time+settings.delay;
@@ -60,8 +65,11 @@
 	if(msg.time<=this.battleField.time){
 	    console.log("it's",this.battleField.time);
 	    console.log("drop outdated message",msg);
+	    who.send({
+		outDated:true
+	    })
 	    return;
-	} 
+	}
 	//
 	console.log(msg.time-settings.delay);
 	console.log(msg.time,this.battleField.time);

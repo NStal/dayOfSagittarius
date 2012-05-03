@@ -1,6 +1,6 @@
 (function(exports){
-    var Class = require("./util").Class;
-    var Gateway = Class.sub();
+    var EventEmitter = require("./util").EventEmitter;
+    var Gateway = EventEmitter.sub();
     var settings = require("./settings").settings;
     //Gateway is the middleware between server and client battleField
     //Gateway add authInfo to every command sent to the server
@@ -31,6 +31,24 @@
 	console.log("recieve msg",msg);
 	//In future version
 	//Here all cmd should be validated
+	if(msg.badge){
+	    if(msg.owner == Static.username)
+		Toast("you "+msg.content);
+	    return;
+	} 
+	if(msg.reward){
+	    if(msg.username == Static.username)
+		Toast("you gain "+msg.ammount);
+	    return;
+	}
+	if(msg.outDated){
+	    this.emit("outdate");
+	    return;
+	}
+	if(typeof msg.channel!="undefined"){
+	    this.emit("chatMessage",msg);
+	    return;
+	}
 	if(msg.cmd==1){
 	    this.battleField.initShips(msg.data.ships,Static.world.galaxy);
 	    Static.world.setTime(msg.time);
