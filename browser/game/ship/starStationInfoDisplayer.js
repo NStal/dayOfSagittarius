@@ -47,6 +47,7 @@
 	self.shipListJ.empty().text("loading...");
     }
     StarStationInfoDisplayer.prototype.show = function(station){
+	return;
 	this.station = station;
 	this.popup();
 	this.update();

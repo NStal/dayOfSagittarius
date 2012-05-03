@@ -1,6 +1,6 @@
 exports.port = 20100;
 exports.host = "0.0.0.0";
-exports.root = "/home/giyya/workspace/dayOfSagittarius/browser/";
+exports.root = "/home/wuminghan/workspace/dayOfSagittarius/browser/";
 exports.apiRoot = "api/";
 
 exports.htmlRoot = "html/";

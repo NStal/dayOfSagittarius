@@ -18,7 +18,7 @@
 		//users ship docked
 		self.station = station; 
 		//alert(station.name);
-		self.onEnterStation(station.name);
+		self.onEnterStation(station.name); 
 	    }
 	});
     }

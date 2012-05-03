@@ -23,7 +23,11 @@
 	if(this.point)this.point.release();
 	this.point = point;
 	this.target = Static.battleFieldDisplayer.findShipByPosition(this.point);
-	if(this.target)this.point = this.target.cordinates;
+	if(this.target)
+	    this.point = this.target.cordinates;
+	this.station = Static.battleFieldDisplayer.findStarStationByPosition(this.point);
+	if(this.station)
+	    this.point = this.station.position;
 	this.done =false;
 	this.minAlpha = 0.3;
 	this.maxAlpha = 1;
@@ -72,7 +76,14 @@
 	},{
 	    name:"dock"
 	    ,callback:function(){
-		new DockAtInteraction(self.ship).init();
+		if(self.station){
+		    new DockAtInteraction(self.ship).init();
+		    Static.globalCaptureLayer.emit(
+			"mouseDown"
+			,Static.battleFieldDisplayer.battleFieldToScreen(self.station.position));
+		}
+		self.hide();
+		//new DockAtInteraction(self.ship).init();
 	    }
 	},{
 	    name:"warp"

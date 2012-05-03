@@ -13,9 +13,6 @@ Site.prototype.initGame = function(username){
     Static.gameResourceManager = gameResourceManager;
     Static.gameResourceManager.init(Items);
     Static.waitingPage = new WaitingPage(this.waitingSceneNode);
-    var StarStationScene = require("./starStationScene/starStationScene").StarStationScene;
-    Static.starStationScene = new StarStationScene(this.starStationSceneNode);
-    Static.starStationScene.onEnterStation("Nolava-I");
     var __config = {
 	username:username
 	,rate:settings.rate
@@ -34,10 +31,12 @@ Site.prototype.initGame = function(username){
 	initTask.complete();
     })
     Static.resourceLoader.start();
+    var self = this;
     initTask.on("finish",function(){
-	main.clientWorld = new ClientWorld(__config);
-    
-	main.clientWorld.start();
+	main.clientWorld = new ClientWorld(__config); 
+	main.clientWorld.start(); 
+	var StarStationScene = require("./starStationScene/starStationScene").StarStationScene;
+	Static.starStationScene = new StarStationScene(self.starStationSceneNode);
     })
     Static.waitingPage.startWaiting();
     window.ontouchmove = function(e){

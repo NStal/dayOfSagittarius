@@ -20,10 +20,29 @@
 	}
 	c.prototype._class = c; 
 	c.prototype.parent = c.parent;
+	
 	c.sub = Class.sub;
 	c.extend = Class.extend;
 	return c;
     }
+    Class.getInstence = function (_instance,_class){
+	var tempInstance = new _class();
+	for(var i in _instance){
+	    tempInstance[i] = _instance[i];
+	}
+	return tempInstance;
+    }
+    Class.prototype.copy = function (target){
+	for(var i in target){
+	    if(target._class.prototype[i]){
+		//console.error(i," is in prototype");
+		continue
+	    }
+	    this[i] = target[i];
+
+	}
+    }
+
     Class.extend = function(){
 	for(var i=0;i<arguments.length;i++){
 	    var toExtend = arguments[i];
@@ -473,6 +492,105 @@
 	_runOnceArray.push(code);
 	handler();
     }
+    Array.prototype.getSubscript = function (target,condition){
+	for(var i=0 ; i<this.length ; i++){
+	    if(this[i][condition] == target[condition]){
+		return i;
+	    }
+	}
+	return -1;
+	console.error("Can't find array target");
+	console.error(target,condition);
+	console.error(this[condition]);
+    }
+    Array.prototype.del = function (target,condition){
+	var sub = this.getSubscript(target,condition);
+	if(sub < 0){
+	    console.error("failed to delet:",target);
+	    return;
+	}
+	this.splice(sub,1);
+    }
+
+    var PathPoint = Class.sub();
+    PathPoint.prototype._init = function (x , y , cpx ,cpy){
+	if(x && x.x) {
+	    this.x = x.x;
+	    this.y = x.y;
+	    this.cpx = x.cpx;
+	    this.cpy = x.cpy;
+	    return;
+	}
+	this.x = x;
+	this.y = y;
+	this.cpx = cpx;
+	this.cpy = cpy;
+    }
+    PathPoint.prototype.startPath = function (context){
+	context.moveTo(this.x,this.y);
+    }
+    PathPoint.prototype.pathThrough = function(context){
+	if(this.cpx){
+	    context.quadraticCurveTo(this.cpx,this.cpy,this.x,this.y);
+	}else{
+	    context.lineTo(this.x,this.y);
+	}
+    }
+    var CirclePath = Class.sub();
+    CirclePath.prototype._init = function (x,y,radius){
+	if(x && x.center){
+	    this.center={};
+	    this.center.x = x.center.x;
+	    this.center.y = x.center.y;
+	    this.radius = x.radius;
+	    return;
+	}
+	this.center={};
+	this.center.x = x;
+	this.center.y = y;
+	this.radius = radius;
+    }
+    CirclePath.prototype.draw = function (context){
+	context.beginPath();
+	context.arc(this.center.x , this.center.y , this.radius , 0 , Math.PI * 2,true);
+	context.stroke();
+    }
+    
+    var Path = Class.sub();
+    Path.prototype._init = function (){
+	this.closed = false;
+	this.pointArray = new Array();
+    }
+    Path.prototype.drawPath = function (context){
+	context.beginPath();
+	this.pointArray[0].startPath(context);
+	for(var i = 1 ; i < this.pointArray.length ; i ++){
+	    if(this.pointArray[i]) this.pointArray[i].pathThrough(context);
+	}
+	if(this.closed){
+	    this.pointArray[0].pathThrough(context);
+	    context.closePath();
+	}
+	context.stroke();
+    }
+    
+    Math.getDistance = function (pointA, pointB){
+	if(!pointA || !pointB) return;
+	var x = pointA.x - pointB.x;
+	var y = pointA.y - pointB.y;
+	//	console.log(Math.sqrt(x*x + y*y)+" "+pointA.x+" "+pointB.x);
+	return Math.sqrt(x*x + y*y);	
+    }
+    Math.getCentrosymmetricPoint = function(pointA , center){
+	var pointB = {};
+	pointB.x = -pointA.x + center.x * 2;
+	pointB.y = -pointA.y + center.y * 2;
+	return pointB;
+    }
+    
+    exports.PathPoint = PathPoint;
+    exports.CirclePath = CirclePath;
+    exports.Path = Path;
     exports.runOnce = runOnce;
     exports.HashInt = HashInt;
     exports.HashRandom = HashRandom;

@@ -422,6 +422,9 @@
 	ship.on("docking",function(ship,station){
 	    self.emit("shipDocking",ship,station);
 	})
+	ship.on("docked",function(ship){
+	    self.emit("shipDocked",ship,ship.AI.destination.starStation);
+	})
 	this.add(ship);
 	return ship;
     }

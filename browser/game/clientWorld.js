@@ -29,7 +29,7 @@
 	Static.globalCaptureLayer = new GlobalCaptureLayer(this);
 	Static.interactionDisplayer = new InteractionDisplayer(this);
 	
-	Static.battleField = new BattleField({world:this,time:worldInfo.time}); 
+	Static.battleField = new BattleField({world:this,time:worldInfo.time});
 	Static.battleFieldDisplayer = new BattleFieldDisplayer(Static.battleField);
 	Static.gateway = new Gateway(Static.battleField); 
 	Static.gateway.on("outdate",function(){
