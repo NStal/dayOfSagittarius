@@ -4,6 +4,7 @@
     <meta name="Content-Type" content="text/html; charset=utf8"/>
     <title>The Day of Sagittarius</title>
     <link rel="stylesheet/less" href="site/css/style.less" type="text/css" media="screen" />
+	<link rel="stylesheet" href="site/css/dockStyle.css" type="text/css" media="screen" />
     <script type="text/javascript" src="site/less-1.2.1.min.js"></script>
 
     <script type="text/javascript" src="game/static.js"></script>
@@ -92,12 +93,25 @@
     <div class="scene" id="battleScene"> 
       <canvas id="screen">
       </canvas> 
-    </div>
-    <div class="scene" id="waitingScene"> 
-      <canvas id="screen">
-      </canvas>
     </div> 
-    <div class="scene" id="starStationScene"> 
+    <div class="scene" id="starStationScene">
+	  <div id="DockHeader" class="">
+	  </div>
+	  <div id="screenContainer">
+		<canvas id="screen">
+		  Your browser does not support the HTML5 Canvas!
+		</canvas>
+	  </div>
+	</div>
+	<!--toolBar--> 
+	<div id="toolBar">
+	  <button id="propertyButton" class="toolButton">Property</button>
+	  <button id="assetsButton" class="toolButton">Assets</button>
+	  <button id="taskButton" class="toolButton">Tasks</button>
+	  <button id="socialButton" class="toolButton">Social</button>
+	  <button id="systemButton" class="toolButton">System</button>
+	</div>
+    <div class="scene" id="waitingScene"> 
       <canvas id="screen">
       </canvas>
     </div>

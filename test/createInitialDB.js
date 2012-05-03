@@ -38,7 +38,7 @@ var GALAXIES = [{
     ,starStations:[]
     ,starGates:[]
     ,server:{
-	host:"115.156.219.166"
+	host:"localhost"
 	,localport:20000
 	,port:10000
     }

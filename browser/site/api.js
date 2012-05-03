@@ -1,8 +1,8 @@
 API = function(){
     APIManager.call(this);
     this.apis = {
-	"getGalaxyInfoByName":["name"] 
-	,"getStationInfoByName":["name"]
+		"getGalaxyInfoByName":["name"]
+		,"getStationInfoByName":["name"]
     }
     this.initAPI();
 }

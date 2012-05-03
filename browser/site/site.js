@@ -13,7 +13,7 @@ Site.prototype.initGame = function(username){
     Static.waitingPage = new WaitingPage(this.waitingSceneJ.find('#screen')[0]);
     var StarStationScene = require("./starStationScene/starStationScene").StarStationScene;
     Static.starStationScene = new StarStationScene(this.starStationSceneNode);
-    //Static.starStationScene.onEnterStation("Nolava-I");
+    Static.starStationScene.onEnterStation("Nolava-I");
     var __config = {
 	username:username
 	,rate:settings.rate

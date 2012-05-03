@@ -1,6 +1,6 @@
 exports.port = 20100;
 exports.host = "0.0.0.0";
-exports.root = "/home/wuminghan/workspace/dayOfSagittarius/browser/";
+exports.root = "/home/giyya/workspace/dayOfSagittarius/browser/";
 exports.apiRoot = "api/";
 
 exports.htmlRoot = "html/";
@@ -20,7 +20,7 @@ exports.alias={
 }
 exports.apiSuffix = ".js";
 exports.header = {};
-exports.databaseName = "suoshi";
+exports.databaseName = "dayOfSagittarius";
 exports.databaseAddress = "localhost";
 exports.databasePort = 27017;
 exports.storageFolder = "store/";
