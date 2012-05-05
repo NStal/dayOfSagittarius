@@ -273,6 +273,7 @@
     Key.space = 32;
     Key.shift = 16;
     Key.ctrl = 17;
+    Key.alt = 18;
     Key.left = 37;
     Key.up = 38;
     Key.right = 39;

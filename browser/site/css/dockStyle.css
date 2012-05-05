@@ -7,13 +7,13 @@
 	
 }
 
-div{
+#starStationScene div{
 	border:1px solid black;
 	background-color:rgba(110,115,130,0.3);
 	color:white;
 	
 }
-button{
+#starStationScene button{
 	color:white;
 }
 

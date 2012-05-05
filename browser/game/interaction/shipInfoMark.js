@@ -8,19 +8,34 @@
     ShipInfoMark.prototype._init = function(ship){
 	this.color = "black";
 	this.ship = ship;
-	this.alpha = 0.6;
+	this.alpha = 0.5;
+	this.lineColor = "#42ccff";
+	this.bg = Static.resourceLoader.get("ui_shipInfoMarkBG");
+	this.userAvatar = new Image();
+	this.userAvatar.src = "image/avatar_"+this.ship.owner+".png";
+	var self = this;
+	this.userAvatar.onload = function(){
+	    self.userAvatar.isReady = true;
+	}
     }
     ShipInfoMark.prototype.show = function(){
 	if(!this.ship)return;
 	this.position = this.ship.cordinates;
-	Static.interactionManager.add(this);
+	Static.interactionDisplayer.add(this);
+	return this;
     }
     ShipInfoMark.prototype.hide = function(){
-	this.ship = null;
-	Static.interactionManager.remove(this);
+	Static.interactionDisplayer.remove(this);
     }
     ShipInfoMark.prototype.onDraw = function(context){
+	if(this.position.x<-Static.battleFieldDisplayer.position.x
+	   ||this.position.y<-Static.battleFieldDisplayer.position.y
+	   ||this.position.x>-Static.battleFieldDisplayer.position.x+settings.width
+	   ||this.position.y>-Static.battleFieldDisplayer.position.y+settings.height){
+	    return;
+	}
 	context.save();
+	context.globalAlpha = 0.5;
 	context.scale(1/Static.battleFieldDisplayer.scale,
 		      1/Static.battleFieldDisplayer.scale);
 	//drawMark
@@ -35,31 +50,39 @@
 	}
 	
 	context.globalAlpha = this.alpha; 
-	context.strokeStyle = this.color;
+	context.strokeStyle = this.lineColor;
 	context.stroke();
 	//draw lines
 	context.beginPath();
 	context.moveTo(size,-size);
-	context.translate(40,-40);
+	context.translate(60,-60);
 	context.lineTo(0,0);
-	context.lineTo(50,0);
+	context.lineTo(20,0);
 	context.stroke();
-	//draw text
-	context.beginPath();
-	context.textAlign = "center";
-	context.fillText(this.ship.name,25,-2);
-	var __hp = this.ship.state.structure/1000 + "k/" + this.ship.ability.structure/1000+"k";
-	context.translate(-40,40);
-	context.beginPath();
-	context.moveTo(size,-size);
-	context.translate(40,-25);
-	context.lineTo(0,0);
-	context.lineTo(50,0);
-	context.stroke();
-	context.beginPath();
-	context.fillText(__hp,25,-2);
-	context.restore();
-	
+	//drawBG
+	context.globalAlpha = 0.5;
+	context.translate(-12,-3);
+	context.drawImage(this.bg,0,0);
+	if(this.userAvatar.isReady){
+	    context.save();
+	    context.beginPath();
+	    context.moveTo(0,19);
+	    context.lineTo(0,100);
+	    context.lineTo(100,100);
+	    context.lineTo(100,0);
+	    context.lineTo(19,0);
+	    context.closePath();
+	    //context.fill();
+	    context.clip();
+	    context.drawImage(this.userAvatar,5,5);
+	    context.restore();
+	}
+	context.translate(55,14);
+	context.font = "8px Delicious";
+	context.fillStyle = "white";
+	context.textAlign = "left"; 
+	context.fillText("pilot:"+this.ship.pilot.substr(0,8),0,0);
+	context.restore(); 
     }
     exports.ShipInfoMark = ShipInfoMark;
 })(exports)

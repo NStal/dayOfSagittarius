@@ -10,6 +10,7 @@
     var ShieldSoul = require("./module").ShieldSoul;
     var Static = require("../static").Static;
     var ArmorSoul = require("./module").ArmorSoul;
+    var EngineSoul = require("./module").EngineSoul;
     var RemoteShieldRechargerSoul = require("./module").RemoteShieldRechargerSoul;
     //Event
     //"OnPresent":
@@ -31,6 +32,7 @@
 	,3:ShieldSoul
 	,4:ArmorSoul
 	,5:RemoteShieldRechargerSoul
+	,6:EngineSoul
     }
     ModuleManager.prototype._init = function(ship){
 	this.ship = ship;

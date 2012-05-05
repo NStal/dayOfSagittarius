@@ -53,6 +53,19 @@
 	    return self[event].apply(self,arguments);
 	}
     } 
+    var EngineSoul = Module.sub();
+    EngineSoul.prototype._init = function(state){
+	this.type="engine";
+	EngineSoul.parent.parent._init.call(this,state);
+	this.listen("onCalculateSpeedFactor");
+	if(!this.speedFactor){
+	    console.warn("no speed factor")
+	    this.speedFactor = 1;
+	}
+    }
+    EngineSoul.prototype.onCalculateSpeedFactor = function(){
+	return this.speedFactor;
+    }
     var ShieldSoul = Module.sub();
     ShieldSoul.prototype._init = function(state){
 	this.type = "shield";
@@ -381,6 +394,7 @@
 	MissileEmitterSoul.parent.prototype._init.call(this,state);
 	this.Allumition = MissileSoul; 
     }
+    exports.EngineSoul = EngineSoul;
     exports.RemoteShieldRechargerSoul = RemoteShieldRechargerSoul;
     exports.ShieldRepairPulseSoul = ShieldRepairPulseSoul;
     exports.ShieldSoul = ShieldSoul;

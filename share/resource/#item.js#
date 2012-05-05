@@ -9,7 +9,6 @@
 	,Shield:3
 	,Armor:4
 	,RemoteShieldRecharger:5
-	,Engine:6
     }
     var m = exports.ModuleEnum;
     var e = exports.ItemEnum;
@@ -394,6 +393,7 @@
 	,attribute:{
 	    moduleId:m.RemoteShieldRecharger
 	    ,coolDown:210
+
 	    ,accuracyFactor:1.2
 	    ,ammunitionInfo:{
 		repairAmmount:90
@@ -457,14 +457,6 @@
 		,range:350 
 		,count: 15
 	    }
-	}
-    },{
-	id:35
-	,name:"Engine (tiny)"
-	,type:e.module
-	,attribute:{
-	    moduleId:m.Engine
-	    ,speedFactor:3
 	}
     }]
 })(exports)

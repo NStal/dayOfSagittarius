@@ -31,10 +31,10 @@
 	
 	Static.world = this;
 	Static.globalCaptureLayer = new GlobalCaptureLayer(this);
-	Static.interactionDisplayer = new InteractionDisplayer(this);
 	
-	Static.battleField = new BattleField({world:this,time:worldInfo.time});
-	Static.battleFieldDisplayer = new BattleFieldDisplayer(Static.battleField);
+	Static.battleField = new BattleField({world:this,time:worldInfo.time}); 
+	Static.interactionDisplayer = new InteractionDisplayer(this);
+	Static.battleFieldDisplayer = new BattleFieldDisplayer(Static.battleField); 
 	Static.gateway = new Gateway(Static.battleField); 
 	Static.gateway.on("outdate",function(){
 	    ShipController.setDelay(ShipController.delay*2);
@@ -175,13 +175,14 @@
 	this.solveKeyEvent();
 	Static.battleField.next(context);
 	var context = this.canvas.getContext("2d");
+	context.font = "11px Arial";
 	context.clearRect(0,0,settings.width,settings.height);
 	context.save();
 	this.draw(context);
 	context.restore();
     }
     ClientWorld.prototype.solveKeyEvent = function(){
-	if(this.KEYS[Key.z]){
+	if(this.KEYS[Key.z] && this.KEYS[Key.alt]){
 	    if(this.KEYS[Key.shift]){
 		Static.battleFieldDisplayer.scale *= 1.1; 
 	    }else{
@@ -190,14 +191,14 @@
 	    if(Static.battleFieldDisplayer.scale >=1)Static.battleFieldDisplayer.scale=1;
 	    if(Static.battleFieldDisplayer.scale <0.1)Static.battleFieldDisplayer.scale=0.1;
 	}
-	if(this.KEYS[Key.f]){
+	if(this.KEYS[Key.f] && this.KEYS[Key.alt]){
 	    if(this.viewLastChange
 	       &&Date.now()-this.viewLastChange<settings.changeViewInterval)return;
 	    this.viewLastChange = Date.now();
 	    this.KEYS[Key.f] = false;
 	    Static.battleFieldDisplayer.followShip = !Static.battleFieldDisplayer.followShip;
 	} 
-	if(this.KEYS[Key.e]){
+	if(this.KEYS[Key.e] && this.KEYS[Key.alt]){
 	    if(this.viewLastChange
 	       &&Date.now()-this.viewLastChange<settings.changeViewInterval)return;
 	    this.viewLastChange = Date.now();
@@ -205,12 +206,19 @@
 	    Static.UIDisplayer.itemDisplayer.toggle();
 	}
 	 
-	if(this.KEYS[Key.c]){
+	if(this.KEYS[Key.c] && this.KEYS[Key.alt]){
 	    if(this.viewLastChange
 	       &&Date.now()-this.viewLastChange<settings.changeViewInterval)return;
 	    this.viewLastChange = Date.now();
 	    this.KEYS[Key.c] = false;
 	    Static.UIDisplayer.chatBox.toggle();
+	}
+	if(this.KEYS[Key.m] && this.KEYS[Key.alt]){
+	    if(this.viewLastChange
+	       &&Date.now()-this.viewLastChange<settings.changeViewInterval)return;
+	    this.viewLastChange = Date.now();
+	    this.KEYS[Key.m] = false;
+	    Static.interactionDisplayer.toggleMarks();
 	}
     } 
     Drawable.mixin(ClientWorld);

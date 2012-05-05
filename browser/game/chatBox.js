@@ -8,13 +8,21 @@
 	    if(!this.channel)this.channel = "0";
 	    this.chatRoomJ.show(); 
 	    this.channelSelectorJ.hide();
-	    this.channelDisplayerJ.text("current channel:"+this.channel);
+	    this.channelDisplayerJ.text("Current Channel:"+this.channel);
 	    this.contentJ.append("change to channel "+this.channel+"</br>");
 	}
 	Static.gateway.on("chatMessage",function(msg){
 	    if(self.channel.toString() == msg.channel.toString()){
 		var item = $("<p>").text(msg.auth.username+":"+msg.content);
 		self.contentJ.append(item);
+		self.contentJ.scrollTop(self.contentJ[0].scrollHeight);
+	    }
+	})
+	this.channelCodeInputJ.keydown(function(e){
+	    var enter = 13;
+	    if(e.which == enter){
+		self.onClickChannelButton(); 
+		return false;
 	    }
 	})
 	this.onClickChangeChannelButton = function(){
@@ -46,6 +54,7 @@
     ChatBox.prototype.show = function(){
 	this.isShown = true;
 	this.nodeJ.show();
+	this.channelDisplayerJ.text("Current Channel :"+this.channel);
     }
     ChatBox.prototype.hide = function(){
 	this.nodeJ.hide();

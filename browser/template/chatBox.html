@@ -1,5 +1,6 @@
 <div id="chatBox">
   <div id="channelSelector"> 
+    <span>Enter the Channel code to change the channel</span>
     <span>0 is global channel(which is default)</span>
     <input type="text" name="" id="channelCodeInput" value="" placeholder="Please enter the chanel code" />
     <button id="channelButton">Enter</button>
@@ -8,10 +9,16 @@
     <div id="content"> 
     </div>
     <div id="chatForm">
-      <input type="text" name="" id="chatInput" value="" placeholder="your words here" />
-      <button id="submitWordButton" >send</button>
-      <button id="changeChannelButton" >change channel</button>
-      <span id="channelDisplayer"></span>
+      <div class="channelBar"> 
+	<span id="channelDisplayer"></span>
+	<button id="changeChannelButton" >change channel</button>
+      </div>
+      <img id="avatar" src="./image/chatBoxAvatar.png"/>
+      <div class="chatBar">
+ 
+	<input type="text" name="" id="chatInput" value="" placeholder="your words here" />
+	<button id="submitWordButton" >send</button>
+      </div>
     </div>
   </div>
 </div>

@@ -4,6 +4,7 @@
 	,["ship_banshee","image","image/ship/banshee.png"]
 	,["ui_basicShipInfoPanel","image","image/basicShipInfoPanel.png"]
 	,["ui_electricityBar","image","image/electricityBar.png"]
+	,["ui_shipInfoMarkBG","image","image/shipMarkBG.png"]
 	,["weapon_beam","image","image/beam.png"] 
 	,["sound_scanning","audio","music/scanning.mp3"]
 	,["sound_cannon","audio","music/cannon.mp3"]

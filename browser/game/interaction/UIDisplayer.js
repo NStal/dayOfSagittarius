@@ -39,7 +39,7 @@
 	$("#battleScene").append(this.chatBox.node);
 	$("#battleScene").append(this.itemDisplayer.node);
 	//this.itemDisplayer.show();
-	//this.chatBox.show();
+	this.chatBox.show();
     }
     MouseEventConsumer.mixin(UIDisplayer);
     exports.UIDisplayer = UIDisplayer;

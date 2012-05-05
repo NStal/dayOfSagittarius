@@ -5,7 +5,7 @@
     var MissileEmitterSoul = require("../share/ship/module").MissileEmitterSoul;
     var ModuleManager = require("../share/ship/moduleManager").ModuleManager;
     var Shield = require("../share/ship/moduleManager").Shield;
-    var Armor = require("../share/ship/moduleManager").Armor;
+    var Armor = require("../share/ship/moduleManager").Armor; 
     Allumition.prototype.onStart = function(){
 	this.type = "ammunition";
 	Static.battleFieldDisplayer.add(this);
@@ -155,6 +155,7 @@
 		    context.globalAlpha = 1;
 		    context.beginPath();
 		    context.moveTo(0,0);
+		    context.lineTo(-15,-53);
 		    context.lineTo(t.x,t.y);
 		    context.stroke();
 		}
@@ -206,6 +207,7 @@
 	    })
 	}
     }
+    var Engine = EngineSoul;
     var CannonEmitter = CannonEmitterSoul.sub();
     CannonEmitter.extend(Weapon);
     CannonEmitter.prototype._init = function(state){
@@ -337,6 +339,7 @@
 	,3:Shield
 	,4:Armor
 	,5:RemoteShieldRecharger
+	,6:Engine
     }
     exports.RemoteShieldRecharger = RemoteShieldRecharger;
     exports.MissileEmitter = MissileEmitter;
