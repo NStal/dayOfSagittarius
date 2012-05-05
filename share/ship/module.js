@@ -56,15 +56,21 @@
     var EngineSoul = Module.sub();
     EngineSoul.prototype._init = function(state){
 	this.type="engine";
-	EngineSoul.parent.parent._init.call(this,state);
+	EngineSoul.parent.prototype._init.call(this,state);
 	this.listen("onCalculateSpeedFactor");
 	if(!this.speedFactor){
 	    console.warn("no speed factor")
 	    this.speedFactor = 1;
 	}
+	this.moduleId = 5;
     }
     EngineSoul.prototype.onCalculateSpeedFactor = function(){
 	return this.speedFactor;
+    }
+    EngineSoul.prototype.toData = function(){
+	return {
+	    itemId:this.itemId
+	};
     }
     var ShieldSoul = Module.sub();
     ShieldSoul.prototype._init = function(state){

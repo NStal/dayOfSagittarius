@@ -26,8 +26,12 @@
 	if(this.target)
 	    this.point = this.target.cordinates;
 	this.station = Static.battleFieldDisplayer.findStarStationByPosition(this.point);
-	if(this.station)
-	    this.point = this.station.position;
+	if(this.station){
+	    this.point = this.station.position; 
+	}
+	this.position.release();
+	this.position = Static.battleFieldDisplayer.battleFieldToScreen(this.point);
+	this.firstShow = true;
 	this.done =false;
 	this.minAlpha = 0.3;
 	this.maxAlpha = 1;
@@ -148,7 +152,7 @@
 	this.callback = callback;
 	this.borderLength = 33;
 	this.mouseReactSize = 32;
-	this.position = new Point(100,100);
+	this.position = new Point(0,0);
 	this.lineWidth = 0.2;
 	this.consumeType.mouseEnter = true;
 	this.consumeType.mouseLeave = true;

@@ -100,7 +100,7 @@
 	    this.setViewPort(context);
     }
     BattleFieldDisplayer.prototype.setViewPort = function(context){
-	var min = 12;
+	var min = 6;
 	if(this.userOnShip){
 	    //make a animation to move view to the followed ship
 	    var targetX = -(this.userOnShip.cordinates.x-settings.width/2);
@@ -108,13 +108,13 @@
 	    if(Math.abs(targetX-this.position.x)<min){
 		this.position.x = targetX;
 	    }else{
-		this.position.x += (targetX-this.position.x)*2/3;
+		this.position.x += (targetX-this.position.x)*1/2;
 	    } 
 	    //not directly set,move it;
 	    if(Math.abs(targetY-this.position.y)<min){
 		this.position.y = targetY;
 	    }else{
-		this.position.y += (targetY-this.position.y)*2/3;
+		this.position.y += (targetY-this.position.y)*1/2;
 	    }
 	    if(this.position.x>0){
 		this.position.x=0;
