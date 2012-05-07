@@ -26,13 +26,12 @@ Site.prototype.initGame = function(username){
     
     var self = this;
     var initTask = new MapTask();
-    if(!this.isSoundReady){
-	initTask.newTask();
-	this.soundReady = function(){
-	    initTask.complete();
-	    self.isSoundReady = true;
-	}
-    }
+
+    //load sound manager
+    initTask.newTask();
+    window.soundManager.onready(function(){
+	initTask.complete();
+    })
     
     initTask.newTask();
     Static.resourceLoader.on("finish",function(){

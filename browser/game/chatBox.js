@@ -53,11 +53,11 @@
     }
     ChatBox.prototype.show = function(){
 	this.isShown = true;
-	this.nodeJ.show();
+	this.nodeJ.fadeIn(200);
 	this.channelDisplayerJ.text("Current Channel :"+this.channel);
     }
     ChatBox.prototype.hide = function(){
-	this.nodeJ.hide();
+	this.nodeJ.fadeOut(200);
 	this.isShown = false;
     }
     ChatBox.prototype.toggle = function(){

@@ -74,9 +74,11 @@
     ShipSoul.prototype.clear = function(){
 	this.parentContainer.remove(this);
 	this.emit("cleared");
+	this.isMissed = true;
     }
     ShipSoul.prototype.onHit = function(byWho,value){
-	if(this.isDead == true)return; 
+	if(this.isDead == true)return;
+	this.emit("hit",byWho,value);
 	value = require("../util").HashRandomInt(byWho.weapon.manager.ship.parentContainer.time
 						 ,value);
 	
@@ -117,6 +119,7 @@
     ShipSoul.prototype.next = function(){
 	this.AI.calculate();
 	this.nextTick();
+	this.emit("next");
 	//console.log("at",this.time,this.cordinates.toString());
 	var fix = this.action.rotateFix;
 	if(fix>1 || fix < -1){

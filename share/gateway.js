@@ -1,7 +1,7 @@
 (function(exports){
     var EventEmitter = require("./util").EventEmitter;
     var Gateway = EventEmitter.sub();
-    var settings = require("./settings").settings;
+    var Static = require("./static").Static;
     //Gateway is the middleware between server and client battleField
     //Gateway add authInfo to every command sent to the server
     //and start the initial sync 
@@ -29,7 +29,7 @@
 	this.worker.send(msg);
     }
     Gateway.prototype.onMessage = function(msg,worker){
-	console.log("recieve msg",msg);
+	//console.log("recieve msg",msg);
 	//In future version
 	//Here all cmd should be validated 
 	if(msg.sequnce!=this.sequnce+1){
@@ -58,11 +58,11 @@
 	}
 	if(msg.cmd==1){
 	    this.battleField.initShips(msg.data.ships,Static.world.galaxy);
-	    this.sequnce = msg.sequnce; 
+	    this.sequnce = msg.sequnce;
 	    Static.world.setTime(msg.time);
-	    console.log(msg);
+	    //console.log(msg);
+	    this.emit("init");
 	    this.battleField.ready = true;
-	    Static.waitingPage.endWaiting();
 	    return;
 	}
 	if(msg.cmd){
@@ -74,10 +74,10 @@
 	}
     }
     Gateway.prototype.onDisconnect = function(worker){
-	Static.waitingPage.startWaiting();
-	this.isConnected = false;
+	this.isConnected = false; 
 	if(this.isTrying)return;
 	this.battleField.ready = false;
+	this.emit("disconnect");
 	var self = this;
 	var id = setInterval(function(){
 	    self.isTrying = true;

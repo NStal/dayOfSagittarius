@@ -4,13 +4,14 @@
     //set up sound manager
     window.soundManager.url = "plugins/sound/soundmanager2.swf"
     window.soundManager.onready(function(){
-	soundManager.ready = true;
+	/*soundManager.ready = true;
+	if(!Static.site)return;
 	if(Static.site.soundReady){
 	    Static.site.soundReady();
 	}
 	else{
 	    Static.site.isSoundReady = true;
-	}
+	}*/
     })
     AudioManager.prototype._init = function(){
 	

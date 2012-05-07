@@ -36,6 +36,12 @@
 	Static.interactionDisplayer = new InteractionDisplayer(this);
 	Static.battleFieldDisplayer = new BattleFieldDisplayer(Static.battleField); 
 	Static.gateway = new Gateway(Static.battleField); 
+	Static.gateway.on("init",function(){
+	    Static.waitingPage.endWaiting();
+	})
+	Static.gateway.on("disconnect",function(){
+	    Static.waitingPage.startWaiting();
+	})
 	Static.gateway.on("outdate",function(){
 	    ShipController.setDelay(ShipController.delay*2);
 	})

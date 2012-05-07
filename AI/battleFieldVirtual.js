@@ -6,7 +6,7 @@
     var BattleFieldSoul = require("./share/battleFieldSoul").BattleFieldSoul;
     var settings = require("./settings");
     var Math = require("./share/util").Math;
-    var BattleFieldVirtual = BattleFieldSoul.sub();
+    var BattleFieldVirtual = BattleFieldSoul;
     var ShipSoul = require("./share/ship/shipSoul").ShipSoul;
     var StarGate = require("./share/ship/starGate").StarGateSoul;
     exports.BattleFieldVirtual = BattleFieldVirtual;

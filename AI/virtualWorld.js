@@ -8,8 +8,9 @@
     var GALAXIES = require("./share/resource/galaxies").GALAXIES;
     var GameInstance = require("./share/gameUtil").GameInstance;
     //alert(VirtualWorldInstace);
-    var Gateway = require("./gateway").Gateway
+    var Gateway = require("./share/gateway").Gateway;
     var VirtualWorld = World.sub();
+    var Static = require("./share/static").Static;
     var AICore = require("./aiCore").AICore;
     //VirtualWorld assambles other Objects like battleFidle gateway etc
     //and holds the worlds' time 
@@ -25,7 +26,9 @@
 	this.gateway.username = worldInfo.name;
 	this.galaxy = "Nolava"
 	this.aiCore = new AICore(this.battleField,this.gateway);
-	
+	Static.username = worldInfo.name;
+	Static.world = this;
+	Static.battleField = this.battleField;
 	this.gateway.aiCore = this.aiCore;
 	//prepare handle global key event 
     }
@@ -34,6 +37,10 @@
 	var self = this;
 	this.changeGalaxy(this.galaxy);
 	return this;
+    }
+    VirtualWorld.prototype.setTime = function(time){
+	this.time = time;
+	Static.battleField.time = time;
     }
     VirtualWorld.prototype.changeGalaxy = function(where){
 	var self = this;
@@ -57,9 +64,8 @@
     VirtualWorld.prototype.next = function(){
 	//this is game loops
 	//test
-	this.time ++;
-	this.battleField.next();
-	GameInstance.nextTick();
+	VirtualWorld.parent.prototype.next.call(this);
+	this.battleField.next(); 
     }
     exports.VirtualWorld = VirtualWorld;
 })(exports)

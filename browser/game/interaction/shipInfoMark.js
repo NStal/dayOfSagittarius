@@ -19,23 +19,29 @@
 	    self.userAvatar.isReady = true;
 	}
 	this.maxHeight  = 100;
+	this.resetEffect();
     }
     ShipInfoMark.prototype.show = function(){
 	if(!this.ship)return;
 	this.position = this.ship.cordinates;
 	Static.interactionDisplayer.add(this);
-	this.height = 1;
-	this.alpha = 1;
+	this.resetEffect();
 	return this;
     }
     ShipInfoMark.prototype.hide = function(){
 	Static.interactionDisplayer.remove(this);
+	this.resetEffect();
+    }
+    ShipInfoMark.prototype.resetEffect = function(){
+	this.height = 1;
+	this.alpha = 1;
     }
     ShipInfoMark.prototype.onDraw = function(context){
 	if(this.position.x<-Static.battleFieldDisplayer.position.x
 	   ||this.position.y<-Static.battleFieldDisplayer.position.y
 	   ||this.position.x>-Static.battleFieldDisplayer.position.x+settings.width
 	   ||this.position.y>-Static.battleFieldDisplayer.position.y+settings.height){
+	    this.resetEffect();
 	    return;
 	}
 	context.save();

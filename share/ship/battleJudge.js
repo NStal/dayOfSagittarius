@@ -7,6 +7,7 @@
 	var ship = ammor.weapon.ship;
 	var distance =ship.cordinates.distance(target.cordinates);
 	var max = 10000;
+	console.log("time",Static.time);
 	if(distance>ammor.range){
 	    return true;
 	}

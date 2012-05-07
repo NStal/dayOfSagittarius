@@ -115,6 +115,8 @@ Interface.removeAllShips(function(){
 	ship.modules = [
 	    13 //1 Cannon small
 	    ,1 //1 beam small
+
+
 	    ,19,25,35 // shield/armor.engine
 	];
 	ship.cagos = [1]; //holds a beam small
