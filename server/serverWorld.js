@@ -20,9 +20,10 @@
 	this.gateway = new ServerGateway(this.battleField);
 	this.syncManager = new SyncManager(this.gateway);
 	var self = this;
-	this.on("nextTick",function(){
-	    self.battleField.next();
-	})
+    }
+    ServerWorld.prototype.next = function(){
+	ServerWorld.parent.prototype.next.call(this);
+	this.battleField.next();
     }
     ServerWorld.prototype.init = function(){
 	var self = this;

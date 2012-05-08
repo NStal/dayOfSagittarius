@@ -2,15 +2,16 @@
     var AICore = require("./share/gameUtil").GameInstance.sub();
     var SC = require("./share/shipController").ShipController;
     var Point = require("./share/util").Point;
+    var NagtiveAI = require("./AILibs/nagtiveAI").NagtiveAI;
     AICore.prototype._init = function(battleField,gateway){
 	this.battleField = battleField;
 	this.gateway = gateway;
 	this.setRate(3);
 	this.ships = [];
 	this.AIName = "AI";
+	this.AIType = NagtiveAI;
 	this.chaseDistance = 300;
 	this.checkInterval = 30; 
-	
 	var self = this;
 	this.battleField.on("shipInitialized",function(ships){
 	    var tempArr = ships; 
@@ -45,39 +46,7 @@
     }
     AICore.prototype.attachShipAI = function(ship){
 	var self = this;
-	ship.on("hit",function(byWho){
-	    if(ship.toSetTarget){
-		return;
-	    }
-	    ship.toSetTarget = byWho.weapon.ship;
-	})
-	ship.on("next",function(){
-	    if(ship.hasTarget){
-		if(ship.hasTarget.isDead)ship.hasTarget = null;
-		if(ship.hasTarget.isMissed)ship.hasTarget = null;
-		if(ship.hasTarget)return;
-	    }
-	    if(!ship.toSetTarget)return;
-	    //no target return
-	    if(ship.toSetTarget.isDead)ship.toSetTarget = null;
-	    if(ship.toSetTarget.isMissed)ship.toSetTarget = null;
-	    if(!ship.toSetTarget)return; 
-	    //has target but not round at target 
-	    if(!ship.AI.destination.roundRoute){
-		if(!ship.bestShootRange){
-		    ship.bestShootRange = 100;
-		} 
-		doAndTry(function(){
-		    console.log("!!!!");
-		    if(ship.AI.destination.roundRoute)return true;
-		    var cmd = (new SC(ship)).roundAtTarget(ship.toSetTarget,ship.bestShootRange,true);
-		    self.gateway.send(cmd);
-		    var cmd = (new SC())
-		},1000);
-	    } 
-	    ship.hasTarget = ship.toSetTarget;
-	    ship.toSetTarget = null;
-	})
+	new this.AIType(ship);
     } 
     AICore.prototype.next = function(){
 	return;

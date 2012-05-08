@@ -30,6 +30,9 @@
 	Static.world = this;
 	Static.battleField = this.battleField;
 	this.gateway.aiCore = this.aiCore;
+	Static.clientSide = true;
+	Static.gateway = this.gateway;
+	
 	//prepare handle global key event 
     }
     VirtualWorld.prototype.start = function(){

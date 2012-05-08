@@ -9,3 +9,7 @@ var require = function(){
 }
 var WebSocket = WebSocket ? WebSocket:MozWebSocket;
 var Static = {};
+//Below option effect the shared code's appearence;
+Static.needDisplay = true;  //drawing and related are enable
+Static.clientSide = true;  //command send available
+Static.browser = true;    //sound and resource load available

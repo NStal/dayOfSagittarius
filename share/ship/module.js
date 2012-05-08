@@ -6,6 +6,8 @@
     var GameInstance = require("../gameUtil").GameInstance;
     var Static = require("../static").Static;
     var BattleJudge = require("./battleJudge").BattleJudge;
+    var Static = require("../static").Static;
+    var ShipController = require("../shipController").ShipController;
     //Some basic model of modules.
     //Weapon,Shield,Armor
     //Weapon defined what ammunition can be used
@@ -53,10 +55,10 @@
 	    return self[event].apply(self,arguments);
 	}
     } 
-    var EngineSoul = Module.sub();
-    EngineSoul.prototype._init = function(state){
+    var Engine = Module.sub();
+    Engine.prototype._init = function(state){
 	this.type="engine";
-	EngineSoul.parent.prototype._init.call(this,state);
+	Engine.parent.prototype._init.call(this,state);
 	this.listen("onCalculateSpeedFactor");
 	if(!this.speedFactor){
 	    console.warn("no speed factor")
@@ -64,22 +66,22 @@
 	}
 	this.moduleId = 5;
     }
-    EngineSoul.prototype.onCalculateSpeedFactor = function(){
+    Engine.prototype.onCalculateSpeedFactor = function(){
 	return this.speedFactor;
     }
-    EngineSoul.prototype.toData = function(){
+    Engine.prototype.toData = function(){
 	return {
 	    itemId:this.itemId
 	};
     }
-    var ShieldSoul = Module.sub();
-    ShieldSoul.prototype._init = function(state){
+    var Shield = Module.sub();
+    Shield.prototype._init = function(state){
 	this.type = "shield";
-	ShieldSoul.parent.prototype._init.call(this,state);
+	Shield.parent.prototype._init.call(this,state);
 	/*this.ability.capacity = 1000;
-	this.ability.recoverInterval = 900; // 300point/30s
-	this.ability.recoverAmmount = 300;
-	this.ability.electricityConsumption = 300;*/
+	  this.ability.recoverInterval = 900; // 300point/30s
+	  this.ability.recoverAmmount = 300;
+	  this.ability.electricityConsumption = 300;*/
 	this.listen("onBeforeHit");
 	this.listen("onNextTick");
 	this.listen("onShieldRecharge");
@@ -92,7 +94,7 @@
 	}
     }
     //check if recover it.
-    ShieldSoul.prototype.onShieldRecharge = function(value){
+    Shield.prototype.onShieldRecharge = function(value){
 	if(this.ability.capacity-this.state.capacity>value){
 	    this.state.capacity+=value;
 	    return 0;
@@ -101,7 +103,7 @@
 	this.state.capacity = this.ability.capacity;
 	return value - used;
     }
-    ShieldSoul.prototype.onNextTick = function(){
+    Shield.prototype.onNextTick = function(){
 	if(this.ship.state.electricity<=0)return; 
 	if(this.state.capacity>=this.ability.capacity)return;
 	if(this.state.recoverState<this.ability.recoverInterval){
@@ -115,7 +117,7 @@
 	    if(this.state.capacity>this.ability.capacity)this.state.capacity=this.ability.capacity;
 	}
     }
-    ShieldSoul.prototype.init = function(manager){
+    Shield.prototype.init = function(manager){
 	Module.prototype.init.call(this,manager);
 	if(typeof this.state.capacity != "number"){
 	    this.state.capacity = this.ability.capacity;
@@ -125,7 +127,7 @@
 	    this.state.recoverState = 0;
 	}
     }
-    ShieldSoul.prototype.onBeforeHit = function(value,bywho){
+    Shield.prototype.onBeforeHit = function(value,bywho){
 	var left = this.state.capacity-value;
 	//debug
 	if(left<=0){
@@ -135,7 +137,7 @@
 	this.state.capacity = left;
 	return 0;
     }
-    ShieldSoul.prototype.toData = function(){
+    Shield.prototype.toData = function(){
 	return {
 	    itemId:this.itemId
 	    ,capacity:this.state.capacity
@@ -143,22 +145,22 @@
 
 	};
     }
-    var ArmorSoul = Module.sub();
-    ArmorSoul.prototype._init = function(state){
-	ArmorSoul.parent.call(this,state);
+    var Armor = Module.sub();
+    Armor.prototype._init = function(state){
+	Armor.parent.call(this,state);
 	this.listen("onDamage");
 	this.type = "armor";
 	if(state&&typeof state.resistPoint == "number"){
 	    this.state.resistPoint = state.resistPoint;
 	}
     }
-    ArmorSoul.prototype.init = function(manager){
+    Armor.prototype.init = function(manager){
 	Module.prototype.init.call(this,manager);
 	if(typeof this.state.resistPoint != "number"){
 	    this.state.resistPoint = this.ability.resistPoint;
 	}
     }
-    ArmorSoul.prototype.onDamage = function(value,bywho){
+    Armor.prototype.onDamage = function(value,bywho){
 	var left = this.state.resistPoint-value;
 	//debug
 	if(left<=0){
@@ -168,14 +170,14 @@
 	this.state.resistPoint = left;
 	return 0;
     }
-    ArmorSoul.prototype.toData = function(){
+    Armor.prototype.toData = function(){
 	return {
 	    itemId:this.itemId
 	    ,resistPoint:this.state.resistPoint
 	};
     }
-    var AllumitionSoul = GameInstance.sub();
-    AllumitionSoul.prototype._init = function(weapon,info){
+    var Allumition = GameInstance.sub();
+    Allumition.prototype._init = function(weapon,info){
 	if(!weapon){
 	    return;
 	} 
@@ -187,17 +189,23 @@
 	this.damagePoint = info.damagePoint;
 	this.count = info.count;
     }
-    AllumitionSoul.prototype.start = function(){
-	AllumitionSoul.parent.prototype.start.call(this);
-	//this.emit("start");
-	if(this.onStart)this.onStart();
+    Allumition.prototype.start = function(){
+	Allumition.parent.prototype.start.call(this);
+	if(Static.needDisplay){
+	    //for browser
+	    Static.battleFieldDisplayer.add(this);
+	    this.position = new Point(this.weapon.target.cordinates);
+	}
     }
-    AllumitionSoul.prototype.stop = function(){
+    Allumition.prototype.stop = function(){
 	//this.emit("stop");
 	if(this.onStop)this.onStop();
-	AllumitionSoul.parent.prototype.stop.call(this);
+	Allumition.parent.prototype.stop.call(this);
+	if(Static.needDisplay){
+	    Static.battleFieldDisplayer.remove(this);
+	}
     }
-    AllumitionSoul.prototype.next = function(){
+    Allumition.prototype.next = function(){
 	if(this.index==0){
 	    if(!this.isMissed){
 		this.hit(); 
@@ -210,26 +218,47 @@
 	}
 	this.index++;
     }
-    AllumitionSoul.prototype.hit = function(){
+    Allumition.prototype.hit = function(){
 	this.target.onHit(this,this.damagePoint); 
     }
     
-    var ShieldRepairPulseSoul = AllumitionSoul.sub();
-    ShieldRepairPulseSoul.prototype._init = function(weapon,info){
-	ShieldRepairPulseSoul.parent.prototype._init.call(this,weapon,info);
+    var ShieldRepairPulse = Allumition.sub();
+    ShieldRepairPulse.prototype._init = function(weapon,info){
+	ShieldRepairPulse.parent.prototype._init.call(this,weapon,info);
 	if(info){
 	    this.repairAmmount = info.repairAmmount;
 	    this.count = info.count;
 	}
     }
-    ShieldRepairPulseSoul.prototype.start = function(){
-	ShieldRepairPulseSoul.parent.prototype.start.call(this);
+    ShieldRepairPulse.prototype.start = function(){
+	ShieldRepairPulse.parent.prototype.start.call(this);
 	if(this.weapon.ship.cordinates.distance(this.target)>this.range){
 	    this.isMissed = true;
+	}else{
+	    this.isMissed = false;
 	}
-	this.isMissed = false;
+	if(Static.needDisplay){
+	    this.from = this.weapon.ship.cordinates;
+	    if(this.isMissed){
+		this.to = new Point(this.weapon.target.cordinates);
+		this.to.x += (Math.random()-0.5)/0.5*30; 
+		this.to.y += (Math.random()-0.5)/0.5*30;
+	    }else{
+		this.to = this.weapon.target.cordinates;
+	    }
+	    this.position = {x:0,y:0};
+	}
     }
-    ShieldRepairPulseSoul.prototype.next = function(){
+    
+    ShieldRepairPulse.prototype.onDraw = function(context){
+	context.beginPath();
+	context.moveTo(this.from.x,this.from.y);
+	context.lineTo(this.to.x,this.to.y);
+	context.strokeStyle = "blue";
+	context.lineWidth = Math.random()*1.5;
+	context.stroke();
+    }
+    ShieldRepairPulse.prototype.next = function(){
 	if(this.index==0){
 	    if(!this.isMissed){
 		console.log("hit repair",this.repairAmmount);
@@ -246,28 +275,66 @@
 	}
 	this.index++;
     }
-    var CannonSoul = AllumitionSoul.sub();
-    CannonSoul.prototype._init = function(weapon,info){
-	CannonSoul.parent.prototype._init.call(this,weapon,info); 
+    var Cannon = Allumition.sub();
+    Cannon.prototype._init = function(weapon,info){
+	Cannon.parent.prototype._init.call(this,weapon,info); 
 	this.count = 8;
     }
-    CannonSoul.prototype.start = function(){
-	CannonSoul.parent.prototype.start.call(this);
+    Cannon.prototype.onDraw = function(context){
+	this._animateIndex*=1.15;
+	context.beginPath();
+	context.globalAlpha = 1/this._animateIndex;
+	context.arc(0,0,this._animateIndex*1.2,0,Math.PI*2);
+	context.fillStyle = "red";
+	context.fill();
+    }
+    Cannon.prototype.start = function(){
+	Cannon.parent.prototype.start.call(this);
 	this.isMissed = BattleJudge.isMissed(this); 
+	if(Static.needDisplay){
+	    var __p = Point.Point(this.weapon.target.cordinates);
+	    __p.x += (Math.random()-0.5) *10;
+	    __p.y += (Math.random()-0.5)*10;
+	    if(this.position)
+		this.position.release();
+	    this.position = __p;
+	    this._animateIndex = 3;
+	}
     }
-    var BeamSoul = AllumitionSoul.sub();
-    BeamSoul.prototype._init = function(weapon,info){
-	BeamSoul.parent.prototype._init.call(this,weapon,info);
+    var Beam = Allumition.sub();
+    Beam.prototype._init = function(weapon,info){
+	Beam.parent.prototype._init.call(this,weapon,info);
     }
-    BeamSoul.prototype.start = function(){
-	BeamSoul.parent.prototype.start.call(this);
+    Beam.prototype.start = function(){
+	Beam.parent.prototype.start.call(this);
 	//judge is missed;
 	this.isMissed = BattleJudge.isMissed(this); 
+	if(Static.needDisplay){
+	    
+	    this.from = this.weapon.ship.cordinates;
+	    if(this.isMissed){
+		this.to = new Point(this.weapon.target.cordinates);
+		this.to.x += (Math.random()-0.5)/0.5*30; 
+		this.to.y += (Math.random()-0.5)/0.5*30;
+	    }else{
+		this.to = this.weapon.target.cordinates;
+	    }
+	    this.position = {x:0,y:0};
+	}
     }
-    BeamSoul.prototype.hit = function(){
+    
+    Beam.prototype.onDraw = function(context){
+	context.beginPath();
+	context.moveTo(this.from.x,this.from.y);
+	context.lineTo(this.to.x,this.to.y);
+	context.strokeStyle = "red";
+	context.lineWidth = Math.random()*1.5;
+	context.stroke();
+    }
+    Beam.prototype.hit = function(){
 	this.target.onHit(this,this.damagePoint);
     }
-    BeamSoul.prototype.next = function(){
+    Beam.prototype.next = function(){
 	this.index++;
 	if(!this.isMissed){
 	    this.hit();
@@ -276,17 +343,35 @@
 	    this.stop();
 	}
     }
-    var MissileSoul = AllumitionSoul.sub();
-    MissileSoul.prototype._init = function(weapon,info){
+    var Missile = Allumition.sub();
+    Missile.prototype._init = function(weapon,info){
 	if(!weapon){
 	    return;
 	}
-	MissileSoul.parent.prototype._init.call(this,weapon,info);
+	Missile.parent.prototype._init.call(this,weapon,info);
 	this.speed = 1;
 	this.maxSpeed = 7;
 	this.position = new Point(weapon.ship.cordinates);
     }
-    MissileSoul.prototype.next = function(){
+    
+    Missile.prototype.start = function(){
+	Missile.parent.prototype.start.call(this);
+	if(Static.needDisplay){
+	    this.position = new Point(this.weapon.ship.cordinates);
+	}
+    }
+    Missile.prototype.onDraw = function(context){
+	context.beginPath();
+	context.moveTo(0,0);
+	context.lineTo(5,0);
+	context.lineWidth=1.2;
+	context.strokeStyle = "red";
+	context.stroke();
+	context.arc(0,0,1+Math.sin(this.index/4),0,Math.PI*2);
+	context.fillStyle = "red";
+	context.fill();
+    } 
+    Missile.prototype.next = function(){
 	this.index++;
 	this.speed+=0.2;
 	if(this.speed>this.maxSpeed)this.speed=this.maxSpeed;
@@ -305,49 +390,146 @@
 	this.position.x+=Math.cos(this.toward)* this.speed;
 	this.position.y+=Math.sin(this.toward)* this.speed;
     }
-    var WeaponSoul = Module.sub();
-    WeaponSoul.prototype._init = function(state){
-	WeaponSoul.parent.prototype._init.call(this,state);
+    var Weapon = Module.sub();
+    Weapon.prototype._init = function(state){
+	Weapon.parent.prototype._init.call(this,state);
 	this.type = "weapon";
 	this.listen("onNextTick");
 	this.coolDown = 120;
 	this.readyState = this.readyState?this.readyState:0;
-	this.Allumition = AllumitionSoul;
+	this.Allumition = Allumition;
 	this.moduleId = 0;
 	this.target = null;
+	//above is used for clientside
+	this.autoFire = false;
+	this.readyFire = true;
+	this.listen("onPresent");
+	this.listen("onIntent"); 
     }
-    WeaponSoul.prototype.isReady = function(){
+    //fire is for clientSide
+    
+    Weapon.prototype.fire = function(){
+	if(this.target){
+	    Static.gateway.send((new ShipController(this.manager.ship)).activeModule(this));
+	    console.log("send fired");
+	    return;
+	}
+	console.log("can't fire without locking the target"); 
+    }
+    Weapon.prototype.isReady = function(){
 	return this.coolDown<=this.readyState;
     }
-    WeaponSoul.prototype.onNextTick = function(){
+    Weapon.prototype.onNextTick = function(){
+	var outDated = 1000; 
 	this.readyState+=1;
+	//
+	if(this.target && (this.target.isDead||this.target.isMissed)){
+	    this.target = null;
+	    this.readyState = true;
+	}
+	if(Static.clientSide 
+	   &&this.autoFire 
+	   && this.target 
+	   && this.readyState>=this.coolDown 
+	   && (this.readyFire == true||Date.now()-this.lastFireDate>outDated)){
+	    this.fire();
+	    this.readyFire = false;
+	    this.lastFireDate = Date.now();
+	}
     }
-    WeaponSoul.prototype.setAllumition = function(allumition){
+    
+    Weapon.prototype.onPresent = function(objects){
+	var self = this;
+	if(!self.shakeEffect){
+	    self.shakeEffect = new Twinkle({min:0.6});
+	}
+	objects.push({
+	    onActive:function(){
+		//self.autoFire = !self.autoFire;
+		new ModuleLockAtInteraction(self).init();
+	    }
+	    ,onActive2:function(){
+		self.autoFire = !self.autoFire; 
+	    }
+	    ,present:function(context,position){
+		if(self.autoFire)self.shakeEffect.onBeforeRender(context);
+		//draw intent line to target
+		context.save()
+		if(self.target){
+		    var t = Static.battleFieldDisplayer.battleFieldToScreen(self.target.cordinates).sub(position);
+		    context.strokeStyle = "orange";
+		    context.lineWidth = 0.5;
+		    context.globalAlpha = 1;
+		    context.beginPath();
+		    context.moveTo(0,0);
+		    context.lineTo(-15,-53);
+		    context.lineTo(t.x,t.y);
+		    context.stroke();
+		}
+		if(self.target 
+		   && self.target.cordinates.distance(self.ship.cordinates)
+		   > self.ammunitionInfo.range){
+		    self.innerColor = "grey";
+		}else{
+		    self.innerColor = "white";
+		}
+		context.restore();
+		context.beginPath();
+		context.arc(0,0,50,0,Math.PI*2);
+		context.fillStyle = "#00bbff";
+		context.globalAlpha*=0.5;
+		context.fill();
+		context.globalAlpha *= 2;
+		context.beginPath();
+		context.arc(0,0,40,0,Math.PI*2); 
+		context.shadowBlur = 20;
+		context.clip();
+		context.beginPath();
+		context.moveTo(0,0);
+		context.lineTo(20,0)
+		context.arc(0,0,40,0,Math.PI*2*self.readyState/self.coolDown);
+		context.closePath();
+		context.fillStyle = self.innerColor;
+		context.fill();
+		if(self.weaponImage){
+		    context.save();
+		    context.drawImage(self.weaponImage,0,0,256,256,-40,-40,80,80);
+		    context.restore();
+		}else{
+		    context.beginPath();
+		    context.fillStyle = "black";
+		    context.textAlign = "center";
+		    context.fillText(self.name,0,3); 
+		}
+		
+	    }
+	});
+    }
+    
+    Weapon.prototype.onIntent = function(objects){
+	var self = this;
+	if(self.target){
+	    objects.push({
+		color:"orange"
+		,target:self.target
+	    })
+	}
+    }
+    Weapon.prototype.setAllumition = function(allumition){
 	this.Allumition = allumition;
     }
-    WeaponSoul.prototype.setTarget = function(target){
-	if(!this.targetLostHandler){
-	    var self = this;
-	    this.targetLostHandler=function(who,byWho){
-		if(who==self.target)
-		    self.releaseTarget(); 
-	    }
-	}
-	if(this.target){
-	    this.target.unbind("dead",this.targetLostHandler);
-	}
+    Weapon.prototype.setTarget = function(target){
 	this.target = target;
-	var self = this;
 	if(this.target){
-	    this.target.on("dead",this.targetLostHandler);
 	    this.emit("target",this,this.target);
 	}
     }
-    WeaponSoul.prototype.releaseTarget = function(){
+    Weapon.prototype.releaseTarget = function(){
 	this.emit("release","target");
 	this.target = null;
     }
-    WeaponSoul.prototype.active = function(){
+    Weapon.prototype.active = function(){
+	this.readyFire = true;
 	if(!this.target){
 	    console.log("can't fire without target");
 	    console.trace();
@@ -363,61 +545,163 @@
 	var allumition = new (this.Allumition)(this,this.ammunitionInfo);
 	allumition.start();
 	console.log("fired");
+	this.emit("active");
 	this.readyState = 0;
     }
-    WeaponSoul.prototype.toData = function(){
+    Weapon.prototype.toData = function(){
 	return {
 	    readyState:this.readyState
 	    ,target:this.target?this.target.id:undefined
 	    ,itemId:this.itemId
 	}
     }
-    var CannonEmitterSoul = WeaponSoul.sub();
-    CannonEmitterSoul.prototype._init = function(){
-	WeaponSoul.prototype._init.call(this);
-	this.Allumition = CannonSoul;
+    var CannonEmitter = Weapon.sub();
+    CannonEmitter.prototype._init = function(){
+	Weapon.prototype._init.call(this);
+	this.Allumition = Cannon;
+	if(Static.browser){
+	    this.name = "CannonEmitter";
+	    this.sound = Static.resourceLoader.get("sound_cannon");
+	    this.on("active",function(){
+		if(this.sound){
+		    var audio = new Audio(this.sound.src);
+		    //audio.volume=0.2;
+		    audio.play();
+		}
+	    });
+	}
 	/*
-	this.moduleId=0;
-	this.coolDown=30; 
-	this.ammunitionInfo = {
-	    damagePoint:220
-	    ,range:300
-	    ,count:8
-	}*/
+	  this.moduleId=0;
+	  this.coolDown=30; 
+	  this.ammunitionInfo = {
+	  damagePoint:220
+	  ,range:300
+	  ,count:8
+	  }*/
     }
-    var BeamEmitterSoul = WeaponSoul.sub();
-    BeamEmitterSoul.prototype._init = function(){
-	WeaponSoul.prototype._init.call(this);
-	this.Allumition = BeamSoul;
+    var BeamEmitter = Weapon.sub();
+    BeamEmitter.prototype._init = function(){
+	Weapon.prototype._init.call(this);
+	this.Allumition = Beam;
+	if(Static.browser){
+	    
+	    this.name = "BeamEmitter";
+	    this.weaponImage = Static.resourceLoader.get("weapon_beam");
+	    this.on("active",function(){
+		(new Audio(Static.resourceLoader.get("sound_beam").src)).play();
+	    })
+	}
     }
-    var RemoteShieldRechargerSoul = WeaponSoul.sub();
-    RemoteShieldRechargerSoul.prototype._init = function(state){
-	RemoteShieldRechargerSoul.parent.prototype._init.call(this,state);
-	this.Allumition = ShieldRepairPulseSoul;
-	
+    var RemoteShieldRecharger = Weapon.sub();
+    RemoteShieldRecharger.prototype._init = function(state){
+	RemoteShieldRecharger.parent.prototype._init.call(this,state);
+	this.Allumition = ShieldRepairPulse;
+	if(Static.browser){
+	    this.name = "RemoteShieldRecharger";
+	    this.on("active",function(){
+		(new Audio(Static.resourceLoader.get("sound_beam").src)).play();
+	    })
+	}
     } 
     
-    var MissileEmitterSoul = WeaponSoul.sub();
-    MissileEmitterSoul.prototype._init = function(state){
-	MissileEmitterSoul.parent.prototype._init.call(this,state);
-	this.Allumition = MissileSoul; 
+    RemoteShieldRecharger.prototype.onPresent = function(objects){
+	var self = this;
+	if(!self.shakeEffect){
+	    self.shakeEffect = new Twinkle({min:0.6});
+	}
+	objects.push({
+	    onActive:function(){
+		//self.autoFire = !self.autoFire;
+		new ModuleLockAtInteraction(self).init();
+	    }
+	    ,onActive2:function(){
+		self.autoFire = !self.autoFire; 
+	    }
+	    ,present:function(context,position){
+		if(self.autoFire)self.shakeEffect.onBeforeRender(context);
+		//draw intent line to target
+		context.save()
+		if(self.target){
+		    var t = Static.battleFieldDisplayer.battleFieldToScreen(self.target.cordinates).sub(position);
+		    context.strokeStyle = "green";
+		    context.lineWidth = 0.5;
+		    context.globalAlpha = 1;
+		    context.beginPath();
+		    context.moveTo(0,0);
+		    context.lineTo(t.x,t.y);
+		    context.stroke();
+		}
+		if(self.target 
+		   && self.target.cordinates.distance(self.ship.cordinates)
+		   > self.ammunitionInfo.range){
+		    self.innerColor = "grey";
+		}else{
+		    self.innerColor = "white";
+		}
+		context.restore();
+		context.beginPath();
+		context.arc(0,0,50,0,Math.PI*2);
+		context.fillStyle = "#00bbff";
+		context.globalAlpha*=0.5;
+		context.fill();
+		context.globalAlpha *= 2;
+		context.beginPath();
+		context.arc(0,0,40,0,Math.PI*2); 
+		context.shadowBlur = 20;
+		context.clip();
+		context.beginPath();
+		context.moveTo(0,0);
+		context.lineTo(20,0)
+		context.arc(0,0,40,0,Math.PI*2*self.readyState/self.coolDown);
+		context.closePath();
+		context.fillStyle = self.innerColor;
+		context.fill();
+		if(self.weaponImage){
+		    context.save();
+		    context.drawImage(self.weaponImage,0,0,256,256,-40,-40,80,80);
+		    context.restore();
+		}else{
+		    context.beginPath();
+		    context.fillStyle = "black";
+		    context.textAlign = "center";
+		    context.fillText(self.name,0,3); 
+		}
+		
+	    }
+	});
     }
-    exports.EngineSoul = EngineSoul;
-    exports.RemoteShieldRechargerSoul = RemoteShieldRechargerSoul;
-    exports.ShieldRepairPulseSoul = ShieldRepairPulseSoul;
-    exports.ShieldSoul = ShieldSoul;
-    exports.Shield = ShieldSoul;
-    exports.ArmorSoul = ArmorSoul;
-    exports.Armor = ArmorSoul;
+    RemoteShieldRecharger.prototype.onIntent = function(objects){
+	var self = this;
+	if(self.target){
+	    objects.push({
+		color:"green"
+		,target:self.target
+	    })
+	}
+    }
     
-    exports.AllumitionSoul = AllumitionSoul;
-    exports.WeaponSoul = WeaponSoul;
-    exports.CannonEmitterSoul = CannonEmitterSoul;
-    exports.CannonSoul = CannonSoul;
-    exports.BeamEmitterSoul = BeamEmitterSoul;
-    exports.BeamSoul = BeamSoul; 
-    exports.MissileEmitterSoul = MissileEmitterSoul;
-    exports.MissileSoul = MissileSoul;
+    var MissileEmitter = Weapon.sub();
+    MissileEmitter.prototype._init = function(state){
+	MissileEmitter.parent.prototype._init.call(this,state);
+	this.Allumition = Missile; 
+	this.name = "MissileEmitter";
+    }
+    exports.Engine = Engine;
+    exports.RemoteShieldRecharger = RemoteShieldRecharger;
+    exports.ShieldRepairPulse = ShieldRepairPulse;
+    exports.Shield = Shield;
+    exports.Shield = Shield;
+    exports.Armor = Armor;
+    exports.Armor = Armor;
+    
+    exports.Allumition = Allumition;
+    exports.Weapon = Weapon;
+    exports.CannonEmitter = CannonEmitter;
+    exports.Cannon = Cannon;
+    exports.BeamEmitter = BeamEmitter;
+    exports.Beam = Beam; 
+    exports.MissileEmitter = MissileEmitter;
+    exports.Missile = Missile;
 
     var a = 5;
 })(exports)

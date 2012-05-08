@@ -3,15 +3,15 @@
     var Util = require("../util").Util; 
     var Container = require("../util").Container;
     var ModuleManager = Container.sub();
-    var WeaponSoul = require("./module").WeaponSoul;
-    var MissileEmitterSoul = require("./module").MissileEmitterSoul;
-    var CannonEmitterSoul = require("./module").CannonEmitterSoul;
-    var BeamEmitterSoul = require("./module").BeamEmitterSoul;
-    var ShieldSoul = require("./module").ShieldSoul;
+    var Weapon = require("./module").Weapon;
+    var MissileEmitter = require("./module").MissileEmitter;
+    var CannonEmitter = require("./module").CannonEmitter;
+    var BeamEmitter = require("./module").BeamEmitter;
+    var Shield = require("./module").Shield;
     var Static = require("../static").Static;
-    var ArmorSoul = require("./module").ArmorSoul;
-    var EngineSoul = require("./module").EngineSoul;
-    var RemoteShieldRechargerSoul = require("./module").RemoteShieldRechargerSoul;
+    var Armor = require("./module").Armor;
+    var Engine = require("./module").Engine;
+    var RemoteShieldRecharger = require("./module").RemoteShieldRecharger;
     //Event
     //"OnPresent":
     //parameter:array object
@@ -26,13 +26,13 @@
 	,onShieldRecharge:6
     }
     ModuleManager.prototype.moduleEnum = {
-	0:CannonEmitterSoul
-	,1:BeamEmitterSoul
-	,2:MissileEmitterSoul
-	,3:ShieldSoul
-	,4:ArmorSoul
-	,5:RemoteShieldRechargerSoul
-	,6:EngineSoul
+	0:CannonEmitter
+	,1:BeamEmitter
+	,2:MissileEmitter
+	,3:Shield
+	,4:Armor
+	,5:RemoteShieldRecharger
+	,6:Engine
     }
     ModuleManager.prototype._init = function(ship){
 	this.ship = ship;

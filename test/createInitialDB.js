@@ -108,7 +108,7 @@ Interface.removeAllShips(function(){
     }
     //add AI ship;
     var centerP = {x:300,y:300};
-    for(var i=0;i<20;i++){
+    for(var i=0;i<10;i++){
 	var ship = getShipTemplate();
 	ship.owner = "AI";
 	ship.pilot = "AI-n"+Math.floor(Math.random()*10000000)
