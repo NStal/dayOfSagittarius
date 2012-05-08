@@ -5,7 +5,7 @@ EventEmitter.mixin(ServerManager);
 ServerManager.prototype._init = function(serverRoot){
     this.serverRoot = serverRoot;
     //when change the watch target,should I print the new target's past output?
-    this.printHistory = true;
+    this.printHistory = false;
 }
 ServerManager.prototype.add = function(galaxyName){
     if(this.find(galaxyName)){
@@ -13,7 +13,7 @@ ServerManager.prototype.add = function(galaxyName){
 	return false;
     }
     var cp = child_process.spawn("node",[this.serverRoot+"/"+"server",galaxyName]);
-    console.log("create process",cp);
+    console.log("create process",cp.pid,galaxyName);
     cp.output = ""
     cp.stdout.on("data",function(data){
 	data = data.toString();
@@ -29,6 +29,7 @@ ServerManager.prototype.add = function(galaxyName){
     return true;
 }
 ServerManager.prototype.watch = function(galaxyName){
+    var self = this;
     var tempArr = this.parts;
     for(var i=0,length=tempArr.length;i < length;i++){
 	var item = tempArr[i];
@@ -41,10 +42,9 @@ ServerManager.prototype.watch = function(galaxyName){
 	    }
 	    this.currentWatch = item;
 	    this.currentWatch.process.exportOutput = function(data){
-		console.log(data);
+		console.log(self.currentWatch.galaxyName,":",data.toString());
 	    }
 	    return true;
-	    
 	}
     }
     console.log("galaxies are:")

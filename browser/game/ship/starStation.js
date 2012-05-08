@@ -22,7 +22,6 @@
 	context.fillStyle = this.innerColor; 
 	context.fill(); 
 	
-	
 	context.textAlign = "center";
 	context.beginPath()
 	context.fillStyle = "white";

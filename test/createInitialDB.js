@@ -33,23 +33,41 @@ var getShipTemplate = function(){
 }
 var GALAXIES = [{
     name:"Nolava"
-    ,color:"black"
     ,position:{x:300,y:400}
     ,size:24
-    ,to:["Evy","Lerum"]
+    ,starGates:[{
+	to:"Evy"
+	,position:{x:900,y:900}
+    }]
+    ,ships:[]
+    ,starStations:[]
+    ,server:{
+	host:vuvu
+	,localport:20000
+	,port:10000
+    }
+},{
+    name:"Evy"
+    ,position:{x:350,y:200}
+    ,size:24
+    ,to:[{
+	galaxyName:"Nolava"
+	,position:{x:900,y:900}
+    }]
     ,ships:[]
     ,starStations:[]
     ,starGates:[]
     ,server:{
 	host:vuvu
-	,localport:20000
-	,port:10000
+	,localport:20001
+	,port:10001
     }
 }]
 var StarStations = [{
     name:"Nolava-I"
     ,color:"blue"
     ,type:"station"
+    ,galaxy:"Nolava"
     ,position:{
 	x:800
 	,y:300

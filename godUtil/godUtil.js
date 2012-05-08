@@ -13,7 +13,7 @@
 		if(callback)callback();
 	    }) 
 	})
-    }
+    } 
     var enterShip = function(galaxyName,shipId,position,callback){
 	Interface.getShipById(shipId,function(ship){
 	    ship.cordinates = position;
@@ -55,6 +55,7 @@
 	    }
 	})
     }
+    
     var UndockShip = function(stationName,shipId,callback){
 	Interface.getStarStation("stationName",function(station){
 	    for(var i=0,length=station.ships.length;i < length;i++){
@@ -74,6 +75,7 @@
 	    }
 	})
     }
+    exports.
     exports.addShipsAtGalaxy = addShipsAtGalaxy;
     exports.enterShip = enterShip;
 })(exports)

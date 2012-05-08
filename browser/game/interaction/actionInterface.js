@@ -29,6 +29,10 @@
 	if(this.station){
 	    this.point = this.station.position; 
 	}
+	this.gate = Static.battleFieldDisplayer.findStarGateByPosition(this.point);
+	if(this.gate){
+	    this.point = this.gate.position;
+	}
 	this.position.release();
 	this.position = Static.battleFieldDisplayer.battleFieldToScreen(this.point);
 	this.firstShow = true;

@@ -8,10 +8,9 @@
 	    return;
 	}
 	this.to = info.to;
-	this.position = new Point(info.position);
+	this.position = Point.Point(info.position);
 	this.id = info.id;
-	this.size = 40;
-	
+	this.size = 40; 
     }
     StarGateSoul.prototype.getDestination = function(){
 	var gs = require("../resource/galaxies.js").GALAXIES;

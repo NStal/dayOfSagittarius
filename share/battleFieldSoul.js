@@ -430,7 +430,6 @@
     }
     BattleFieldSoul.prototype.onShipDead = function(ship,byWho){
 	console.log("ship id:",who.id,"is dead",",killed by",byWho.weapon.ship.id);
-	
     }
     BattleFieldSoul.prototype.initEnvironment = function(galaxy){
 	this.galaxy = galaxy;
