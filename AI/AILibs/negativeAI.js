@@ -1,9 +1,25 @@
 (function(exports){
     var Static = require("../share/static").Static;
     var EventEmitter = require("../share/util").EventEmitter;
-    var NagtiveAI = EventEmitter.sub();
-    //NagtiveAI is AI that will fight back it is attacked
-    NagtiveAI.prototype._init = function(){
+    var NegativeAI = EventEmitter.sub(); 
+    var SC = require("../share/shipController").ShipController;
+    //NegativeAI is AI that will fight back it is attacked
+    
+    function doAndTry(todo,interval,startHalt){
+	if(typeof interval != "number"){
+	    interval = 1000;
+	}
+	if(typeof startHalt != "number"){
+	    startHalt = 0;
+	}
+	console.log("!!!!");
+	setTimeout(function(){
+	    var result = todo();
+	    if(result)return;
+	    doAndTry(todo,interval,interval);
+	},startHalt);
+    }
+    NegativeAI.prototype._init = function(ship){
 	ship.on("hit",function(byWho){
 	    if(ship.toSetTarget){
 		return;
@@ -50,5 +66,5 @@
 	    ship.toSetTarget = null;
 	})
     }
-    exports.NagtiveAI = NagtiveAI;
+    exports.NegativeAI = NegativeAI;
 })(exports)

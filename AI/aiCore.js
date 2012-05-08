@@ -2,14 +2,14 @@
     var AICore = require("./share/gameUtil").GameInstance.sub();
     var SC = require("./share/shipController").ShipController;
     var Point = require("./share/util").Point;
-    var NagtiveAI = require("./AILibs/nagtiveAI").NagtiveAI;
+    var NegativeAI = require("./AILibs/negativeAI").NegativeAI;
     AICore.prototype._init = function(battleField,gateway){
 	this.battleField = battleField;
 	this.gateway = gateway;
 	this.setRate(3);
 	this.ships = [];
 	this.AIName = "AI";
-	this.AIType = NagtiveAI;
+	this.AIType = NegativeAI;
 	this.chaseDistance = 300;
 	this.checkInterval = 30; 
 	var self = this;
@@ -30,20 +30,6 @@
     //doAndTry:
     //do it right now if failed repeat it at interval
     //until it succeceed
-    function doAndTry(todo,interval,startHalt){
-	if(typeof interval != "number"){
-	    interval = 1000;
-	}
-	if(typeof startHalt != "number"){
-	    startHalt = 0;
-	}
-	console.log("!!!!");
-	setTimeout(function(){
-	    var result = todo();
-	    if(result)return;
-	    doAndTry(todo,interval,interval);
-	},startHalt);
-    }
     AICore.prototype.attachShipAI = function(ship){
 	var self = this;
 	new this.AIType(ship);
