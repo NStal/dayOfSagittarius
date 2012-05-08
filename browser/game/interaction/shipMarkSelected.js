@@ -105,14 +105,23 @@
 	    var target = targets[i].target;
 	    var color = targets[i].color;
 	    var p = target.cordinates.sub(this.ship.cordinates);
+	    var rad = p.rad();
 	    context.save();
 	    context.beginPath();
 	    context.moveTo(0,0);
-	    context.lineTo(p.x,p.y);
+	    if(i%2==0){
+		var j = i*6;
+	    }else{
+		var j = -i*6;
+	    }
+	    context.quadraticCurveTo(p.x/2+j*Math.sin(rad)
+				     ,p.y/2-j*Math.cos(rad)
+				     ,p.x,p.y);
 	    context.lineWidth=0.4;
 	    context.strokeStyle = color?color:"green";
 	    context.stroke();
 	    context.restore();
+	    p.release();
 	}
     }
     ShipMarkSelected.prototype.onDraw = function(context){

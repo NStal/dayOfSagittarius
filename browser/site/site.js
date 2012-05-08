@@ -12,6 +12,7 @@ Site.prototype.updateUserInfo = function(username,callback){
 	if(rsp.result){
 	    Static.userData = rsp.data;
 	    callback(rsp.data);
+	    console.log(rsp);
 	}else{
 	    alert("fail to update user info");
 	}
@@ -52,10 +53,10 @@ Site.prototype.initGame = function(username){
     Static.resourceLoader.start();
     initTask.on("finish",function(){
 	main.clientWorld = new ClientWorld(__config); 
-	main.clientWorld.start();
-	//console.error(self.isSoundReady);
 	var StarStationScene = require("./starStationScene/starStationScene").StarStationScene;
 	Static.starStationScene = new StarStationScene(self.starStationSceneNode);
+	main.clientWorld.start();
+	//console.error(self.isSoundReady);
     })
     Static.waitingPage.startWaiting();
     window.ontouchmove = function(e){

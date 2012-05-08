@@ -9,13 +9,18 @@ exports.handler = function(){
 	    Interface.findShipByPilot(query.name,function(ship){
 		if(ship){
 		    user.atShip = ship;
-		    if(ship.at.namespace=="galaxies"){
+		    if(ship.at && ship.at.namespace=="galaxies"){
 			user.atGalaxy = true;
 			user.at = ship.at.oid;
 		    }
 		    else{
+			
 			user.atStation = true;
-			user.at = user.at.oid;
+			if(ship.at && ship.at.namespace == "starStations"){
+			    user.at = ship.at.oid;
+			}else{
+			    user.at = user.oid;
+			}
 		    }
 		}
 		self.end(user); 

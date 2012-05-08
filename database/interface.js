@@ -80,8 +80,10 @@
 		for(var item in data){
 		    obj[item] = data[item];
 		}
+		if(!callback)callback = function(){};
 		col.update({_id:username}
-			   ,obj,{safe:true}
+			   ,obj
+			   ,{safe:true}
 			   ,callback);
 	    });
 	});

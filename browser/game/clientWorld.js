@@ -158,7 +158,12 @@
 	Static.waitingPage.startWaiting();
 	//connect to server to sync battleFieldInfo 
 	//WARNING TAG TEST assume user always at galaxy 
-	this.changeGalaxy(Static.userData.at);
+	if(Static.userData.atGalaxy){
+	    this.changeGalaxy(Static.userData.at);
+	}else{
+	    this.stop();
+	    Static.starStationScene.onEnterStation(Static.userData.at);
+	}
 	var audio = new Audio(Static.resourceLoader.get("music_bgm").src);
 	audio.play();
 	audio.loop = true;

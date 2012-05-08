@@ -37,7 +37,6 @@
 	if(this.isEnd){
 	    this.hide();
 	}
-	console.log("～～～～");
 	if(this.isEnding){
 	    this.alpha-=0.04;
 	    if(this.r!=0)
