@@ -4,6 +4,7 @@ API = function(){
 	"getGalaxyInfoByName":["name"]
 	,"getStationInfoByName":["name"]
 	,"requestShipUndocking":["shipId","stationName"]
+	,"getUserData":["name"]
     }
     this.apiEx = {
 	"template":["template/all.json"]

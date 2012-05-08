@@ -35,6 +35,16 @@
 	Static.battleField = new BattleField({world:this,time:worldInfo.time}); 
 	Static.interactionDisplayer = new InteractionDisplayer(this);
 	Static.battleFieldDisplayer = new BattleFieldDisplayer(Static.battleField); 
+	Static.battleField.on("shipInitialized",function(ships){
+	    var tempArr = ships;
+	    for(var i=0,length=tempArr.length;i < length;i++){
+		var item = tempArr[i];
+		item.on("jumped",function(ship){
+		    var gate = ship.AI.destination.starGate;
+		    Static.world.changeGalaxy(gate.to);
+		})
+	    }
+	})
 	Static.gateway = new Gateway(Static.battleField); 
 	Static.gateway.on("init",function(){
 	    Static.waitingPage.endWaiting();
@@ -133,6 +143,7 @@
 	window.onkeyup = function(e){
 	    self.KEYS[e.which] = false;
 	}
+	
 	$(window).resize(function(){
 	    settings.width = $("body").width();
 	    settings.height = $("body").height();
@@ -145,8 +156,9 @@
     ClientWorld.prototype.start = function(){
 	ClientWorld.parent.prototype.start.call(this);
 	Static.waitingPage.startWaiting();
-	//connect to server to sync battleFieldInfo
-	this.changeGalaxy("Nolava");
+	//connect to server to sync battleFieldInfo 
+	//WARNING TAG TEST assume user always at galaxy 
+	this.changeGalaxy(Static.userData.at);
 	var audio = new Audio(Static.resourceLoader.get("music_bgm").src);
 	audio.play();
 	audio.loop = true;

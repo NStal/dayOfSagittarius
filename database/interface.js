@@ -51,7 +51,15 @@
 		console.trace();
 		return;
 	    }
-	    col.insert({_id:username});
+	    col.insert({_id:username
+			,credits:2000
+			,at:new mongodb.DBRef("starStations","Nolava-I") 
+			//at is your born place,if no ship.pilot is the username
+			//then you will be at you born place 
+			//usually because u are dead
+			});
+			//Nolava is the initial galaxies
+			//
 	})
     }
     Interface.setUserData = function(username,data,callback){
@@ -95,8 +103,7 @@
 		}
 		callback(obj);
 	    });
-	});
-
+	}); 
     }
     Interface.addGalaxy = function(galaxy,callback){
 	this._getCollection("galaxies",function(err,col){
@@ -168,6 +175,26 @@
 	    col.insert(ship,{safe:true},callback);
 	});
     }
+    
+    Interface.findShipByPilot = function(pilotName,callback){
+	this._getCollection("ships",function(err,col){
+	    if(err || !col){
+		console.warn("fail to get collection ships");
+		callback(null);
+		return;
+	    }
+	    col.findOne({"pilot":pilotName}
+			,function(err,obj){
+			    if(err || !obj){
+				callback(null);
+				return;
+			    }
+			    callback(obj);
+			    return;
+			})
+	})
+    }
+    
     Interface.getShipById = function(shipId,callback){
 	this._getCollection("ships",function(err,col){
 	    if(err || !col){
@@ -448,7 +475,7 @@
 	    } 
 	    delete galaxy.ships;
 	    if(__list.length==0){
-		galaxy.starGates = [];
+		galaxy.starStations = [];
 		callback(galaxy);
 		return;
 	    }

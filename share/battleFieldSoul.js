@@ -74,7 +74,29 @@
     }
     BattleFieldSoul.prototype._excute = function(instruction){
 	//see protocol.js => clientCommand to all the command implemented here 
-	
+	if(instruction.cmd==clientCommand.jumpTo){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id);
+		console.trace();
+		return;
+	    }
+	    var gate = null;
+	    var tempArr = this.parts;
+	    for(var i=0,length=tempArr.length;i < length;i++){
+		var item = tempArr[i];
+		if(item.type == "gate" && item.to == instruction.data.to){
+		    gate = item;
+		}
+	    }
+	    if(!gate){
+		console.warn("invalid gate");
+		return;
+	    }
+	    ship.AI.jumpTo(gate);
+	}
 	if(instruction.cmd==clientCommand.setModuleTarget){
 	    var ship = this.getShipById(instruction.data.id);
 	    if(ship){
@@ -117,6 +139,19 @@
 	    ship.clear();
 	    ship.emit("docked",ship);
 	    console.log("ship",ship.id,"ship dock accept by GOD");
+	}
+	if(instruction.cmd == clientCommand.GOD_shipJumped){
+	    var ship = this.getShipById(instruction.data.id);
+	    if(ship){
+		console.log("get ship of id:",ship.id);
+	    }else{
+		console.warn("invalid ship id",instruction.data.id); 
+		console.trace();
+		return;
+	    }
+	    ship.clear();
+	    ship.emit("jumped",ship);
+	    console.log("ship",ship.id,"ship jump accept by GOD");
 	}
 	//chase target 
 	if(instruction.cmd == clientCommand.GOD_removeShip){
@@ -373,6 +408,16 @@
 	}
 	return null;
     }
+    BattleFieldSoul.prototype.getStarGateByDestination = function(to){
+	var tempArr = this.parts;
+	for(var i=0,length=tempArr.length;i < length;i++){
+	    var item = tempArr[i];
+	    if(item.type == "gate" && item.to == to){
+		return item;
+	    }
+	}
+	return null;
+    }
     BattleFieldSoul.prototype.getStarGateById = function(id){
 	for(var i=0;i<this.parts.length;i++){
 	    var item = this.parts[i];
@@ -425,11 +470,22 @@
 	ship.on("docked",function(ship){
 	    self.emit("shipDocked",ship,ship.AI.destination.starStation);
 	})
+	ship.on("passStarGate",function(ship){
+	    console.log("111111111!@#ASDGAG");
+	    self.emit("shipPassStarGate",ship,ship.AI.destination.starGate);
+	})
 	this.add(ship);
 	return ship;
     }
     BattleFieldSoul.prototype.onShipDead = function(ship,byWho){
 	console.log("ship id:",who.id,"is dead",",killed by",byWho.weapon.ship.id);
+    }
+    BattleFieldSoul.prototype.initialize = function(ships,galaxy){
+	
+	this.emit("initialize");
+	this.parts.length = 0; 
+	this.initEnvironment(galaxy);
+	this.initShips(ships);
     }
     BattleFieldSoul.prototype.initEnvironment = function(galaxy){
 	this.galaxy = galaxy;

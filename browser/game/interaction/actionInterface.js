@@ -45,6 +45,14 @@
 	this.index = 0;
 	this.length = 6;
 	var self = this;
+	this.enableMatrix = {
+	    move:true
+	    ,round:true
+	    ,lock:false
+	    ,dock:this.station?true:false
+	    ,jump:this.gate?true:false
+	    ,warp:false
+	}
 	this.commands = [{
 	    name:"move"
 	    ,callback:function(){
@@ -53,7 +61,7 @@
 		//simulate a move to interaction
 		Static.globalCaptureLayer.emit("mouseDown",self.position)
 		self.hide();
-	    }
+	    } 
 	},{
 	    name:"round"
 	    ,callback:function(){
@@ -79,7 +87,9 @@
 	},{
 	    name:"lock"
 	    ,callback:function(){
-		new LockAtInteraction(self.ship).init();
+		self.hide();
+		return;
+		//new LockAtInteraction(self.ship).init(); 
 	    }
 	},{
 	    name:"dock"
@@ -89,19 +99,26 @@
 		    Static.globalCaptureLayer.emit(
 			"mouseDown"
 			,Static.battleFieldDisplayer.battleFieldToScreen(self.station.position));
-		}
+		} 
 		self.hide();
 		//new DockAtInteraction(self.ship).init();
 	    }
 	},{
 	    name:"warp"
 	    ,callback:function(){
-		console.log("warp");
+		console.log("warp"); 
+		self.hide();
 	    }
 	},{
 	    name:"jump"
 	    ,callback:function(){
-		console.log("jump");
+		if(self.gate){
+		    new JumpToInteraction(self.ship).init();
+		}
+		Static.globalCaptureLayer.emit(
+		    "mouseDown"
+		    ,Static.battleFieldDisplayer.battleFieldToScreen(self.gate.position));
+		self.hide();
 	    }
 	}];
 	var self = this;
@@ -110,6 +127,7 @@
 	    item = new ActionInterfaceItem(item.name,function(item){return function(){
 		item.callback();
 	    }}(item))
+	    item.enable = this.enableMatrix[item.name];
 	    item.index = i;
 	    this.add(item);
 	}
@@ -165,6 +183,7 @@
 	this.extendToBe = this.borderLength*2.2;
 	this.extend = this.extendToBe/2;
 	this.extendSpeed = 5;
+	this.color = "#60dfff";
 	var self = this;
 	this.on("mouseEnter",function(e){
 	    self.lineWidthToBe = 0.8;
@@ -186,6 +205,9 @@
 	})
     }
     ActionInterfaceItem.prototype.onDraw = function(context){
+	if(!this.enable){
+	    this.color = "grey";
+	}
 	context.beginPath();
 	context.save();
 	//context.rotate(-0.03);
@@ -214,17 +236,17 @@
 	this.position.x =Math.sin(Math.PI+Math.PI*2/6*this.index)*this.extend;
 	this.position.y =Math.cos(Math.PI+Math.PI*2/6*this.index)*this.extend;
 	context.closePath();
-	context.strokeStyle = "#60dfff";
+	context.strokeStyle = this.color;
 	context.lineWidth=this.lineWidth; 
 	context.globalAlpha = 0.3;
-	context.fillStyle = "#60dfff";
+	context.fillStyle = this.color;
 	context.fill();
 	
 	if(this.lineWidth>this.lineWidthToBe)this.lineWidth-=0.1;
 	if(this.lineWidth<this.lineWidthToBe)this.lineWidth+=0.1;
 	context.globalAlpha = 1; 
 	context.shadowBlur = 4;
-	context.shadowColor = "#60dfff";
+	context.shadowColor = this.color;
 	context.stroke();
 	context.restore();
 	context.textAlign="center";

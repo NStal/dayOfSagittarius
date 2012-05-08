@@ -32,6 +32,8 @@
 	,GOD_enterShip:12
 	,GOD_shipDocked:13
 	,setModuleTarget:14
+	,jumpTo:15 
+	,GOD_shipJumped:16
     }
     response = {
 	t:defineType.time      // t=0 meas need initial sync

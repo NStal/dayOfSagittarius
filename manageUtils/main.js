@@ -53,3 +53,4 @@ function hello(){
     })
 }
 hello();
+commandResolver.resolve("watch Nolava");

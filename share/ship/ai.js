@@ -26,16 +26,23 @@
 	    this.destination.roundRoute){
 	    this.destination.roundRoute.point = this.destination.roundTarget.cordinates;
 	}
+	
 	if(this.destination.starGate){
 	    if(typeof this.destination.starGate == "string"){
-		this.destination.starGate = this.ship.parentContainer.getStarGateById(this.destination.starGate);
+		this.destination.starGate = this.ship.parentContainer.getStarGateByDestination(this.destination.starGate); 
 	    }
 	    this.destination.roundRoute = null;
 	    this.destination.targetPoint = this.destination.starGate.position;
-	    
+	    /*console.log(this.destination.starGate.position.distance(this.ship.cordinates)
+			,this.destination.starGate.size
+			,this.destination.starGate.position.distance(this.ship.cordinates)
+			< this.destination.starGate.size);*/
 	    if(this.destination.starGate.position.distance(this.ship.cordinates)
 	       < this.destination.starGate.size){
-		this.ship.emit("passStarGate",this.ship,this.destination.starGate);
+		if(!this.hasJumped){
+		    this.ship.emit("passStarGate",this.ship,this.destination.starGate);
+		}
+		this.hasJumped = true;
 	    }
 	}
 	if(this.destination.starStation){
@@ -75,6 +82,9 @@
     AI.prototype.start = function(){
 	this.rate = this.ship.state.cpu;
 	AI.parent.prototype.start.call(this);
+    }
+    AI.prototype.jumpTo = function(gate){
+	this.destination.starGate = gate;
     }
     AI.prototype.passStarGate = function(gate){
 	this.destination.starGate = gate;
@@ -197,6 +207,7 @@
 		,roundRoute:this.destination.roundRoute
 		,roundTarget:this.destination.roundTarget?this.destination.roundTarget.id:null
 		,chaseTarget:this.destination.chaseTarget?this.destination.chaseTarget.id:null
+		,starGate:this.destination.starGate?this.destination.starGate.to:null
 	    }
 	}
 	return data;

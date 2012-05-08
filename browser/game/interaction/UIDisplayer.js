@@ -27,11 +27,6 @@
 	
 	var ShipInfoDisplayer = require("./shipInfoDisplayer").ShipInfoDisplayer;
 	this.shipInfoDisplayer = new ShipInfoDisplayer()
-	this.add(this.shipInterface);
-	this.add(this.modulePanel);
-	this.add(this.starStationInterface); 
-	this.add(this.actionInterface);
-	this.add(this.mouse);
 	//this.add(this.shipInfoDisplayer);
 	this.starStationInfoDisplayer = new StarStationInfoDisplayer(Static.template.starStationInfoDisplayer);
 	this.chatBox = new ChatBox(Static.template.chatBox);
@@ -40,6 +35,17 @@
 	$("#battleScene").append(this.itemDisplayer.node);
 	//this.itemDisplayer.show();
 	this.chatBox.show();
+	Static.battleField.on("initialize",function(){
+	    self.init();
+	})
+    }
+    UIDisplayer.prototype.init = function(){
+	this.parts.length = 0;
+	this.add(this.shipInterface);
+	this.add(this.modulePanel);
+	this.add(this.starStationInterface); 
+	this.add(this.actionInterface);
+	this.add(this.mouse); 
     }
     MouseEventConsumer.mixin(UIDisplayer);
     exports.UIDisplayer = UIDisplayer;

@@ -30,13 +30,14 @@
     WaitingPage.prototype.hide = function(){
 	this.drawingInstance.stop();
 	this.canvas.style.display = "none";
-	this.nodeJ.css({"display":"none"});
+	this.nodeJ.hide();
 	this.isWaiting = false;
     }
     WaitingPage.prototype.next = function(){
 	if(this.isEnd){
 	    this.hide();
 	}
+	console.log("～～～～");
 	if(this.isEnding){
 	    this.alpha-=0.04;
 	    if(this.r!=0)
@@ -96,7 +97,8 @@
 	this.isEnding = false;
 	this.alpha = 1;
 	this.drawingInstance.start();
-	this.canvas.style.display = "block";
+	$(this.canvas).show();
+	this.nodeJ.show();
     }
     exports.WaitingPage = WaitingPage; 
 })(exports)

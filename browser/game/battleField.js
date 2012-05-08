@@ -17,8 +17,6 @@
 	this.parts= bf.parts;
 	if(this.size)this.size.release();
 	this.size = Point.Point(10000,10000);
-	this.shipMark = new ShipMarkSelected();
-	Static.interactionDisplayer.add(this.shipMark);
 	//listen mouseUp for ship selection;
 	this.consumeType.mouseDown = true;
 	this.consumeType.mouseMove = true;
@@ -62,7 +60,7 @@
 		Static.UIDisplayer.starStationInterface.show(station);
 		return;
 	    }
-	    self.shipMark.set(ship);
+	    Static.interactionDisplayer.shipMark.set(ship);
 	    self.selectedShip = ship;
 	    Static.UIDisplayer.shipInfoDisplayer.show(ship);
 	    Static.UIDisplayer.modulePanel.show(ship);

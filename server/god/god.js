@@ -4,12 +4,13 @@
     var Interface = require("../../database/interface").Interface;
     var BadgeSystem =require("./badgeSystem").BadgeSystem;
     var KillingRewardSystem =require("./killingRewardSystem").KillingRewardSystem;
-    
-    var God = EventEmitter.sub();
+    var GalaxyTravelSystem = require("./galaxyTravelSystem").GalaxyTravelSystem;
+    var God = EventEmitter.sub(); 
     God.prototype._init = function(){
 	this.worlds = [];
 	this.badgeSystem = new BadgeSystem(this);
 	this.killingRewardSystem = new KillingRewardSystem(this); 
+	this.galaxyTravelSystem = new GalaxyTravelSystem(this);
     }
     God.prototype.log = function(){
 	var godWord = ["GOD:"];
@@ -23,7 +24,10 @@
 	this.worlds.push(world);
 	world.battleField.on("shipDead",function(ship,byWho){
 	    self.emit("shipDead",world,ship,byWho);
-	}); 
+	});
+	world.battleField.on("shipPassStarGate",function(ship,gate){
+	    self.emit("shipPassStarGate",world,ship,gate);
+	})
 	world.battleField.on("shipDocking",function(ship,station){
 	    if(ship.removedByGod)return;
 	    ship.removedByGod = true;

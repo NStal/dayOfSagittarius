@@ -2,11 +2,15 @@
     var Class = require("../share/util").Class;
     var Interface = require("../../database/interface").Interface;
     var KillingRewardSystem =Class.sub();
+    var mongodb = require("mongodb");
     KillingRewardSystem.prototype._init = function(god){
 	//god watch the world
 	this.god = god;
 	this.god.on("shipDead",function(world,ship,byWho){
 	    var oriShip = byWho.weapon.ship
+	    Interface.setUserData(ship.owner,{
+		at:new mongodb.DBRef("starStations","Nolava-I")
+	    });
 	    Interface.getUserData(oriShip.owner,function(data){
 		//WARNING TAG
 		//this action is not a  atomic action
@@ -26,6 +30,7 @@
 		    });
 		}) 
 	    });
+	    
 	})
     }
     exports.KillingRewardSystem = KillingRewardSystem;

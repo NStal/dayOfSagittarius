@@ -57,7 +57,9 @@
 	    return;
 	}
 	if(msg.cmd==1){
-	    this.battleField.initShips(msg.data.ships,Static.world.galaxy);
+	    this.battleField.initialize(msg.data.ships,Static.world.galaxy);
+	    /*this.battleField.initEnvironment
+	    this.battleField.initShips(msg.data.ships,Static.world.galaxy);*/
 	    this.sequnce = msg.sequnce;
 	    Static.world.setTime(msg.time);
 	    //console.log(msg);

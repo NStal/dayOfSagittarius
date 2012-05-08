@@ -75,7 +75,17 @@
 	    cmd:6
 	    ,data:{
 		id:this.ship.id
-		,gateId:gate.id
+		,gateTo:gate.to
+	    }
+	}
+    }
+    ShipController.prototype.jumpTo = function(gate){
+	return {
+	    //time:this.ship.parentContainer.time+ShipController.delay
+	    cmd:15
+	    ,data:{
+		id:this.ship.id
+		,to:gate.to
 	    }
 	}
     }

@@ -14,7 +14,12 @@
 	this.world = world;
 	this.marks = []; 
 	var self = this; 
-	var ShipInfoMark = require("./shipInfoMark").ShipInfoMark;
+	var ShipInfoMark = require("./shipInfoMark").ShipInfoMark; 
+	Static.battleField.on("initialize",function(){
+	    self.init();
+	}) 
+	this.shipMark = new ShipMarkSelected();
+	this.add(this.shipMark);
 	Static.battleField.on("shipInitialized",function(ships){
 	    var tempArr = ships;
 	    for(var i=0,length=tempArr.length;i < length;i++){
@@ -23,6 +28,12 @@
 	    }
 	    self.showMarks();
 	})
+    }
+    InteractionDisplayer.prototype.init = function(){
+	this.marks.length = 0;
+	this.parts.length = 0;
+	this.add(this.shipMark);
+	this.shipMark.set(null);
     }
     InteractionDisplayer.prototype.showMarks = function(){
 	var tempArr = this.marks;

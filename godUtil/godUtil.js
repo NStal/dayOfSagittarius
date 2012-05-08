@@ -10,12 +10,34 @@
 	    var worker = new SyncWorker(host,port).start();
 	    worker.on("open",function(){
 		worker.send(data);
+		console.log("callback",typeof callback);
 		if(callback)callback();
 	    }) 
 	})
-    } 
+    }
+    var enterShipFromGate = function(galaxyName,fromGalaxy,ship,callback){
+	console.log("callback first int",typeof callback);
+	ship = ship.toData();
+	ship._id = ship.id;
+	console.log(ship.id,ship._id);
+	Interface.getGalaxy(galaxyName,function(galaxy){
+	    var tempArr = galaxy.starGates;
+	    for(var i=0,length=tempArr.length;i < length;i++){
+		var item = tempArr[i];
+		if(item.to==fromGalaxy){
+		    ship.cordinates = item.position;
+		    exports.enterShip(galaxyName,ship._id,ship.cordinates,callback);
+		    return;
+		}
+	    }
+	    console.error("no galaxy name",galaxy);
+	})
+	/*Interface.setShip(ship,ship,function(){
+	})*/
+    }
     var enterShip = function(galaxyName,shipId,position,callback){
 	Interface.getShipById(shipId,function(ship){
+	    console.log("enter here !!!!");
 	    ship.cordinates = position;
 	    ship.AI = {};
 	    ship.AI.destination = {};
@@ -25,6 +47,7 @@
 	    }
 	    ship.id = ship._id;
 	    Interface.changeShipToGalaxy(ship,galaxyName);
+	    console.log("callback enter ship",typeof callback);
 	    godCommandSend(galaxyName,{
 		cmd:clientCommand.GOD_enterShip
 		,data:{
@@ -75,7 +98,7 @@
 	    }
 	})
     }
-    exports.
+    exports.enterShipFromGate = enterShipFromGate;
     exports.addShipsAtGalaxy = addShipsAtGalaxy;
     exports.enterShip = enterShip;
 })(exports)

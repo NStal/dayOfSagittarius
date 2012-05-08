@@ -50,13 +50,12 @@ var GALAXIES = [{
     name:"Evy"
     ,position:{x:350,y:200}
     ,size:24
-    ,to:[{
-	galaxyName:"Nolava"
-	,position:{x:900,y:900}
-    }]
     ,ships:[]
+    ,starGates:[{
+	to:"Nolava"
+	,position:{x:400,y:300}
+    }]	
     ,starStations:[]
-    ,starGates:[]
     ,server:{
 	host:vuvu
 	,localport:20001
@@ -77,16 +76,18 @@ var StarStations = [{
 
 //START TEST
 console.log("create users");
+var mongodb = require("mongodb");
+    
 for(var i=0;i < users.length;i++){
     var user = users[i];
     Interface.addUser(user);
     console.log("add users",user);
     (function(_user){
 	Interface.getUserData(_user,function(obj){
-	    Interface.setUserData(_user,{credits:2000},function(){
+	    Interface.setUserData(_user,{credits:2000,at:new mongodb.DBRef("starStations","Nolava-I") },function(){
 		Interface.getUserData(_user,function(obj){
 		    console.log("set,credits");
-		    console.log("result",obj); 
+		    console.log("result",obj);
 		})
 	    });
 	})

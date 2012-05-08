@@ -1,1 +1,1 @@
-exports.galaxies = ["Nolava"];
+exports.galaxies = ["Nolava","Evy"];

@@ -15,9 +15,25 @@ ServerManager.prototype.add = function(galaxyName){
     var cp = child_process.spawn("node",[this.serverRoot+"/"+"server",galaxyName]);
     console.log("create process",cp.pid,galaxyName);
     cp.output = ""
+    var self = this;
     cp.stdout.on("data",function(data){
 	data = data.toString();
 	cp.output+=data;
+	if(!self.noMultiOutput){
+	    console.log(galaxyName,":",data);
+	    return;
+	}
+	if(typeof cp.exportOutput == "function"){
+	    cp.exportOutput(data);
+	}
+    })
+    cp.stderr.on("data",function(data){
+	data = data.toString();
+	cp.output+=data; 
+	if(!self.noMultiOutput){
+	    console.log(galaxyName,":",data);
+	    return;
+	}
 	if(typeof cp.exportOutput == "function"){
 	    cp.exportOutput(data);
 	}

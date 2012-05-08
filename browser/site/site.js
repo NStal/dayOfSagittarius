@@ -7,6 +7,16 @@ var Site = function(){
 	self.landingPageJ.hide();
     }
 }
+Site.prototype.updateUserInfo = function(username,callback){
+    Static.HttpAPI.getUserData(username,function(rsp){
+	if(rsp.result){
+	    Static.userData = rsp.data;
+	    callback(rsp.data);
+	}else{
+	    alert("fail to update user info");
+	}
+    })
+}
 Site.prototype.initGame = function(username){
     settings.width = $("body").width();
     settings.height = $("body").height();
@@ -26,7 +36,8 @@ Site.prototype.initGame = function(username){
     
     var self = this;
     var initTask = new MapTask();
-
+    //load userdata
+    this.updateUserInfo(username,initTask.newTask());
     //load sound manager
     initTask.newTask();
     window.soundManager.onready(function(){
@@ -40,7 +51,6 @@ Site.prototype.initGame = function(username){
     })
     Static.resourceLoader.start();
     initTask.on("finish",function(){
-	
 	main.clientWorld = new ClientWorld(__config); 
 	main.clientWorld.start();
 	//console.error(self.isSoundReady);

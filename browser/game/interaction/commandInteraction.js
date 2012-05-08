@@ -141,6 +141,32 @@
 	    return true;
 	});
     }
+    var JumpToInteraction = Interaction.sub();
+    JumpToInteraction.prototype._init = function(ship){	
+	if(!ship){
+	    return;
+	}
+	var ShipController = require("../shipController").ShipController;
+	var self = this;
+	this.ship = ship;
+	this.shipController = new ShipController(ship); 
+    }
+    JumpToInteraction.prototype.init = function(){
+	var self = this;
+	Static.globalCaptureLayer.capture("mouseDown",function(e){
+	    var p = Static.battleFieldDisplayer.screenToBattleField(e);
+	    var gate =Static.battleFieldDisplayer.findStarGateByPosition(p);
+	    if(!gate){
+		Toast("please select a Gate");
+		return true;
+	    }
+	    Static.gateway.send(self.shipController.jumpTo(gate));
+	    Static.globalCaptureLayer.release("mouseDown");
+	    
+	    (new Audio(Static.resourceLoader.get("sound_click1").src)).play();
+	    return true;
+	});
+    }
     
     var PassStarGateInteraction = Interaction.sub();
     PassStarGateInteraction.prototype._init = function(ship){
@@ -261,5 +287,6 @@
     exports.RoundAtInteraction = RoundAtInteraction;
     exports.MoveToInteraction = MoveToInteraction;
     exports.PassStarGateInteraction = PassStarGateInteraction;
+    exports.JumpToInteraction = JumpToInteraction;
 })(exports)
 
