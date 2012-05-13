@@ -5,6 +5,7 @@ API = function(){
 	,"getStationInfoByName":["name"]
 	,"requestShipUndocking":["shipId","stationName"]
 	,"getUserData":["name"]
+	,"updateShipModules":["id","equipments"]
     }
     this.apiEx = {
 	"template":["template/all.json"]

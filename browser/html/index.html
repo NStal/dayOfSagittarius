@@ -4,14 +4,14 @@
     <meta name="Content-Type" content="text/html; charset=utf8"/>
     <title>The Day of Sagittarius</title>
     <link rel="stylesheet/less" href="site/css/style.less" type="text/css" media="screen" />
-	<link rel="stylesheet" href="site/css/dockStyle.css" type="text/css" media="screen" />
+    <!--link rel="stylesheet" href="site/css/dockStyle.css" type="text/css" media="screen" /-->
     <script type="text/javascript" src="site/less-1.2.1.min.js"></script>
     
     <script type="text/javascript" src="game/static.js"></script>
     <script type="text/javascript" src="game/settings.js"></script>
     <!-- LOADING SITE and out plugins--> 
     <script type="text/javascript" src="plugins/sound/soundmanager2.js"></script>
-    <script type="text/javascript" src="site/jquery-1.5.min.js"></script>
+    <script type="text/javascript" src="site/jquery-1.7.2.js"></script>
     <script type="text/javascript" src="site/jXFrame/jTool.js"></script>
     <script type="text/javascript" src="site/jXFrame/apiManager.js"></script>
     <script type="text/javascript" src="site/jXFrame/widget.js"></script> 
@@ -96,7 +96,15 @@
     
     <!-- Code below is for Giyya -->
     
-    <script type="text/javascript" src="game/starStationScene/ptStore.js"></script>
+    <script type="text/javascript" src="game/starStationScene/ptStore.js"></script> 
+    <script type="text/javascript" src="game/starStationScene/dockGuidBox.js"></script>
+    <script type="text/javascript" src="game/starStationScene/dockInteractionBox.js"></script>
+    <script type="text/javascript" src="game/starStationScene/serviceBox.js"></script>
+    <script type="text/javascript" src="share/blueprint.js"></script>
+    <script type="text/javascript" src="game/starStationScene/shipDesigner.js"></script>
+    <script type="text/javascript" src="game/starStationScene/facilities.js"></script>
+    <script type="text/javascript" src="game/starStationScene/dockFacility.js"></script>
+    <!--script type="text/javascript" src="game/starStationScene/factoryShip.js"></script-->
     <script type="text/javascript" src="game/starStationScene/starSceneUtil.js"></script>
     <script type="text/javascript" src="game/starStationScene/starStationScene.js"></script>
     
@@ -114,32 +122,34 @@
       </canvas> 
     </div> 
     <div class="scene" id="starStationScene">
-	  <div id="DockHeader" class="">
+	  <div id="DockHeader">
+	    <button id="leave">leave</button>
 	  </div>
 	  <div id="screenContainer">
 		<canvas id="screen">
 		  Your browser does not support the HTML5 Canvas!
 		</canvas>
 	  </div>
-	</div>
-	<!--toolBar--> 
-	<div id="toolBar">
-	  <button id="propertyButton" class="toolButton">Property</button>
-	  <button id="assetsButton" class="toolButton">Assets</button>
-	  <button id="taskButton" class="toolButton">Tasks</button>
-	  <button id="socialButton" class="toolButton">Social</button>
-	  <button id="systemButton" class="toolButton">System</button>
-	</div>
-    <div class="scene" id="waitingScene"> 
-      <canvas id="screen">
-      </canvas>
-    </div> 
-    <div id="landingPage">
+    </div>
+    <!--toolBar--> 
+    <div id="toolBar">
+      <button id="propertyButton" class="toolButton">Property</button>
+      <button id="assetsButton" class="toolButton">Assets</button>
+      <button id="taskButton" class="toolButton">Tasks</button>
+      <button id="socialButton" class="toolButton">Social</button>
+      <button id="systemButton" class="toolButton">System</button>
+    </div>
+<div id="landingPage">
       <div class="wrapper"> 
 	<input type="text" name="" id="loginUsernameInput" value="" placeholder="用户名" />
 	<button id="loginButton">登录</button>
 	<button id="signUpButton" >注册</button>
       </div>
     </div>
+    
+    <div class="scene" id="waitingScene"> 
+      <canvas id="screen">
+      </canvas>
+    </div> 
   </body>
 </html>

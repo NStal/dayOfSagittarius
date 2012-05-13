@@ -59,8 +59,9 @@
 	for(var i=0,length=this.instructionQueue.length;i < length;i++){
 	    var item = this.instructionQueue[i];
 	    if(item.time<this.time){
+		console.error("recieve oudated instruction");
 		console.error("fatal error");
-		process.kill();
+		console.trace();
 	    }
 	    if(item.time == this.time){
 		var ins = item;
@@ -71,6 +72,9 @@
 	    }
 	}
 	
+    }
+    BattleFieldSoul.prototype.clearInstructions = function(){
+	this.instructionQueue.length = 0;
     }
     BattleFieldSoul.prototype._excute = function(instruction){
 	//see protocol.js => clientCommand to all the command implemented here 
@@ -484,6 +488,7 @@
 	
 	this.emit("initialize");
 	this.parts.length = 0; 
+	this.clearInstructions();
 	this.initEnvironment(galaxy);
 	this.initShips(ships);
     }

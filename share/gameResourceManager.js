@@ -10,6 +10,6 @@
 	}
 	
 	return null;
-    }
+    } 
     exports.gameResourceManager = gameResourceManager;
 })(exports)

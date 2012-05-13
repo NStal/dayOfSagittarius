@@ -372,7 +372,7 @@
     }
     Point.prototype._init = function(x,y){
 	if(typeof x == "undefined")return;
-	if(x.x){
+	if(typeof x.x == "number"){
 	    this.x = x.x;
 	    this.y = x.y;
 	    return;

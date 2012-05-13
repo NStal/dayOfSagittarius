@@ -16,15 +16,32 @@
 	if(!info){
 	    return;
 	}
+	if(!info.itemId){
+	    console.warn("info",info);
+	    console.warn("no ship prototype provide");
+	    return;
+	}
+	//console.log("infoQ",info.cordinates);
 	this.type = "ship";
-	this.id = info.id;
+	if(info.id)
+	    this.id = info.id;
+	if(info._id)
+	    this.id = info._id.toString();
+	if(!this.id){
+	    console.warn("!!!!","no id!!!!");
+	}
+	console.log("id",this.id);
+	this.itemId = info.itemId; 
+	var GRM = require("../static").Static.GRM;
+	var shipPrototype = GRM.get(info.itemId);
 	this.name = info.name
-	this.ability = info.ability;
+	this.ability = {};
+	Util.update(this.ability,shipPrototype.ability);
 	this.state = info.state?info.state:null;
 	this.action = info.action?info.action:{
 	    rotateFix:0
 	};
-	this.cordinates = new Point(info.cordinates);
+	this.cordinates = Point.Point(info.cordinates);
 	this.physicsState = info.physicsState;
 	this.moduleManager = new ModuleManager(this);
 	this.AI = new AI(this);
@@ -55,10 +72,11 @@
     ShipSoul.prototype.toData = function(){
 	var data ={
 	    id:this.id
+	    ,itemId:this.itemId
 	    ,name:this.name
 	    ,cordinates:{x:this.cordinates.x
 			 ,y:this.cordinates.y}
-	    ,ability:this.ability
+	    //,ability:this.ability
 	    ,state:this.state
 	    ,physicsState:this.physicsState
 	    ,action:this.action
@@ -96,7 +114,6 @@
 	//console.log(this.state.structure);
 	if(this.state.structure<=0){
 	    this.onDead(byWho);
-	    
 	}
     }
     ShipSoul.prototype.onDead = function(byWho){
@@ -126,6 +143,7 @@
 	    console.trace();
 	    return;
 	}
+	//console.log(this.state);
 	rotateSpeed = (1-this.state.speedFactor)*this.state.maxRotateSpeed;
 	this.physicsState.toward += fix*rotateSpeed;
 	this.physicsState.toward = Math.mod(this.physicsState.toward,Math.PI*2);

@@ -22,6 +22,7 @@ Site.prototype.initGame = function(username){
     settings.width = $("body").width();
     settings.height = $("body").height();
     Static.gameResourceManager = gameResourceManager;
+    Static.GRM = gameResourceManager;
     Static.gameResourceManager.init(Items);
     Static.waitingPage = new WaitingPage(this.waitingSceneNode);
     var __config = {
@@ -62,4 +63,5 @@ Site.prototype.initGame = function(username){
     window.ontouchmove = function(e){
 	e.preventDefault();
     }
+    
 }

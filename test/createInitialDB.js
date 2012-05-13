@@ -1,6 +1,7 @@
 var vuvu="115.156.219.166"
 var Interface = require("../database/interface").Interface;
 var MapTask =require("../share/util").MapTask;
+var ShipSoul = require("../share/ship/shipSoul").ShipSoul;
 var users = ["nstal"]//,"AI"];
 var getShipTemplate = function(){
     return {
@@ -8,18 +9,9 @@ var getShipTemplate = function(){
 	,owner:"nstal"
 	,pilot:"nstal"
 	,cordinates:{x:100,y:100}
-	,category:0
-	,ability:{
-	    maxSpeed:8
-	    ,structure:8000
-	    ,maxRotateSpeed:0.2
-	    ,speedFactor:0.8
-	    ,cpu:10
-	    ,size:18
-	    ,curveForwarding:true
-	    ,electricity:20000
-	}
+	,itemId:36
 	,modules:[]
+	,equipmentArray:[]
 	,cagos:[]
 	,reward:1200
 	,action:{
@@ -106,46 +98,52 @@ Interface.removeAllShips(function(){
 	    ship.pilot = user+"'sAI";
 	}
 	else{
+	    
 	    ship.pilot = user;
 	}
-	ship.modules = [13,13 //2 Cannon small
-			,7,1//,3//Missile//Beam small//Beam Big
-			,19 //small shield
-			,25 //small armor
-			,31 //small shieldRecharger
-			,35,35 // 2 tiny engine
-		       ];
-	ship.cagos = [1,2,3,4,1,4,2,6,5];
+	
+	console.error("QDADFASDFASDF",ship);
+	ship.modules = []//13,13 //2 Cannon small
+		       //,7,1//,3//Missile//Beam small//Beam Big
+		       //,19 //small shield
+		       //,25 //small armor
+		       //,31 //small shieldRecharger
+	//,35,35 // 2 tiny engine
+	//;
+	ship.cagos = [1,1,7,13,19,25];
 	ship.cordinates = {x:Math.random()*600+200
 			   ,y:Math.random()*600+200
 			  };
+	var _ship = new ShipSoul(ship).init(ship.modules);
+	ship = _ship.toData();
 	createShips.newTask();
-	Interface.addShip(ship,function(){
+	(function(ship){Interface.addShip(ship,function(){
 	    createShips.complete();
 	    console.log("ship::::",ship);
-	});
+	})})(ship);
     }
-    //add AI ship;
+    //add AI ship; 
     var centerP = {x:300,y:300};
     for(var i=0;i<10;i++){
 	var ship = getShipTemplate();
 	ship.owner = "AI";
 	ship.pilot = "AI-n"+Math.floor(Math.random()*10000000)
-	ship.modules = [
+	/*ship.modules = [
 	    13 //1 Cannon small
 	    ,1 //1 beam small
 	    ,19,25,35 // shield/armor.engine
-	];
+	];*/
 	ship.cagos = [1]; //holds a beam small
 	ship.cordinates = {
 	    x:Math.random()*500+centerP.x
 	    ,y:Math.random()*500+centerP.y
 	}
+	ship = new ShipSoul(ship).init(ship.modules).toData();
 	createShips.newTask();
-	Interface.addShip(ship,function(){
+	(function(ship){Interface.addShip(ship,function(){
 	    createShips.complete();
 	    console.log("add AI ship",ship);
-	})
+	})})(ship);
     }
     createShips.on("finish",function(){
 	Interface.getAllShips(function(ships){

@@ -46,6 +46,8 @@
 	this.add(this.starStationInterface); 
 	this.add(this.actionInterface);
 	this.add(this.mouse); 
+	//this.add(this.shipInfoDisplayer);
+	
     }
     MouseEventConsumer.mixin(UIDisplayer);
     exports.UIDisplayer = UIDisplayer;

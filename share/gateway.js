@@ -81,6 +81,7 @@
 	this.battleField.ready = false;
 	this.emit("disconnect");
 	var self = this;
+	if(Static.world.sleep)return;
 	var id = setInterval(function(){
 	    self.isTrying = true;
 	    if(!worker.ready && !self.isConnected)

@@ -19,6 +19,7 @@
 	this.statusText.position = {x:160,y:45};
     }
     ShipInfoDisplayer.prototype.onDraw = function(context){
+	if(!this.ship)return;
 	this.position.x = settings.width/2;
 	this.position.y = settings.height-180;
 	var HPCenter = {x:72,y:73};
