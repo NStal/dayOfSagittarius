@@ -69,22 +69,25 @@ var StarStations = [{
 //START TEST
 console.log("create users");
 var mongodb = require("mongodb");
-    
-for(var i=0;i < users.length;i++){
-    var user = users[i];
-    Interface.addUser(user);
-    console.log("add users",user);
-    (function(_user){
-	Interface.getUserData(_user,function(obj){
-	    Interface.setUserData(_user,{credits:2000,at:new mongodb.DBRef("starStations","Nolava-I") },function(){
+Interface._getCollection("users",function(err,col){
+    col.remove(function(){
+	for(var i=0;i < users.length;i++){
+	    var user = users[i];
+	    Interface.addUser(user);
+	    console.log("add users",user);
+	    (function(_user){
 		Interface.getUserData(_user,function(obj){
-		    console.log("set,credits");
-		    console.log("result",obj);
+		    Interface.setUserData(_user,{credits:2000,at:new mongodb.DBRef("starStations","Nolava-I") },function(){
+			Interface.getUserData(_user,function(obj){
+			    console.log("set,credits");
+			    console.log("result",obj);
+			})
+		    });
 		})
-	    });
-	})
-    })(user);
-}
+	    })(user);
+	}
+    });
+});
 console.log("removeAll ships") 
 var createShips = new MapTask();
 Interface.removeAllShips(function(){
@@ -104,10 +107,10 @@ Interface.removeAllShips(function(){
 	
 	console.error("QDADFASDFASDF",ship);
 	ship.modules = []//13,13 //2 Cannon small
-		       //,7,1//,3//Missile//Beam small//Beam Big
-		       //,19 //small shield
-		       //,25 //small armor
-		       //,31 //small shieldRecharger
+	//,7,1//,3//Missile//Beam small//Beam Big
+	//,19 //small shield
+	//,25 //small armor
+	//,31 //small shieldRecharger
 	//,35,35 // 2 tiny engine
 	//;
 	ship.cagos = [1,1,7,13,19,25];
@@ -124,27 +127,27 @@ Interface.removeAllShips(function(){
     }
     //add AI ship; 
     var centerP = {x:300,y:300};
-    for(var i=0;i<10;i++){
-	var ship = getShipTemplate();
-	ship.owner = "AI";
-	ship.pilot = "AI-n"+Math.floor(Math.random()*10000000)
-	/*ship.modules = [
-	    13 //1 Cannon small
-	    ,1 //1 beam small
-	    ,19,25,35 // shield/armor.engine
-	];*/
-	ship.cagos = [1]; //holds a beam small
-	ship.cordinates = {
-	    x:Math.random()*500+centerP.x
-	    ,y:Math.random()*500+centerP.y
-	}
-	ship = new ShipSoul(ship).init(ship.modules).toData();
-	createShips.newTask();
-	(function(ship){Interface.addShip(ship,function(){
-	    createShips.complete();
-	    console.log("add AI ship",ship);
-	})})(ship);
-    }
+    /*for(var i=0;i<10;i++){
+      var ship = getShipTemplate();
+      ship.owner = "AI";
+      ship.pilot = "AI-n"+Math.floor(Math.random()*10000000)
+      ship.modules = [
+      13 //1 Cannon small
+      ,1 //1 beam small
+      ,19,25,35 // shield/armor.engine
+      ];
+      ship.cagos = [1]; //holds a beam small
+      ship.cordinates = {
+      x:Math.random()*500+centerP.x
+      ,y:Math.random()*500+centerP.y
+      }
+      ship = new ShipSoul(ship).init(ship.modules).toData();
+      createShips.newTask();
+      (function(ship){Interface.addShip(ship,function(){
+      createShips.complete();
+      console.log("add AI ship",ship);
+      })})(ship);
+      }*/
     createShips.on("finish",function(){
 	Interface.getAllShips(function(ships){
 	    var __list = [];

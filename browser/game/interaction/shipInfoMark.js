@@ -37,10 +37,7 @@
 	this.alpha = 1;
     }
     ShipInfoMark.prototype.onDraw = function(context){
-	if(this.position.x<-Static.battleFieldDisplayer.position.x
-	   ||this.position.y<-Static.battleFieldDisplayer.position.y
-	   ||this.position.x>-Static.battleFieldDisplayer.position.x+settings.width
-	   ||this.position.y>-Static.battleFieldDisplayer.position.y+settings.height){
+	if(!Static.interactionDisplayer.isPointInScreen(this.position)){
 	    this.resetEffect();
 	    return;
 	}
@@ -57,8 +54,7 @@
 	    context.lineTo(size,size);
 	    context.lineTo(size,size-pad);
 	    context.rotate(Math.PI/2);
-	}
-	
+	} 
 	context.strokeStyle = this.lineColor;
 	context.stroke();
 	//draw lines

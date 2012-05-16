@@ -1,9 +1,6 @@
 
 var Factory = Class.sub();
-var Clone = Class.sub();
 var Market = Class.sub();
-var Bank = Class.sub();
-var Dock = Class.sub();
 //closure here to make sure class Equipmen do not pollute the global scope
 (function(exports){
     Factory.prototype._init = function(facility){
@@ -43,5 +40,8 @@ var Dock = Class.sub();
     Factory.prototype.changeShip = function(ship){
 	this.shipDesigner.workOn(ship); 
 	this.currentShip = ship;
-    }    
+    }
+    Market.prototype._init = function(facility){
+	
+    }
 })(exports)
