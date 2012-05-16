@@ -60,5 +60,15 @@
 	this.position = Static.battleFieldDisplayer.position;
 	this.scale = Static.battleFieldDisplayer.scale;
     }
+    InteractionDisplayer.prototype.isPointInScreen = function(p){
+	var w = settings.width;
+	var h = settings.height;
+	var scale=Static.battleFieldDisplayer.scale;
+	//console.log(p.toString(),Static.battleFieldDisplayer.position.toString());
+	return (p.x>-Static.battleFieldDisplayer.position.x/scale
+		&& p.y>-Static.battleFieldDisplayer.position.y/scale
+		&&p.x<-Static.battleFieldDisplayer.position.x/scale+w
+		&&p.y<-Static.battleFieldDisplayer.position.y/scale+h);
+    }
     exports.InteractionDisplayer = InteractionDisplayer;
 })(exports)

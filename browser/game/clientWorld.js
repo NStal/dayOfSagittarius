@@ -168,7 +168,7 @@
 	}
 	if(!this.bgm){
 	    var audio = new Audio(Static.resourceLoader.get("music_bgm").src);
-	    audio.play();
+	    //audio.play();
 	    audio.loop = true;
 	    this.bgm = audio;
 	}
@@ -217,7 +217,7 @@
 	    }else{
 		Static.battleFieldDisplayer.scale *= 0.9;
 	    }
-	    if(Static.battleFieldDisplayer.scale >=1)Static.battleFieldDisplayer.scale=1;
+	    if(Static.battleFieldDisplayer.scale >=2)Static.battleFieldDisplayer.scale=2;
 	    if(Static.battleFieldDisplayer.scale <0.1)Static.battleFieldDisplayer.scale=0.1;
 	}
 	if(this.KEYS[Key.f] && this.KEYS[Key.alt]){

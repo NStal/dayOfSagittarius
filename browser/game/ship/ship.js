@@ -8,6 +8,7 @@
 	var ShipInfoMark = require("../interaction/shipInfoMark").ShipInfoMark;
 	Ship.parent.prototype._init.call(this,info);
 	var self = this;
+	this.scale = 0.5;
 	this.on("docked",function(){
 	    Static.UIDisplayer.starStationInfoDisplayer.show(self.AI.destination.starStation);
 	    return;
@@ -31,19 +32,21 @@
     }
     Ship.prototype.onDraw = function(context){
 	context.globalAlpha = 0.8;
-	context.shadowBlur=5;
+	context.shadowBlur=2;
 	
 	context.fillStyle = this.color;
 	context.shadowColor=this.color;
-	/*if(!this.shipImage){
+	if(!this.shipImage){
 	    this.shipImage = Static.resourceLoader.get("ship_banshee");
 	}
 	if(this.shipImage){
-	    context.rotate(Math.PI/2);
+	    context.globalAlpha = 0.9;
+	    context.rotate(-Math.PI/2);
+	    context.scale(1,1);
 	    context.drawImage(this.shipImage
 			      ,-15,-25,30,50);
 	    return;
-	}*/
+	}
 	context.beginPath();
 	context.moveTo(-6,-3);
 	context.lineTo(6,0);

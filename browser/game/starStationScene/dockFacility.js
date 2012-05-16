@@ -29,9 +29,6 @@ DockFacility.prototype.hide = function(){
     });
 }
 DockFacility.Enum = {
-    Clone:Clone
-    ,Market:Market
+    Market:Market
     ,Factory:Factory
-    ,Bank:Bank
-    ,Dock:Dock
 }

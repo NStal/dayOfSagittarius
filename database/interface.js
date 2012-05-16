@@ -43,7 +43,7 @@
 	    }
 	})
     }
-    Interface.addUser = function(username){
+    Interface.addUser = function(username,callback){
 	this._getCollection("users",function(err,col){
 	    if(err||!col){
 		console.log(err);
@@ -51,15 +51,27 @@
 		console.trace();
 		return;
 	    }
-	    col.insert({_id:username
-			,credits:2000
-			,at:new mongodb.DBRef("starStations","Nolava-I") 
-			//at is your born place,if no ship.pilot is the username
-			//then you will be at you born place 
-			//usually because u are dead
-			});
-			//Nolava is the initial galaxies
-			//
+	    col.findOne({_id:username},function(err,obj){
+		if(obj){
+		    console.log("errrr",err,obj);
+		    if(callback)
+			callback(null);
+		    return;
+		} 
+		var user = {_id:username
+			    ,credits:2000
+			    ,at:new mongodb.DBRef("starStations","Nolava-I") 
+			    //at is your born place,if no ship.pilot is the username
+			    //then you will be at you born place 
+			    //usually because u are dead
+			   };
+		col.insert(user,{safe:true},function(){
+		    if(callback)
+			callback(user);
+		});
+		//Nolava is the initial galaxies
+		//
+	    })
 	})
     }
     Interface.setUserData = function(username,data,callback){

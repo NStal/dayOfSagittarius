@@ -6,7 +6,6 @@
     var Drawable = require("../game/drawing/drawable").Drawable; 
     var StarStationScene = function(template){
 	Widget.call(this,template);
-	
 	this.nodeJ.css({display:"none"});
 	this.node.width = settings.width;
 	this.node.height = settings.height;
@@ -142,12 +141,14 @@
 		    console.error("fail to leave station",rsp);
 		    return;
 		}
-		Static.site.updateUserInfo(Static.username,function(){
-		    self.nodeJ.fadeOut();
-		    Static.world.start();
-		    $("#battleFieldScene").show();
-		    self.onLeave();
-		})
+		setTimeout(function(){
+		    Static.site.updateUserInfo(Static.username,function(){
+			self.nodeJ.fadeOut();
+			Static.world.start();
+			$("#battleFieldScene").show();
+			self.onLeave();
+		    })
+		},300);
 	    });
     }
     StarStationScene.prototype.goTo = function (placeName){
