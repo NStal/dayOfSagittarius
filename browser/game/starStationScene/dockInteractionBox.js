@@ -4,35 +4,9 @@
 	Widget.call(this,Static.template.interactionBox);
 	var self = this; 
 	this.isShown = true;
-	this.rolePicBoxJ.hide();
-	this.diologBoxJ.hide(); 
-	this.rolePicBox.changePic = function(src){
-	    self.rolePicBoxJ.attr("src",src);
-	}
-	this.defaultWidth = 900;
+	
     }
-    DockInteractionBox.prototype.showOnTop = function(){
-	this.diologBoxJ.css({zIndex:20}); 
-    }
-    DockInteractionBox.prototype.hideToBottom = function(){
-	this.diologBoxJ.css({zIndex:5});
-    }
-    DockInteractionBox.prototype.reset = function(){
-	this.roleListJ.empty();
-    }
-    DockInteractionBox.prototype.roleHide = function(callback){
-	var self = this;
-	this.diologBoxJ.slideUp("fast",function (){
-	    self.rolePicBoxJ.animate({right:-self.rolePicBoxJ.width()*2},"fast",callback);			
-	});
-    }
-    DockInteractionBox.prototype.roleShow = function(callback){
-	var self = this;
-	this.rolePicBoxJ.show();
-	this.rolePicBoxJ.animate({right:0},"fast",function (){
- 	    self.diologBoxJ.slideDown("fast",callback);			
-	});
-    }
+    
     DockInteractionBox.prototype.hide = function(callback){
 	if(!this.isShown)return false;
 	this.isShown = false;

@@ -13,6 +13,11 @@ DockServiceBox.prototype._init = function (){
 DockServiceBox.prototype.show = function (callback){
     if(this.isShown) return;
     this.isShown = true;
+    //calculate the correct height
+    var width = $(document).width() - this.dock.guidBox.nodeJ.width()-140;
+    var height = $(document).height() - 200;
+    this.nodeJ.css({width:width
+		    ,height:height})
     this.nodeJ.show(90,callback);
 }
 DockServiceBox.prototype.hide = function (callback){

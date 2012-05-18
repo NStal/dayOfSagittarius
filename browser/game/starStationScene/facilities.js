@@ -24,8 +24,9 @@ var Market = Class.sub();
 	facility.box.add(this);
     }
     Factory.prototype.prepareCanvas = function(){
-	this.canvas.width = this.shipDisplayerJ.width();
-	this.canvas.height = this.shipDisplayerJ.height();
+	this.canvas.width = $(this.canvas).width();
+	this.canvas.height = $(this.canvas).height(); 
+	console.log(this.canvas.width);
     }
     Factory.prototype.onClickSave = function(eq){
 	if(this.currentShip._id)this.currentShip.id = this.currentShip._id;

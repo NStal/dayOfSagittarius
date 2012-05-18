@@ -518,7 +518,7 @@
     },{
 	id:36
 	,name:"frontier"
-	,type:e.ship 
+	,type:e.ship
 	,width:525
 	,height:518
 	,size:4 //this size if for ship factory

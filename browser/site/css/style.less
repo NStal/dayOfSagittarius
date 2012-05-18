@@ -1,4 +1,23 @@
-@font-face { font-family: Delicious; src: url('../coppers/Copperplate-Gothic-Light.ttf'); } 
+@font-face { font-family: Delicious; src: url('../coppers/Copperplate-Gothic-Light.ttf'); }
+//debug
+.box-shadow{
+    box-shadow:0px 0px 4px grey;
+}
+.transition (@attr,@time){
+    transition:@attr @time;
+    -moz-transition:@attr @time;
+    -webkit-transition:@attr @time;
+    -o-transition:@attr @time;
+}
+.border-image (@url,@b1,@b2,@b3,@b4){
+    border-image:@url @b1 @b2 @b3 @b4 repeat repeat;
+    -webkit-border-image:@url @b1 @b2 @b3 @b4 repeat repeate; 
+    -moz-border-image:@url @b1 @b2 @b3 @b4 repeat repeat;
+    
+}
+.clickable{
+    cursor:pointer;
+}
 .box-sizing{
     box-sizing:border-box;
     -moz-box-sizing:border-box;
@@ -220,61 +239,92 @@ canvas{
 
 #starStationScene {
     overflow:hidden;
-    background-color:#29272D;
-    font-size:1em; 
-    #serviceBox{
-	position:relative;
-	overflow:hidden;
-	top:10%;
-	margin:10px auto;
-	border:1px solid black;
-	z-index:10;
-	height:700px;
-	width:1000px; 
-	#serviceList{
-	    text-align:right;
-	    background-color:rgba(70,75,85,1);
-	    border:none;
-	    border-bottom:1px solid black;
-	    width:100%;
-	    height:35px;
-	    overflow:hidden;
+    font-size:12px;
+    color:#222;
+    background-color:#eee;
+    #header{
+	#title{
+	    position:absolute;
+	    top:0;
+	    left:50%;
+	    margin-left:-640px;
+	    width:1280px;
+	    height:42px;
+	    background-image: url(../../image/starStationHeader.png);
+	    text-align:center;
+	    line-height:40px;
 	}
+	width:100%;
+	height:42px;
+	background-image: url(../../image/header.png);
+	background-repeat:repeat-x;
+	background-position:top;
+    }
+    #serviceBox{
+	//debug
+	position:absolute;
+	top:50px;
+	right:20px;
+	height:600px;
+	width:1000px;
 	#content{
 	    margin-top:-35px;//left space for serviceList
 	    padding-top:35px;//
 	    height:100%;
-	    width:100%;
+	    width:100%; 
+	    margin-left:-22px;
 	}
     }
     #factory{
 	width:100%;
 	height:100%;
-	overflow:hidden;
+	position:relative;
 	#equipments{
 	    .box-sizing;
-	    width:30%;
-	    float:left;
-	    margin:0;
+	    width:245px;
 	    height:90%;
-	    overflow:auto;
+	    position:absolute;
+	    left:0;
+	    top:0;
+	    overflow:hidden;
 	    .equipmentButton{
-		height:45px;
-		border:1px solid black;
-		border-width:1px 1px 0 0;
+		.itemBar;
+		span{
+		    line-height:32px;
+		    font-weight:700;
+		    padding-left:8px;
+		    font-size:12px;
+		}
 	    }
 	}
 	#shipDisplayer{
-	    width:70%;
+	    width:100%;
 	    float:left;
-	    margin:0;
-	    height:90%;
-	    #screen{
+	    position:absolute;
+	    right:0;
+	    border:none;
+	    height:100%;
+	    margin-right:-480px;
+	    padding-right:240px;
+	    #pad{
+		padding-right:220px;
+		padding-left:30px;
+		padding-bottom:20px;
+		height:90%;
+		.box-sizing;
 		width:100%;
-		height:100%;
-		cursor:default;
+		#screenContainer{
+		    .box-sizing;
+		    .box-shadow;
+		    height:100%;
+		}
+		#screen{
+		    width:100%;
+		    height:100%;
+		    cursor:default;
+		}
 	    } 
-	    .box-sizing;
+	    
 	}
 	.bottom{
 	    button{
@@ -286,12 +336,6 @@ canvas{
 	    height:10%;
 	    color:black;
 	}
-    }
-    div{
-	border:1px solid black;
-	background-color:rgba(110,115,130,0.3);
-	color:white;
-	
     }
     button{
 	color:white;
@@ -528,13 +572,42 @@ canvas{
 	margin:0;
     }
     #guidBox{
-	background-color:transparent;
 	position:absolute;
-	border:none;
-	top:5px;
-	left:5px;
-	width:645px;
-	height:720px;
+	top:50px;
+	left:30px;
+	width:255px;
+	height:260px;
+	#handle{
+	    position:absolute;
+	    left:-62px;
+	    top:0px;
+	    width:49px;
+	    height:171px;
+	    background-image: url(../../image/guidBoxHandle.png);
+	}
+	h2{
+	    font-size:12px;
+	    color:#222;
+	    margin:0;
+	    margin-top:-16px;
+	    margin-left:-10px;
+	    margin-bottom:12px;
+	    padding:0;
+	} 
+	#placesBox{
+	    margin-left:-22px;
+	    overflow:hidden;
+	    width:245px;
+	    height:210px;
+	    .guidBoxItem{
+		.itemBar;
+		#name{
+		    display:block;
+		    padding:12px;
+		    font-size:12px;
+		}
+	    }
+	}
     }
 
     #previewBox{
@@ -561,117 +634,64 @@ canvas{
 	width:50%;
 	height:30%;
     }
-    #placesBox{
-	position:absolute;
-	left:0;
-	top:30%;
-	width:50%;
-	//height:70%;
-    }
     #guidButtonBox{
 	border:none;
 	border-top:1px solid black;
     }
-    .placeButton{
-	background-color:rgba(300,300,300,0);
-	border:none;
-	border-left:1px solid black;
-	border-bottom:1px solid black;
-	float:right;
-	margin:0px;
-	width:100px;
-	height:100px;
+}
+.customWindow{
+    border-width:34px 34px 16px 30px;
+    .border-image(url("../../image/windowBorderSmall.png"),34,34,16,30);
+    .box-sizing;
+    
+}
+.itemBar{
+    margin-bottom:-1px;
+    overflow:hidden; 
+    background-image: url(../../image/itemBar.png); 
+    width:240px;
+    height:57px;
+    .transition(background-image,200ms);
+    &:hover{
+	background-image: url(../../image/itemBarHover.png);
+	color:white; 
+	.transition(background-image,200ms);
+	
     }
-    .placeButton-hover{
-	background-color:rgba(240,240,240,0.5);
-
-    }
-    .placeButton:active{
-	background-color:rgba(230,230,230,0.5);
-    }
-    #screenContainer{
-	display:none;
-    }
-    #interactionBox{
+}
+#interactionBox{
+    width:100%;
+    height:250px;
+    position:absolute;
+    bottom:0;
+    left:0;
+    display:block;
+    z-index:100;
+    #bg{
 	position:absolute;
-	background-color:transparent;
-	border:none;
-	right:5px;
-	bottom:0px;
-	width:700px;
-	height:670px;
+	width:100%;
+	height:0px;
+	bottom:0;
+	left:0;
+	border-width:153px 20px 0 500px;
+	.border-image(url("../../image/interactionBoxBar.png"),153,20,0,500);
+	z-index:3;
+    }
+    #npcName{
+	background-image: url(../../image/npcNameBox.png);
+	background-position:top left;
+	width:250px;
+	height:50px; 
+	position:absolute;
+	bottom:75px;
+	left:235px;
+	line-height:47px;
+	text-indent:65px;
+	
     }
     #rolePicBox{
 	position:absolute;
-	background-color:transparent;
-	border:none;
-	right:0;
-	top:0;
-	width:43%;
-	height:66%;
-    }
-    .pageImage{
-	float:right;
-	height:100%;
-	float:right;
-    }
-    #roleList{
-	position:absolute;
-	text-align:center;
-	overflow:hidden;
-	background-color:transparent;
-	bottom:30%;
-	border:none;
-	height:60px;
-	width:700px;
-	right:0;
-    }
-    .roleIcon{
-	height:35px;
-	width:100px;
-	float:right;
-	background-color:rgba(70,70,70,1);
-	border:1px solid black;
-    }
-    .roleIcon-hover{
-	background-color:rgba(140,140,140,1);
-    }
-
-    .roleIcon:active{
-	background-color:rgba(230,230,230,1);
-    }
-    #diologBox{
-	position:absolute;
-	z-index:20;
-	background-color:rgba(70,70,75,1);
-	top:66%;
-	right:0;
-	width:99%;
-	height:33%;
-    }
-
-    #toolBar{
-	z-index:5;
-	position:absolute;
-	background-color:transparent;
-	text-align:right;
-	width:100%;
-	border:none;
-	padding:1px;
-	right:0;
-	top:10px;
-    }
-    .toolButton{
-	background-color:transparent;
-	border:none;
-	width:70px;
-	height:30px;
-    }
-    .toolButton:hover{
-	background-color:rgba(140,140,140,0.4);
-	border:1px solid rgba(100,100,100,0.5);
-    }
-    .toolButton:active{
-	background-color:rgba(200,200,200,0.5);
+	left:120px;
+	bottom:30px;
     }
 }

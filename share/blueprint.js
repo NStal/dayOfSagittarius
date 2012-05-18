@@ -22,7 +22,10 @@
 	this.name = info.name;
 	this.proto = Static.GRM.get(this.info.itemId);
 	Util.update(this,this.proto);
-	this.fieldSize = 100/this.size;
+	var con = 100;
+	this.fieldSize = 20;
+	this.size = 100/this.fieldSize;
+	//this.fieldSize = 100/this.size;
 	this.equipments = [];
 	if(info.equipments){
 	    var tempArr = info.equipments;
@@ -69,7 +72,10 @@
     }
     Blueprint.prototype._drawPath = function(context){
 	context.save();
+	context.strokeStyle = "white";
 	context.lineWidth = 2;
+	context.scale(this.proto.size/this.size
+		      ,this.proto.size/this.size);
 	for (var i = 0; i < this.shapePathArray.length; i++){
 	    if(this.shapePathArray[i]._class == CirclePath){
 		this.shapePathArray[i].draw(context);
@@ -89,7 +95,8 @@
     }
     Blueprint.prototype._drawField = function(context){
 	var fieldData = this.fieldData;
-	context.translate(-this.width/2,-this.height/2);
+	context.translate(-this.fieldWidth*this.fieldSize/2
+			  ,-this.fieldHeight*this.fieldSize/2);
 	context.beginPath();
 	var colorMap = {
 	    1:["gray","rgba(220,220,100,0.13)"]
@@ -180,7 +187,20 @@
 	eq.onDraw(context);
 	context.restore();
     }
+    Blueprint.prototype._drawPattern = function(context){
+	if(this.pattern){
+	    context.fillStyle = this.pattern;
+	    context.rect(-2000,-2000,4000,4000);
+	    context.fill();
+	}else{
+	    var img = Static.resourceLoader.get("blueprintTexture");
+	    if(img){
+		this.pattern = context.createPattern(img,"repeat");
+	    }
+	}
+    }
     Blueprint.prototype.onDraw = function (context){
+	this._drawPattern(context);
 	this._drawPath(context);
 	this._drawField(context);
 	this._drawEquipments(context);
