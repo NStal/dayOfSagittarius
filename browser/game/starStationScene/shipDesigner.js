@@ -76,7 +76,6 @@
 	    var has = false;
 	    for(var j=0,_length=equipmentsInfo.length;j < _length;j++){
 		var _item = equipmentsInfo[j];
-		console.log(_item,item);
 		if(_item.id==item){
 		    _item.count++;
 		    has = true;

@@ -11,7 +11,7 @@
 }
 .border-image (@url,@b1,@b2,@b3,@b4){
     border-image:@url @b1 @b2 @b3 @b4 repeat repeat;
-    -webkit-border-image:@url @b1 @b2 @b3 @b4 repeat repeate; 
+    -webkit-border-image:@url @b1 @b2 @b3 @b4 repeat repeat;
     -moz-border-image:@url @b1 @b2 @b3 @b4 repeat repeat;
     
 }
@@ -267,26 +267,85 @@ canvas{
 	right:20px;
 	height:600px;
 	width:1000px;
+	#currentService{
+	    background-image: url(../../image/serviceTitleBg.png);
+	    width:232px;
+	    height:25px;
+	    padding:0;
+	    margin:0;
+	    font-size:12px;
+	}
+	#title{
+	    position:absolute;
+	    top:-30px;
+	    left:50%;
+	    margin-left:-116px;
+	    text-align:center; 
+	    height:25px;
+	    line-height:25px;
+	    &:hover #serviceTitle{
+		display:block;
+	    }
+	    #serviceTitle{
+		position:absolute;
+		display:none;
+		padding:0;
+		left:0;
+		top:11px;
+		height:100px; 
+		width:232px;
+		opacity:0.8;
+		background-color:rgba(0,0,0,0.5);
+		list-style:none;
+		color:white;
+		z-index:12;
+		li{
+		    &:hover{
+			background-color:black;
+			color:white;
+		    }
+		}
+	    }
+	}
 	#content{
-	    margin-top:-35px;//left space for serviceList
-	    padding-top:35px;//
+	    margin-top:-25px;//left space for serviceList
+	    padding-top:25px;//
 	    height:100%;
 	    width:100%; 
 	    margin-left:-22px;
 	}
     }
-    #factory{
+    #galaxyEntry{
+
+    }
+    #galaxyEntry{
+	#enterButton{
+	    background-image: url(../../image/enterGalaxyButton.png);
+	    width:351px;
+	    height:351px;
+	    .clickable;
+	    margin:80px auto;
+	    line-height:351px;
+	    text-align:center;
+	    color:white;
+	}
+    }
+    #shipModifier{
 	width:100%;
 	height:100%;
 	position:relative;
-	#equipments{
+	#equipmentsBox{
 	    .box-sizing;
 	    width:245px;
 	    height:90%;
 	    position:absolute;
 	    left:0;
 	    top:0;
-	    overflow:hidden;
+	    #list{
+		overflow:hidden;
+		width:100%;
+		height:100%;
+	    }
 	    .equipmentButton{
 		.itemBar;
 		span{
@@ -515,44 +574,6 @@ canvas{
 	width:20%;
 	height:55%;
     }
-
-    .factoryShipButton{
-	background-color:transparent;
-	position:relative;
-	top:35px;
-	border:1px solid black;
-	width:100%;
-	height:23%;
-    }
-    .factoryShipButton-hover{
-	background-color:rgba(140,140,140,0.8);
-    }
-    .factoryEquipmentButton{
-	margin:0;
-	width:100%;
-	height:6%;
-	padding-top:5px;
-	background-color:transparent;
-	border:1px solid black;
-    }
-    .factoryEquipmentButton-hover{
-	background-color:rgba(140,140,140,0.8);
-    }
-    .factoryEquipmentButton:active{
-	background-color:rgba(100,100,100,0.8);
-    }
-    .factoryEquipmentNameText{
-	margin:0;
-	width:75%;
-	height:100%;
-	float:left;
-    }
-    .factoryEquipmentNumberText{
-	margin:0;
-	width:24%;
-	height:100%;
-	float:right;
-    }
     #serviceBoxShrinkButton{
 	position:absolute;
 	bottom:0;
@@ -659,6 +680,26 @@ canvas{
 	
     }
 }
+.scrollBar{
+    .border-image(url(../../image/scrollerBar.png),5,4,5,4);
+    .box-sizing;
+    border-width:5px 4px 5px 4px;
+    width:8px;
+    height:100%;
+    position:absolute;
+    top:0;
+    right:-12px;
+    #scroller{
+	margin:-5px 0;
+	background-image:url(../../image/scroller.png);
+	width:13px;
+	height:70px;
+	position:relative;
+	margin-left:-6px;
+	top:0;
+	left:0; 
+    }
+}
 #interactionBox{
     width:100%;
     height:250px;
@@ -666,7 +707,14 @@ canvas{
     bottom:0;
     left:0;
     display:block;
-    z-index:100;
+    #locationTitle{
+	position:absolute;
+	bottom:95px;
+	left:0px;
+	width:95px;
+	text-align:center;
+	z-index:4;
+    }
     #bg{
 	position:absolute;
 	width:100%;
@@ -692,6 +740,23 @@ canvas{
     #rolePicBox{
 	position:absolute;
 	left:120px;
-	bottom:30px;
+	bottom:-200px;
+	img{
+	    height:600px;
+	}
+    }
+    #conversationBox{
+	position:absolute;
+	z-index:10;
+	bottom:0;
+	right:0;
+	width:100%;
+	.box-sizing;
+	height:140px;
+	padding-left:480px;
+	p{
+	    padding:3px 5px 0;
+	    margin:0;
+	}
     }
 }

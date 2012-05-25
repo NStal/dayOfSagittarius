@@ -1,7 +1,7 @@
 (function(exports){
     var Resource = [
 	["grid","image","image/newGrid.png"]
-	,["blueprintTexture","image","image/blueprintTexture.png"]
+	,["blueprintTexture","image","image/shipDesignerGrid.png"]
 	,["ship_banshee","image","image/destroyer.png"]
 	,["ui_basicShipInfoPanel","image","image/basicShipInfoPanel.png"]
 	,["ui_electricityBar","image","image/electricityBar.png"]

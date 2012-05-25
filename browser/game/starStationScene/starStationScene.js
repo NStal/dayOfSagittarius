@@ -20,12 +20,6 @@
 	});
     } 
     StarStationScene.prototype.buildFacilities = function (facilityArray){
-	this.guidBox = new DockGuidBox(this);
-	this.nodeJ.append(this.guidBox.nodeJ);
-	this.interactionBox = new DockInteractionBox(this);
-	this.nodeJ.append(this.interactionBox.nodeJ);
-	this.serviceBox = new DockServiceBox(this);
-	this.nodeJ.append(this.serviceBox.nodeJ);
 	this.facility = [];
 	for(var i=0;i < facilityArray.length;i++){
 	    this.addFacility(facilityArray[i]);
@@ -40,10 +34,10 @@
 	this.getStationInfoByName(stationName); 
     } 
     StarStationScene.prototype.addFacility = function(facilityInfo){
-	var fac = new DockFacility(facilityInfo);
-	this.facility.push(fac);
-	this.guidBox.add(fac);
-	this.nodeJ.append(fac.box.nodeJ);
+	var fac = new Facility(facilityInfo);
+	this.facility.push(fac);//form where we can traverse them
+	this.guidBox.add(fac);//guidbox item
+	this.nodeJ.append(fac.box.nodeJ);//UI
     }
     StarStationScene.prototype.getStationInfoByName = function (stationName){
 	var self = this;
@@ -54,51 +48,12 @@
 	    }
 	    Static.waitingPage.endWaiting();
 	    response.data.facility = [
-		{type:"Dock"
-		 ,bgPic:""
-		 ,message:"Here is Nolava-I.Welcom aborad Comander"
+		{name:"Dock"
+		 ,services:["ShipModifier"]}
+		,{name:"Exit"
+		  ,services:["GalaxyEntry"]
 		}
-		,{type:"Clone",corporation:"GeneTech",bgPic:""
-		  ,message:"Get a Clone NOW!"
-		  ,npc:["Inori","Izzac"]
-		  ,welcomService:"clone"
-		  ,service:[{type:"clone"}
-			   ]
-		 }
-		,{type:"Factory",bgPic:""
-		  ,message:"New equipment arived,get your self armored."
-		  ,npc:["Mirria"]
-		  ,service:[{type:"equipmentManage"}]
-		  ,welcomService:"equipmentManage"
-		 }
-		,{type:"Bank",bgPic:"",corporation:"BitBank"
-		  ,message:"BitBank ,always by your side"
-		  ,npc:["Inori"]
-		  ,welcomNpc:"Inori"
-		  ,service:[{type:"assetsManage"}
-			    ,{type:"stock"}]
-		 }
-		,{type:"Market",bgPic:""
-		  ,message:"welcom"
-		  ,npc:["Homura","Yomi"]
-		  ,welcomNpc:"Homura"
-		  ,welcomService:"marketBuy"
-		  ,service:[{type:"marketBuy"
-			     ,goods:[{name:"apple",price:100}
-				     ,{name:"banana",price:300}
-				     ,{name:"orange",price:300}
-				     ,{name:"watermellon",price:300}
-				     ,{name:"yooooo",price:300}
-				     ,{name:"sijimuri",price:300}
-				     ,{name:"demasia",price:300}
-				     ,{name:"yukuri",price:10000}
-				    ]
-			    }
-			    ,{type:"marketSell"}
-			    ,{type:"test1"}
-			    ,{type:"test2"}]
-		 }
-	    ];
+	    ]
 	    var context = self.screenNode.getContext("2d")
 	    context.textAlign = "center"; 
 	    context.translate(self.screenJ.width()/2,self.screenNode.height/2); 
@@ -111,9 +66,13 @@
 	this.data = responce.data;
 	this.ships = this.data.ships; 
 	this.name = this.data.name;
-	console.log(responce.data); 
+	this.guidBox = new GuidBox(this);
+	this.nodeJ.append(this.guidBox.nodeJ);
+	this.interactionBox = new InteractionBox(this);
+	this.nodeJ.append(this.interactionBox.nodeJ);
+	
 	this.buildFacilities(this.data.facility);
-	this.goTo("Factory");
+	this.goTo("Exit");
     }
     StarStationScene.prototype.onLeave = function(){
 	//hide will cause canvas instance stop drawing;
