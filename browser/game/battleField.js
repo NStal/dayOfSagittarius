@@ -152,7 +152,7 @@
 	context.globalAlpha = 0.3;
 	context.strokeStyle = "#666";
 
-
+	
 	context.lineWidth = 1;
 	context.stroke();
 	context.globalAlpha = 1;

@@ -1,7 +1,6 @@
 (function(exports){
     var Class = require("../util").Class;
     var EventEmitter = require("../util").EventEmitter;
-    
     var Point = require("../util").Point;
     var Util = require("../util").Util;
     var ShipSoul = EventEmitter.sub();
@@ -42,7 +41,6 @@
 	    rotateFix:0
 	};
 	this.cordinates = Point.Point(info.cordinates);
-	this.physicsState = info.physicsState;
 	this.moduleManager = new ModuleManager(this);
 	this.AI = new AI(this);
 	this.AI.destination = info.AI&&info.AI.destination?info.AI.destination:{};
